@@ -12,9 +12,9 @@ using NGA.Domain;
 
 namespace NGA.API.Controllers
 {
-    public class AnimalController : DefaultApiController<AnimalAddVM, AnimalUpdateVM, AnimalVM, IAnimalService>
+    public class GroupController : DefaultApiController<GroupAddVM, GroupUpdateVM, GroupVM, IGroupService>
     {
-        public AnimalController(IAnimalService service)
+        public GroupController(IGroupService service)
              : base(service)
         {
 
