@@ -4,35 +4,12 @@ using System.Text;
 
 namespace NGA.Core.Enum
 {
-    public enum AnimalStatus : byte
+    public enum UserStatus : byte
     {
-        NoInfo = 1,
-        Good = 2,
-        Normal = 3,
-        Poor = 4,
-        Died = 5,
-    }
-
-    public enum NestStatus : byte
-    {
-        NoInfo = 1,
-        Good = 2,
-        Normal = 3,
-        Poor = 4
-    }
-
-    public enum Gender : byte
-    {
-        NoInfo = 1,
-        Male = 2,
-        Female = 3
-    }
-
-    public enum UserRole : byte
-    {
-        Standart = 1,
-        Moderator = 2,
-        Admin = 3
+        Online = 1,
+        Idle = 2,
+        DontDisturb = 3,
+        Invisible = 4,
     }
 
     public enum HTTPMethodType : byte

@@ -19,44 +19,7 @@ namespace NGA.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("NGA.Domain.Animal", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime?>("BirthDate");
-
-                    b.Property<Guid>("CreateBy");
-
-                    b.Property<DateTime>("CreateDT");
-
-                    b.Property<byte>("Gender")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue((byte)1);
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("NickName")
-                        .HasMaxLength(100);
-
-                    b.Property<byte>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue((byte)1);
-
-                    b.Property<Guid>("TypeId");
-
-                    b.Property<Guid?>("UpdateBy");
-
-                    b.Property<DateTime?>("UpdateDT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TypeId");
-
-                    b.ToTable("Animal");
-                });
-
-            modelBuilder.Entity("NGA.Domain.AnimalType", b =>
+            modelBuilder.Entity("NGA.Domain.Group", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -65,12 +28,22 @@ namespace NGA.Data.Migrations
 
                     b.Property<DateTime>("CreateDT");
 
+                    b.Property<string>("Description")
+                        .HasMaxLength(250);
+
                     b.Property<bool>("IsDeleted");
+
+                    b.Property<bool>("IsMain")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsPrivate")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(100);
-
-                    b.Property<Guid?>("ParentId");
 
                     b.Property<Guid?>("UpdateBy");
 
@@ -78,7 +51,35 @@ namespace NGA.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AnimalType");
+                    b.ToTable("Group");
+                });
+
+            modelBuilder.Entity("NGA.Domain.GroupUser", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("CreateBy");
+
+                    b.Property<DateTime>("CreateDT");
+
+                    b.Property<Guid>("GroupId");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<Guid?>("UpdateBy");
+
+                    b.Property<DateTime?>("UpdateDT");
+
+                    b.Property<Guid>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("GroupUser");
                 });
 
             modelBuilder.Entity("NGA.Domain.Log", b =>
@@ -141,7 +142,7 @@ namespace NGA.Data.Migrations
                     b.ToTable("LogErrors");
                 });
 
-            modelBuilder.Entity("NGA.Domain.Nest", b =>
+            modelBuilder.Entity("NGA.Domain.Message", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -150,58 +151,27 @@ namespace NGA.Data.Migrations
 
                     b.Property<DateTime>("CreateDT");
 
+                    b.Property<Guid>("GroupId");
+
                     b.Property<bool>("IsDeleted");
 
-                    b.Property<DateTime?>("LastCheckDate");
-
-                    b.Property<DateTime?>("LastRepaireDate");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(100);
-
-                    b.Property<byte>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue((byte)1);
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(500);
 
                     b.Property<Guid?>("UpdateBy");
 
                     b.Property<DateTime?>("UpdateDT");
 
-                    b.Property<double>("XCordinate");
-
-                    b.Property<double>("YCordinate");
+                    b.Property<Guid>("UserId");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Nest");
-                });
+                    b.HasIndex("GroupId");
 
-            modelBuilder.Entity("NGA.Domain.NestAnimal", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.HasIndex("UserId");
 
-                    b.Property<Guid>("AnimalId");
-
-                    b.Property<Guid>("CreateBy");
-
-                    b.Property<DateTime>("CreateDT");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<Guid>("NestId");
-
-                    b.Property<Guid?>("UpdateBy");
-
-                    b.Property<DateTime?>("UpdateDT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AnimalId");
-
-                    b.HasIndex("NestId");
-
-                    b.ToTable("NestAnimal");
+                    b.ToTable("Message");
                 });
 
             modelBuilder.Entity("NGA.Domain.Parameter", b =>
@@ -244,7 +214,7 @@ namespace NGA.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Bio")
+                    b.Property<string>("About")
                         .HasMaxLength(250);
 
                     b.Property<Guid>("CreateBy");
@@ -255,7 +225,7 @@ namespace NGA.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(20);
 
-                    b.Property<bool>("IsApproved")
+                    b.Property<bool>("IsAdmin")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValue(false);
 
@@ -271,9 +241,9 @@ namespace NGA.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(50);
 
-                    b.Property<byte>("Role")
+                    b.Property<byte>("Status")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue((byte)1);
+                        .HasDefaultValue((byte)4);
 
                     b.Property<Guid?>("UpdateBy");
 
@@ -288,11 +258,16 @@ namespace NGA.Data.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("NGA.Domain.Animal", b =>
+            modelBuilder.Entity("NGA.Domain.GroupUser", b =>
                 {
-                    b.HasOne("NGA.Domain.AnimalType", "Type")
-                        .WithMany("Animals")
-                        .HasForeignKey("TypeId")
+                    b.HasOne("NGA.Domain.Group", "Group")
+                        .WithMany("Users")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("NGA.Domain.User", "User")
+                        .WithMany("Groups")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -304,16 +279,16 @@ namespace NGA.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("NGA.Domain.NestAnimal", b =>
+            modelBuilder.Entity("NGA.Domain.Message", b =>
                 {
-                    b.HasOne("NGA.Domain.Animal", "Animal")
-                        .WithMany("NestAnimals")
-                        .HasForeignKey("AnimalId")
+                    b.HasOne("NGA.Domain.Group", "Group")
+                        .WithMany("Messages")
+                        .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("NGA.Domain.Nest", "Nest")
-                        .WithMany("NestAnimals")
-                        .HasForeignKey("NestId")
+                    b.HasOne("NGA.Domain.User", "User")
+                        .WithMany("Messages")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

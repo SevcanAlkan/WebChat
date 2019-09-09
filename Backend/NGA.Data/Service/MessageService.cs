@@ -8,11 +8,11 @@ using System.Text;
 
 namespace NGA.Data.Service
 {
-    public class AnimalService : BaseService<AnimalAddVM, AnimalUpdateVM, AnimalVM, Animal>, IAnimalService
+    public class MessageService : BaseService<MessageAddVM, MessageUpdateVM, MessageVM, Message>, IMessageService
     {
         #region Ctor
 
-        public AnimalService(UnitOfWork _uow, IMapper _mapper)
+        public MessageService(UnitOfWork _uow, IMapper _mapper)
             : base(_uow, _mapper)
         {
 
@@ -25,7 +25,7 @@ namespace NGA.Data.Service
         #endregion
     }
 
-    public interface IAnimalService : IBaseService<AnimalAddVM, AnimalUpdateVM, AnimalVM, Animal>
+    public interface IMessageService : IBaseService<MessageAddVM, MessageUpdateVM, MessageVM, Message>
     {
 
     }

@@ -32,10 +32,9 @@ namespace NGA.Data
             if (modelBuilder == null)
                 throw new ArgumentNullException("modelBuilder");            
 
-            modelBuilder.ApplyConfiguration(new AnimalMap());
-            modelBuilder.ApplyConfiguration(new AnimalTypeMap());
-            modelBuilder.ApplyConfiguration(new NestMap());
-            modelBuilder.ApplyConfiguration(new NestAnimalMap());
+            modelBuilder.ApplyConfiguration(new GroupMap());
+            modelBuilder.ApplyConfiguration(new GroupUserMap());
+            modelBuilder.ApplyConfiguration(new MessageMap());
             modelBuilder.ApplyConfiguration(new ParameterMap());
             modelBuilder.ApplyConfiguration(new UserMap());
 
@@ -56,10 +55,9 @@ namespace NGA.Data
 
         #region Tables
 
-        public DbSet<Animal> Animals { get; set; }
-        public DbSet<AnimalType> AnimalTypes { get; set; }
-        public DbSet<Nest> Nests { get; set; }
-        public DbSet<NestAnimal> NestAnimals { get; set; }
+        public DbSet<Group> Groups { get; set; }
+        public DbSet<GroupUser> GroupUsers { get; set; }
+        public DbSet<Message> Messages { get; set; }
     
         public DbSet<Parameter> Parameters { get; set; }
         public DbSet<Log> Logs { get; set; }

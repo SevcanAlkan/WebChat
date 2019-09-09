@@ -1,18 +1,21 @@
 ﻿using AutoMapper;
+using NGA.Core.Helper;
+using NGA.Core.Model;
 using NGA.Data.SubStructure;
 using NGA.Data.ViewModel;
 using NGA.Domain;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace NGA.Data.Service
 {
-    public class NestAnimalService : BaseService<NestAnimalAddVM, NestAnimalUpdateVM, NestAnimalVM, NestAnimal>, INestAnimalService
+    public class GroupService : BaseService<GroupAddVM, GroupUpdateVM, GroupVM, Group>, IGroupService
     {
         #region Ctor
 
-        public NestAnimalService(UnitOfWork _uow, IMapper _mapper)
+        public GroupService(UnitOfWork _uow, IMapper _mapper)
             : base(_uow, _mapper)
         {
 
@@ -22,11 +25,11 @@ namespace NGA.Data.Service
 
         #region Methods                
 
+        
         #endregion
     }
 
-    public interface INestAnimalService : IBaseService<NestAnimalAddVM, NestAnimalUpdateVM, NestAnimalVM, NestAnimal>
+    public interface IGroupService : IBaseService<GroupAddVM, GroupUpdateVM, GroupVM, Group>
     {
-
     }
 }

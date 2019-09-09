@@ -92,10 +92,8 @@ namespace NGA.API
             services.AddSingleton(typeof(IRepository<>), typeof(Repository<>));
 
             services.AddSingleton<IParameterService, ParameterService>();
-            services.AddSingleton<IAnimalService, AnimalService>();
-            services.AddSingleton<IAnimalTypeService, AnimalTypeService>();
-            services.AddSingleton<INestService, NestService>();
-            services.AddSingleton<INestAnimalService, NestAnimalService>();
+            services.AddSingleton<IGroupService, GroupService>();
+            services.AddSingleton<IMessageService, MessageService>();
             services.AddSingleton<IUserService, UserService>();
             services.AddScoped(typeof(IBaseService<,,,>), typeof(BaseService<,,,>));
 
@@ -136,8 +134,7 @@ namespace NGA.API
             app.UseMvc(options =>
             {
                 options.MapRoute(name: "DefaultApi",
-                template: "api/{controller}/{id?}",
-                defaults: new { controller = "Home", action = "Index" });
+                template: "api/{controller}/{id?}");
             });
         }
     }
