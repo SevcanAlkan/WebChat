@@ -28,7 +28,7 @@ namespace NGA.Data.ViewModel
         [Required, MaxLength(15)]
         public string UserName { get; set; }
         [Required, MaxLength(50)]
-        public string Pasword { get; set; }
+        public string PaswordHash { get; set; }
 
         public DateTime? LastLoginDateTime { get; set; }
       
@@ -52,7 +52,7 @@ namespace NGA.Data.ViewModel
         [Required, MaxLength(15)]
         public string UserName { get; set; }
         [Required, MaxLength(50)]
-        public string Pasword { get; set; }
+        public string PaswordHash { get; set; }
 
         public DateTime? LastLoginDateTime { get; set; }
 
@@ -68,5 +68,13 @@ namespace NGA.Data.ViewModel
 
         [Required, Range(1, 4), DefaultValue(1)]
         public UserStatus Status { get; set; }
+    }
+
+    public class UserLoginVM
+    {
+        [Required, MaxLength(15)]
+        public string UserName { get; set; }
+        [Required, MaxLength(50)]
+        public string PasswordHash { get; set; }
     }
 }
