@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -14,10 +16,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Converters;
 using NGA.API.Config;
 using NGA.API.Filter;
-using NGA.API.Middleware;
 using NGA.API.SignalR;
 using NGA.Core;
 using NGA.Core.EntityFramework;
@@ -27,7 +29,6 @@ using NGA.Data.Service;
 using NGA.Data.SubStructure;
 using NGA.Data.ViewModel;
 using NGA.Domain;
-using StackExchange.Redis;
 
 namespace NGA.API
 {
@@ -53,6 +54,21 @@ namespace NGA.API
                 .AllowAnyHeader()
                 .AllowCredentials()
                  ));
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+             .AddJwtBearer(options =>
+             {
+                 var signingKey = System.Convert.FromBase64String(Configuration["Jwt:Key"]);
+                 options.TokenValidationParameters = new TokenValidationParameters
+                 {
+                     ValidateIssuer = true,
+                     ValidateAudience = true,
+                     ValidateIssuerSigningKey = true,
+                     IssuerSigningKey = new SymmetricSecurityKey(signingKey),
+                     ValidAudience = Configuration["Jwt:Audience"],
+                     ValidIssuer = Configuration["Jwt:Issuer"],
+                 };
+             });
 
             #region MVC Configration
             services.AddMvc(options =>
@@ -108,8 +124,6 @@ namespace NGA.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseMiddleware<AuthMiddleware>();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -130,6 +144,8 @@ namespace NGA.API
             {
                 routes.MapHub<ChatHub>("/chatHub");
             });
+
+            app.UseAuthentication();
 
             app.UseMvc(options =>
             {

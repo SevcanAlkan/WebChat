@@ -40,7 +40,7 @@ namespace NGA.Core
         #region WRG
 
         /// <summary>
-        /// Record not fount on this ID
+        /// Record not found on this ID
         /// </summary>
         public const string WRG01001 = "WRG01001";
 
@@ -48,6 +48,11 @@ namespace NGA.Core
         /// Invalid parameter Or parameters
         /// </summary>
         public const string WRG01002 = "WRG01002";
+
+        /// <summary>
+        /// User not found
+        /// </summary>
+        public const string WRG01003 = "WRG01003";
 
         #endregion
 

@@ -12,7 +12,7 @@ namespace NGA.Data.SubStructure
     {
         Task<T> GetByID(Guid id);
         IQueryable<T> Get();
-        IQueryable<T> Query();
+        IQueryable<T> Query(bool isDeleted = false);
         void Add(T entity);
         void Update(T entity);
     }
@@ -47,9 +47,9 @@ namespace NGA.Data.SubStructure
         {
             con.Entry(entity).State = EntityState.Modified;
         }
-        public IQueryable<T> Query()
+        public IQueryable<T> Query(bool isDeleted = false)
         {
-            return con.Set<T>().AsNoTracking().Where(x => !x.IsDeleted);
+            return con.Set<T>().AsNoTracking().Where(x => !x.IsDeleted || x.IsDeleted == isDeleted);
         }
     }
 }
