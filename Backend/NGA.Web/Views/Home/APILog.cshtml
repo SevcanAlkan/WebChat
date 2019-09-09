@@ -1,0 +1,70 @@
+﻿@model List<NGA.Data.ViewModel.LogVM>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Requests Records</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group mr-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+        </div>
+
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-sm">
+        <thead>
+            <tr>
+                <th hidden>ID</th>
+                <th>Create Date&Time</th>
+                <th>Controller</th>
+                <th>Action</th>
+                <th>Return Type</th>
+                <th>Method Type</th>
+                <th>Response Time</th>
+                <th>Show Detail</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <tr @if (Model[i].Errors != null && Model[i].Errors.Count > 0) { <text> style="background-color:darkred; color: white;" </text> }>
+                    <td hidden>@Model[i].Id</td>
+                    <td>@Model[i].CreateDate</td>
+                    <td>@Model[i].ControllerName</td>
+                    <td>@Model[i].ActionName</td>
+                    <td>@Model[i].ReturnTypeName</td>
+
+                    @switch (Model[i].MethodType)
+                    {
+                        case NGA.Core.Enum.HTTPMethodType.Unknown:
+                            <td>Unknown</td>
+                            break;
+                        case NGA.Core.Enum.HTTPMethodType.GET:
+                            <td>GET</td>
+                            break;
+                        case NGA.Core.Enum.HTTPMethodType.POST:
+                            <td>POST</td>
+                            break;
+                        case NGA.Core.Enum.HTTPMethodType.PUT:
+                            <td>PUT</td>
+                            break;
+                        case NGA.Core.Enum.HTTPMethodType.DELETE:
+                            <td>DELETE</td>
+                            break;
+                        default:
+                            <td>Unknown</td>
+                            break;
+                    }
+
+                    <td>@Model[i].ResponseTime</td>
+                    <td><a href="@Url.Action("APILogDetail", "Home", new { Id= Model[i].Id })" type="button" class="btn btn-sm btn-outline-primary">Detail</a></td>
+
+                </tr>
+                @*<tr style="font:italic; font-size:small"><td>@Model[i].Path</td></tr>*@
+            }
+
+        </tbody>
+    </table>
+</div>
