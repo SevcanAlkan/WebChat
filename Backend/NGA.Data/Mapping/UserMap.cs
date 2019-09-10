@@ -15,9 +15,6 @@ namespace NGA.Data.Mapping
         {
             builder.ToTable("User");
 
-            builder.Property(c => c.UserName).IsRequired().HasMaxLength(15);
-            builder.Property(c => c.PaswordHash).IsRequired().HasMaxLength(50);
-
             builder.Property(c=>c.Status).HasDefaultValue(UserStatus.Invisible).IsRequired();
 
             builder.Property(c => c.IsAdmin).HasDefaultValue(false);

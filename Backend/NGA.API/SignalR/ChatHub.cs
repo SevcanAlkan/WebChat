@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 namespace NGA.API.SignalR
 {
     [EnableCors("CorsPolicy")]
+    [AllowAnonymous]
     public class ChatHub : Hub
     {
         public async Task SendMessage(string user, string message)

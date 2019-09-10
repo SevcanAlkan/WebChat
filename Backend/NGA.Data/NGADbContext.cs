@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using NGA.Core.EntityFramework;
@@ -11,7 +12,7 @@ using System.Text;
 
 namespace NGA.Data
 {
-    public class NGADbContext : DbContext
+    public class NGADbContext : IdentityDbContext<User,Role, Guid>
     {
         public NGADbContext() : base()
         {
@@ -62,8 +63,6 @@ namespace NGA.Data
         public DbSet<Parameter> Parameters { get; set; }
         public DbSet<Log> Logs { get; set; }
         public DbSet<LogError> LogErrors { get; set; }
-
-        public DbSet<User> Users { get; set; }
 
         #endregion
     }

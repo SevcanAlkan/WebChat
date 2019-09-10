@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NGA.Data;
 
 namespace NGA.Data.Migrations
 {
     [DbContext(typeof(NGADbContext))]
-    partial class NGADbContextModelSnapshot : ModelSnapshot
+    [Migration("20190910110433_T4")]
+    partial class T4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -362,7 +364,9 @@ namespace NGA.Data.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256);
 
-                    b.Property<string>("PasswordHash");
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(50);
 
                     b.Property<string>("PhoneNumber");
 
@@ -377,6 +381,7 @@ namespace NGA.Data.Migrations
                     b.Property<bool>("TwoFactorEnabled");
 
                     b.Property<string>("UserName")
+                        .IsRequired()
                         .HasMaxLength(256);
 
                     b.HasKey("Id");

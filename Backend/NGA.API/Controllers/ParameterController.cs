@@ -13,7 +13,7 @@ using NGA.Domain;
 
 namespace NGA.API.Controllers
 {
-    public class ParameterController : DefaultApiController<ParameterAddVM, ParameterUpdateVM, ParameterVM, IParameterService>
+    public class ParameterController : DefaultApiCRUDController<ParameterAddVM, ParameterUpdateVM, ParameterVM, IParameterService>
     {
         public ParameterController(IParameterService service)
              : base(service)

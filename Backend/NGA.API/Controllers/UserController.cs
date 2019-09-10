@@ -4,14 +4,19 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using NGA.Core;
 using NGA.Core.Helper;
 using NGA.Core.Model;
+using NGA.Core.Validation;
 using NGA.Data;
 using NGA.Data.Service;
 using NGA.Data.ViewModel;
@@ -19,66 +24,101 @@ using NGA.Domain;
 
 namespace NGA.API.Controllers
 {
-    public class UserController : DefaultApiController<UserAddVM, UserUpdateVM, UserVM, IUserService>
+    public class UserController : DefaultApiController
     {
         private IConfiguration _config;
+        private IUserService _service;
+        private readonly IMapper _mapper;
 
-        public UserController(IUserService service, IConfiguration config)
-             : base(service)
+        readonly UserManager<User> _userManager;
+        readonly SignInManager<User> _signInManager;
+
+        public UserController(IUserService service, IConfiguration config, UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper)
         {
             _config = config;
+            _service = service;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _mapper = mapper;
         }
 
         [AllowAnonymous]
-        public async Task<JsonResult> Login(UserLoginVM model)
+        public async Task<JsonResult> CreateToken(UserLoginVM model)
         {
-            APIResultVM result = await _service.Authenticate(model.UserName, model.PasswordHash);
+            var loginResult = await _signInManager.PasswordSignInAsync(model.UserName, model.PasswordHash, isPersistent: false, lockoutOnFailure: false);
 
-            var signingKey = System.Convert.FromBase64String(_config["Jwt:Key"]);
-            var expiryDuration = int.Parse(_config["Jwt:ExpiryDuration"]);
+            if (!loginResult.Succeeded)
+                return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.WRG01004));
 
-            var tokenDescriptor = new SecurityTokenDescriptor
+            var user = await _userManager.FindByNameAsync(model.UserName);
+
+            return new JsonResult(APIResult.CreateVMWithRec<string>(GetToken(user), true));
+        }
+
+        public async Task<JsonResult> RefreshToken()
+        {
+            var user = await _userManager.FindByNameAsync(
+                User.Identity.Name ??
+                User.Claims.Where(c => c.Properties.ContainsKey("unique_name")).Select(c => c.Value).FirstOrDefault()
+                );
+
+            return new JsonResult(APIResult.CreateVMWithRec<string>(GetToken(user), true));
+        }
+
+        [AllowAnonymous]
+        public async Task<JsonResult> Register(UserAddVM model)
+        {
+            try
             {
-                Issuer = _config["Jwt:Issuer"],
-                Audience = _config["Jwt:Audience"],
-                IssuedAt = DateTime.UtcNow,
-                NotBefore = DateTime.UtcNow,
-                Expires = DateTime.UtcNow.AddMinutes(expiryDuration),
-                Subject = new ClaimsIdentity(new List<Claim> {
-                new Claim("userid", (result.Rec as UserVM).Id.ToString())
-            }),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(signingKey), SecurityAlgorithms.HmacSha256Signature)
+                if (ModelState.IsValid)
+                {
+                    User entity = _mapper.Map<UserAddVM, User>(model);
+                    entity.Id = Guid.NewGuid();
+                    var identityResult = await _userManager.CreateAsync(entity, model.PasswordHash);
+                    if (identityResult.Succeeded)
+                    {
+                        await _signInManager.SignInAsync(entity, isPersistent: false);
+
+                        return new JsonResult(APIResult.CreateVMWithRec<string>(GetToken(entity), true));
+                    }
+                    else
+                    {
+                        return new JsonResult(APIResult.CreateVMWithRec<object>(identityResult.Errors));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, null, AppStatusCode.ERR01001)));                
+            }
+            return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.ERR01001));
+        }
+
+        private String GetToken(User user)
+        {
+            var utcNow = DateTime.UtcNow;
+
+            var claims = new Claim[]
+            {
+                        new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                        new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim(JwtRegisteredClaimNames.Iat, utcNow.ToString())
             };
-            var jwtTokenHandler = new JwtSecurityTokenHandler();
-            var jwtToken = jwtTokenHandler.CreateJwtSecurityToken(tokenDescriptor);
-            var token = jwtTokenHandler.WriteToken(jwtToken);
 
-            return new JsonResult(token);
-        }
+            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetValue<String>("Jwt:Key")));
 
-        public override JsonResult Get()
-        {
-            return base.Get();
-        }
-
-        public override Task<JsonResult> GetById(Guid id)
-        {
-            return base.GetById(id);
-        }
-
-        public override Task<JsonResult> Add(UserAddVM model)
-        {
-            return base.Add(model);
-        }
-
-        public override Task<JsonResult> Update(Guid id, UserUpdateVM model)
-        {
-            return base.Update(id, model);
-        }
-
-        public override Task<JsonResult> Delete(Guid id)
-        {
-            return base.Delete(id);
+            var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+            var jwt = new JwtSecurityToken(
+                signingCredentials: signingCredentials,
+                claims: claims,
+                notBefore: utcNow,
+                expires: utcNow.AddSeconds(_config.GetValue<int>("Jwt:ExpiryDuration")),
+                audience: _config.GetValue<String>("Jwt:Audience"),
+                issuer: _config.GetValue<String>("Jwt:Issuer")
+                );
+            
+            return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
     }
 }
