@@ -1,33 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Converters;
 using NGA.API.Config;
 using NGA.API.Filter;
 using NGA.API.SignalR;
 using NGA.Core;
-using NGA.Core.EntityFramework;
-using NGA.Core.Model;
 using NGA.Data;
 using NGA.Data.Service;
 using NGA.Data.SubStructure;
-using NGA.Data.ViewModel;
 using NGA.Domain;
 
 namespace NGA.API
@@ -48,32 +39,71 @@ namespace NGA.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            #region Add CORS
             services.AddCors(options => options.AddPolicy("CorsPolicy",
             builder => builder.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials()
+                .WithOrigins("http://localhost:4200")
                  ));
+            #endregion
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-             .AddJwtBearer(options =>
-             {
-                 var signingKey = System.Convert.FromBase64String(Configuration["Jwt:Key"]);
-                 options.TokenValidationParameters = new TokenValidationParameters
-                 {
-                     ValidateIssuer = true,
-                     ValidateAudience = true,
-                     ValidateIssuerSigningKey = true,
-                     IssuerSigningKey = new SymmetricSecurityKey(signingKey),
-                     ValidAudience = Configuration["Jwt:Audience"],
-                     ValidIssuer = Configuration["Jwt:Issuer"],
-                 };
-             });
+            #region Add Entity Framework and Identity Framework
+            services.AddIdentity<User, Role>()
+              .AddEntityFrameworkStores<NGADbContext>()
+              .AddDefaultTokenProviders();
+            #endregion
 
+            #region Add Authentication
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+           .AddJwtBearer(options =>
+           {
+               var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<String>("Jwt:Key")));
+
+               options.RequireHttpsMetadata = false;
+               options.SaveToken = true;
+
+               options.TokenValidationParameters = new TokenValidationParameters
+               {
+                   LifetimeValidator = (before, expires, token, param) =>
+                   {
+                       return expires > DateTime.UtcNow;
+                   },
+                   ValidateIssuer = true,
+                   ValidateAudience = true,
+                   ValidateIssuerSigningKey = true,
+                   IssuerSigningKey = signingKey,
+                   ValidAudience = Configuration["Jwt:Audience"],
+                   ValidIssuer = Configuration["Jwt:Issuer"],
+               };
+
+               options.Events = new JwtBearerEvents
+               {
+                   OnMessageReceived = context =>
+                   {
+                       var accessToken = context.Request.Query["access_token"];
+
+                       var path = context.HttpContext.Request.Path;
+                       if (!string.IsNullOrEmpty(accessToken) &&
+                           (path.StartsWithSegments("/chatHub")))
+                       {
+                           context.Token = accessToken;
+                       }
+                       return Task.CompletedTask;
+                   }
+               };
+           });
+            #endregion
+          
             #region MVC Configration
             services.AddMvc(options =>
             {
-                options.Filters.Add(typeof(ValidatorActionFilter));//MVC kendisi attributelara gore zaten validation yapiyor. 
+                options.Filters.Add(typeof(ValidatorActionFilter));
                 options.Filters.Add(typeof(LoggerFilter));
             }).AddJsonOptions(options =>
             {
@@ -117,8 +147,12 @@ namespace NGA.API
 
             #endregion
 
-            services.AddSignalR();
-
+            #region Add SignalR
+            services.AddSignalR().AddHubOptions<ChatHub>(options =>
+            {
+                options.EnableDetailedErrors = true;
+            });
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -137,12 +171,13 @@ namespace NGA.API
             app.UseDefaultFiles();
             app.UseStaticFiles();
             //app.UseHttpsRedirection(); //for diseable SSL
+            //app.UseCookiePolicy();
 
             app.UseCors("CorsPolicy");
 
             app.UseSignalR(routes =>
             {
-                routes.MapHub<ChatHub>("/chatHub");
+                routes.MapHub<ChatHub>("/chathub");
             });
 
             app.UseAuthentication();

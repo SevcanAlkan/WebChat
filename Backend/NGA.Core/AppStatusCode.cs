@@ -54,6 +54,11 @@ namespace NGA.Core
         /// </summary>
         public const string WRG01003 = "WRG01003";
 
+        /// <summary>
+        /// Login failed
+        /// </summary>
+        public const string WRG01004 = "WRG01004";
+
         #endregion
 
         #region INF

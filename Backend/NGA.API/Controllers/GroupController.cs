@@ -12,7 +12,7 @@ using NGA.Domain;
 
 namespace NGA.API.Controllers
 {
-    public class GroupController : DefaultApiController<GroupAddVM, GroupUpdateVM, GroupVM, IGroupService>
+    public class GroupController : DefaultApiCRUDController<GroupAddVM, GroupUpdateVM, GroupVM, IGroupService>
     {
         public GroupController(IGroupService service)
              : base(service)

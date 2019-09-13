@@ -1,4 +1,6 @@
-﻿using NGA.Core.Enum;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using NGA.Core.Enum;
 using NGA.Core.Model;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,7 @@ using System.Text;
 
 namespace NGA.Data.ViewModel
 {
-    public class UserVM : BaseVM 
+    public class UserVM : BaseVM
     {
         public string UserName { get; set; }
 
@@ -20,7 +22,15 @@ namespace NGA.Data.ViewModel
         public string DisplayName { get; set; }
         public string About { get; set; }
 
+        [JsonIgnore]
         public UserStatus Status { get; set; }
+        public int StatusVal
+        {
+            get
+            {
+                return (int)this.Status;
+            }
+        }
     }
 
     public class UserAddVM : AddVM
@@ -28,10 +38,10 @@ namespace NGA.Data.ViewModel
         [Required, MaxLength(15)]
         public string UserName { get; set; }
         [Required, MaxLength(50)]
-        public string PaswordHash { get; set; }
+        public string PasswordHash { get; set; }
 
         public DateTime? LastLoginDateTime { get; set; }
-      
+
         [DefaultValue(false)]
         public bool IsAdmin { get; set; }
         [DefaultValue(false)]
@@ -52,7 +62,7 @@ namespace NGA.Data.ViewModel
         [Required, MaxLength(15)]
         public string UserName { get; set; }
         [Required, MaxLength(50)]
-        public string PaswordHash { get; set; }
+        public string PasswordHash { get; set; }
 
         public DateTime? LastLoginDateTime { get; set; }
 
@@ -76,5 +86,37 @@ namespace NGA.Data.ViewModel
         public string UserName { get; set; }
         [Required, MaxLength(50)]
         public string PasswordHash { get; set; }
+    }
+
+    public class UserAuthenticateVM : BaseVM
+    {
+        public string UserName { get; set; }
+
+        public DateTime? LastLoginDateTime { get; set; }
+
+        public bool IsAdmin { get; set; }
+        public bool IsBanned { get; set; }
+
+        public string DisplayName { get; set; }
+        public string About { get; set; }
+
+        [JsonIgnore]
+        public UserStatus Status { get; set; }
+        public int StatusVal
+        {
+            get
+            {
+                return (int)this.Status;
+            }
+        }
+
+        public string Token { get; set; }
+    }
+
+    public class UserListVM : BaseVM
+    {
+        public string UserName { get; set; }
+        public bool IsAdmin { get; set; }
+        public string DisplayName { get; set; }
     }
 }

@@ -12,11 +12,9 @@ namespace NGA.Data.ViewModel
     public class MessageVM : BaseVM 
     {
         public string Text { get; set; }
-
         public Guid UserId { get; set; }
-        public string UserDisplayName { get; set; }
         public Guid GroupId { get; set; }
-        public string GroupName { get; set; }
+        public DateTime Date { get; set; }
     }
 
     public class MessageAddVM : AddVM
