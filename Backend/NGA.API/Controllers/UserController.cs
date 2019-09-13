@@ -42,6 +42,24 @@ namespace NGA.API.Controllers
             _mapper = mapper;
         }
 
+
+        public JsonResult Get()
+        {
+            try
+            {
+                var result = _service.GetAll();
+
+                if (result == null)
+                    return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.WRG01001));
+
+                return new JsonResult(result);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, null, AppStatusCode.ERR01001)));
+            }
+        }
+
         [AllowAnonymous]
         public async Task<JsonResult> CreateToken(UserLoginVM model)
         {
@@ -52,7 +70,12 @@ namespace NGA.API.Controllers
 
             var user = await _userManager.FindByNameAsync(model.UserName);
 
-            return new JsonResult(APIResult.CreateVMWithRec<string>(GetToken(user), true));
+
+            UserAuthenticateVM returnVM = new UserAuthenticateVM();
+            returnVM = _mapper.Map<User, UserAuthenticateVM>(user);
+            returnVM.Token = GetToken(user);
+
+            return new JsonResult(returnVM);
         }
 
         public async Task<JsonResult> RefreshToken()
@@ -79,7 +102,12 @@ namespace NGA.API.Controllers
                     {
                         await _signInManager.SignInAsync(entity, isPersistent: false);
 
-                        return new JsonResult(APIResult.CreateVMWithRec<string>(GetToken(entity), true));
+
+                        UserAuthenticateVM returnVM = new UserAuthenticateVM();
+                        returnVM = _mapper.Map<User, UserAuthenticateVM>(entity);
+                        returnVM.Token = GetToken(entity);
+
+                        return new JsonResult(returnVM);
                     }
                     else
                     {

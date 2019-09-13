@@ -30,12 +30,19 @@ namespace NGA.Data.Service
 
         #region Methods                
 
-    
+        public List<UserVM> GetAll()
+        {
+            var userList = con.Set<User>().ToList();
+            List<UserVM> result = mapper.Map<List<UserVM>>(userList);
+
+            return result;
+        }
 
         #endregion
     }
 
     public interface IUserService 
     {
+        List<UserVM> GetAll();
     }
 }

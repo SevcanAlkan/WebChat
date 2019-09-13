@@ -71,18 +71,27 @@ namespace NGA.API.Config
             CreateMap<User, UserVM>();
             CreateMap<User, UserAddVM>();
             CreateMap<User, UserUpdateVM>();
+            CreateMap<User, UserAuthenticateVM>();
 
             CreateMap<UserVM, User>();
             CreateMap<UserVM, UserAddVM>();
             CreateMap<UserVM, UserUpdateVM>();
+            CreateMap<UserVM, UserAuthenticateVM>();
 
             CreateMap<UserAddVM, User>();
             CreateMap<UserAddVM, UserVM>();
             CreateMap<UserAddVM, UserUpdateVM>();
+            CreateMap<UserAddVM, UserAuthenticateVM>();
 
             CreateMap<UserUpdateVM, User>();
             CreateMap<UserUpdateVM, UserVM>();
             CreateMap<UserUpdateVM, UserAddVM>();
+            CreateMap<UserUpdateVM, UserAuthenticateVM>();
+
+            CreateMap<UserAuthenticateVM, User>();
+            CreateMap<UserAuthenticateVM, UserVM>();
+            CreateMap<UserAuthenticateVM, UserAddVM>();
+            CreateMap<UserAuthenticateVM, UserUpdateVM>();
             #endregion
 
         }
