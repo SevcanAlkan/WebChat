@@ -135,6 +135,12 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  get sortMessages() {
+    return this.messages.sort((a, b) => {
+      return <any>new Date(a.date) - <any>new Date(b.date);
+    });
+  }
+
   sendMessage(message: Message) {  
      if (this.tempMessage) {  
       var text = "";
@@ -170,6 +176,18 @@ export class HomeComponent implements OnInit {
           return "Undefined User";
         }
     }
+  }
+
+  getMessageCountForGroup(groupId){
+    //   if(this.Mesa){
+    //     var user = this.UserList.find(item=>item.id===id);
+    //     if(user){
+    //       return user.displayName;
+    //     }else{
+    //       return "Undefined User";
+    //     }
+    // }
+    return 0; //Add feature to get unreaded messages
   }
 
   search(value){

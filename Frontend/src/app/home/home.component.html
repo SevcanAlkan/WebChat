@@ -59,7 +59,7 @@
                   <li *ngFor="let item of GroupList">
                     <a href="#" id="{{item.id}}" (click)="selectGroup(item.id)">
                       <span>{{ item.name }}</span>
-                      <span class="badge badge-light">9</span>
+                      <span class="badge badge-light">{{ getMessageCountForGroup(item.id) }}</span>
                     </a>
                   </li>
                 </ul>
@@ -79,7 +79,7 @@
               <div class="inbox_msg">  
                 <div class="mesgs">  
                   <div class="msg_history">  
-                    <div *ngFor="let msg of messages">  
+                    <div *ngFor="let msg of sortMessages">  
                     <div class="incoming_msg" *ngIf="msg.type == 'received'">  
                       <div class="incoming_msg_img"> </div>  
                       <div class="received_msg">  
