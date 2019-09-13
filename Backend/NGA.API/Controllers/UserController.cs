@@ -47,7 +47,7 @@ namespace NGA.API.Controllers
         {
             try
             {
-                var result = _service.GetAll();
+                var result = _service.GetUserList();
 
                 if (result == null)
                     return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.WRG01001));

@@ -38,11 +38,25 @@ namespace NGA.Data.Service
             return result;
         }
 
+        public List<UserListVM> GetUserList()
+        {
+            var result = con.Set<User>().Select(a => new UserListVM()
+            {
+                Id = a.Id,
+                DisplayName = a.DisplayName,
+                IsAdmin = a.IsAdmin,
+                UserName = a.UserName
+            }).ToList();
+
+            return result;
+        }
+
         #endregion
     }
 
-    public interface IUserService 
+    public interface IUserService
     {
         List<UserVM> GetAll();
+        List<UserListVM> GetUserList();
     }
 }

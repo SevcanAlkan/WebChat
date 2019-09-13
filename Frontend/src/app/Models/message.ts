@@ -1,11 +1,14 @@
-export class Message{
+import { BaseVM } from '@common/BaseModel';
+
+export class Message extends BaseVM {
     text;
     groupId;
     userId;
+    date;
+    type;
+}
 
-    constructor(text, groupId, userId){
-        this.text = text;
-        this.groupId = groupId;
-        this.userId = userId;
-    }
+export class TempMessage{
+    text;
+    groupId;
 }

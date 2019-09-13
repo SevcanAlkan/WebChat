@@ -112,4 +112,11 @@ namespace NGA.Data.ViewModel
 
         public string Token { get; set; }
     }
+
+    public class UserListVM : BaseVM
+    {
+        public string UserName { get; set; }
+        public bool IsAdmin { get; set; }
+        public string DisplayName { get; set; }
+    }
 }

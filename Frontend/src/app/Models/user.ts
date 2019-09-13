@@ -35,3 +35,9 @@ export class UserLoginVM{
     public UserName: string;
     public PasswordHash: string;
 }
+
+export class UserListVM extends BaseVM{
+    public userName: string;
+    public isAdmin: boolean;
+    public displayName: string;
+}

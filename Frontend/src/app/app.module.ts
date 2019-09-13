@@ -16,6 +16,9 @@ import { HomeComponent } from './home/home.component';
 import { JwtInterceptor } from './helpers/JwtInterceptor';
 import { ErrorInterceptor } from './helpers/ErrorInterceptor';
 
+//Services
+import { ChatService } from '@services/ChatService';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -33,7 +36,8 @@ import { ErrorInterceptor } from './helpers/ErrorInterceptor';
   bootstrap: [AppComponent],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    ChatService
   ]
 })
 export class AppModule { }

@@ -1,26 +1,26 @@
 import { Injectable } from '@angular/core';  
-import { User, UserLoginVM, UserListVM } from '@app/models/User';
 import { BaseService } from '@common/BaseService';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';  
+import { Message } from '@models/message';
+import { map, catchError } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
 
 @Injectable({  
     providedIn: 'root'  
 })  
   
 @Injectable()
-export class UserService extends BaseService<User> {
+export class MessageService extends BaseService<Message> {
   constructor(http: HttpClient) {
-    super(http, "user");    
+    super(http, "message");    
   }
 
-  public getUserList() : Observable<UserListVM[]> {
+  public getByGroupId(groupId: string) : Observable<Message[]> {
     let headers = new HttpHeaders({ 'Content-Type': 'application/json' });  
 
-    return this.http.get<UserListVM[]>(this.apiUrl + "get", { headers: headers })
-    .pipe(map((data: UserListVM[]) => data),  
+    return this.http.get<Message[]>(this.apiUrl + "GetByGroupId?groupId=" + groupId, { headers: headers })
+    .pipe(map((data: Message[]) => data),  
         catchError(this.handleError)  
     );  
-  }
+  }  
 }

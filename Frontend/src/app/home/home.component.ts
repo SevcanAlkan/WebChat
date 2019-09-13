@@ -1,10 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { UserService } from '@services/UserService';
+import { Component, OnInit, EventEmitter, NgZone } from '@angular/core';
+import { Router } from '@angular/router';
+
+import { Message, TempMessage } from '@models/message';
 import { Group } from '@models/Group';
-import { User } from '@models/User';
+import { User, UserListVM } from '@models/User';
+
+import { UserService } from '@services/UserService';
 import { GroupService } from '@services/GroupService';
 import { AuthenticationService } from '@services/AuthenticationService';
-import { Router } from '@angular/router';
+import { ChatService } from '@services/ChatService';
+import { MessageService } from '@services/MessageService';
 
 @Component({
   selector: 'app-home',
@@ -12,43 +17,53 @@ import { Router } from '@angular/router';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-
-  private GroupService: GroupService;  
-  private UserService: UserService;  
-
-  private CurrentUser: User;
-  CurrentGroup: Group;
+  private CurrentUser: User; //Current logged in user.
+  CurrentGroup: Group = new Group; //Already selected group.
 
   private GroupList: Group[] = []; 
-  private UserList: User[] = [];  
-  public UserTest:User;
-  CurrentMessage = "";  
-  messages;
-  
-  constructor(private _Route: Router,private authenticationService: AuthenticationService, private userService: UserService, private groupService :GroupService) {
-    this.authenticationService.currentUser.subscribe(x => this.CurrentUser = x);   
-    
-    this.GroupService = groupService;  
-    this.UserService = userService;
+  private UserList: UserListVM[] = [];  
+
+  messages: Message[] = [];  
+  private tempMessages: TempMessage[] = []; //Which messages have written but didn't send.
+  tempMessage: string = " "; //Current message text, from input.
+  private message: Message; //Message model for send to API.
+
+  constructor(private _Route: Router,
+    private authenticationService: AuthenticationService,
+     private userService: UserService,
+     private groupService :GroupService,
+     private chatService: ChatService,
+     private messageService: MessageService,
+     private _ngZone: NgZone) {
+     this.authenticationService.currentUser.subscribe(x => this.CurrentUser = x);   
+        this.subscribeToEvents(); 
    }
 
   ngOnInit() {
     //Load groups
     this.getGroups();
-    //Load messages
+    //Load old messages
     this.getMessages();
 
-    var users = this.UserService.GetAll();
+    var users = this.userService.getUserList();
     if(users){
-      users.forEach((item: User[]) => {
+      users.forEach((item: UserListVM[]) => {
         item.forEach(user => {
           this.UserList.push(user);
         })
       });
-    }       
-  }
+    }    
+  } 
 
-  ngAfterContentInit(){
+  private subscribeToEvents(): void {    
+    this.chatService.messageReceived.subscribe((message: Message) => {  
+      this._ngZone.run(() => {  
+        if (message.userId !== this.CurrentUser.id) {  
+          message.type = "received";  
+          this.messages.push(message);  
+        }  
+      });  
+    });  
   }
 
   logout() {
@@ -57,7 +72,7 @@ export class HomeComponent implements OnInit {
   }
 
   getGroups(){
-    this.GroupService.GetAll().forEach(data => {
+    this.groupService.GetAll().forEach(data => {
       data.forEach(item=>{
         var group = new Group();
         group.id = item.id;
@@ -78,28 +93,73 @@ export class HomeComponent implements OnInit {
   selectGroup(id){    
     if(id==null){
       return;
+    }else if(this.CurrentGroup && id===this.CurrentGroup.id){
+      return;
     }
 
     var group = this.GroupList.find(item=>item.id===id);
     if(group==null){
       return;
-    }
-
-    this.CurrentMessage = "";
+    }  
+    
+    var _tempMessage = new TempMessage();
+    _tempMessage.text = this.tempMessage;
+    _tempMessage.groupId = this.CurrentGroup.id;    
+    this.tempMessages.push(_tempMessage);
+    this.tempMessage=  " ";
+    this.messages = [];
+    
     this.CurrentGroup = group;    
-
     this.getMessages();
   }
 
   getMessages(){
-    // this.messages = this.allMessages.filter(item => item.groupId===this.CurrentGroup.id);
+    if(this.CurrentGroup && this.CurrentGroup.id){
+
+      this.messageService.getByGroupId(this.CurrentGroup.id).forEach(data => {
+        data.forEach(item=>{  
+          
+          if(item.userId === this.CurrentUser.id){
+            item.type = "sent";
+          }else{
+            item.type = "received";
+          } 
+          this.messages.push(item);
+        })
+      });
+
+      var _tempMessage = this.tempMessages.find(a=>a.groupId===this.CurrentGroup.id);
+      if(_tempMessage && _tempMessage.text){
+        this.tempMessage = _tempMessage.text;
+      }
+    }
   }
 
-  sendMessage(){   
-    this.CurrentMessage = "";
+  sendMessage(message: Message) {  
+     if (this.tempMessage) {  
+      var text = "";
+      if(this.tempMessage.length >= 500){
+        text = this.tempMessage.substring(0, 499);
+      }else{
+        text = this.tempMessage;
+      }
+      
+      this.message = new Message();  
+      this.message.userId = this.CurrentUser.id; 
+      this.message.groupId = this.CurrentGroup.id;  
+      this.message.type = "sent";  
+      this.message.text = text;  
+      this.message.date = new Date(); 
+      
+      this.messages.push(this.message);  
+      this.chatService.sendMessage(this.message);  
 
-    this.getMessages();
-  }
+      //Clear temp message
+      this.tempMessage = "";  
+      let _sentMessage = this.tempMessages.find(a => a.groupId === this.message.groupId); 
+      this.tempMessages = this.tempMessages.filter(obj => obj !== _sentMessage);
+    }  
+  }  
 
   getUserName(id){
       if(this.UserList){

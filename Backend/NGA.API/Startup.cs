@@ -1,35 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Converters;
 using NGA.API.Config;
 using NGA.API.Filter;
 using NGA.API.SignalR;
 using NGA.Core;
-using NGA.Core.EntityFramework;
-using NGA.Core.Model;
 using NGA.Data;
 using NGA.Data.Service;
 using NGA.Data.SubStructure;
-using NGA.Data.ViewModel;
 using NGA.Domain;
 
 namespace NGA.API
@@ -56,6 +45,7 @@ namespace NGA.API
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials()
+                .WithOrigins("http://localhost:4200")
                  ));
             #endregion
 
@@ -187,7 +177,7 @@ namespace NGA.API
 
             app.UseSignalR(routes =>
             {
-                routes.MapHub<ChatHub>("/chatHub");
+                routes.MapHub<ChatHub>("/chathub");
             });
 
             app.UseAuthentication();

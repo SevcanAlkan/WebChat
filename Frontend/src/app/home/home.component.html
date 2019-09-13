@@ -19,7 +19,7 @@
                 </div> -->
                 <div class="user-info">
                   <span class="user-name">
-                    <strong ng-if="CurrentUser!=null">{{ CurrentUser.displayName }}</strong> 
+                    <strong ng-if="CurrentUser">{{ CurrentUser.displayName }}</strong> 
                   </span>
                   <span class="user-role">Role</span>
                   <span class="user-status" [ngSwitch]=" CurrentUser.statusVal">                   
@@ -73,32 +73,47 @@
     
       <div class="col-10" style="padding-left: 0px;padding-right: 0px;">
         
-          <div class="messaging">
-              <div class="inbox_msg">              
-                <div class="mesgs">
-                  <ul class="msg_history">
-                    
-                  <ng-container>
-                    <li class="outgoing_msg" *ngFor="let item of messages">
-                      <div class="sent_msg">
-                        <p>{{ item.text }} <span class="badge badge-light">{{ getUserName(item.userId) }}</span></p>                                           
-                      </div>
-                      </li>
-                  </ng-container> 
-  
-                  </ul>
-  
-                  <div class="type_msg justify-content-center">
-                    <div class="input_msg_write">
-                      <input type="text" class="write_msg" [(ngModel)]="CurrentMessage" #messageTxt (keyup.enter)="sendMessage()" placeholder="Type a message" />
-                      <button class="msg_send_btn btn btn-dark justify-content-right" type="button"><i class="material-icons" (click)="sendMessage()">
-                          send
-                          </i></button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div class="container">  
+            <h3 class=" text-center chat_header">{{ CurrentGroup.name }}</h3>  
+            <div class="messaging">  
+              <div class="inbox_msg">  
+                <div class="mesgs">  
+                  <div class="msg_history">  
+                    <div *ngFor="let msg of messages">  
+                    <div class="incoming_msg" *ngIf="msg.type == 'received'">  
+                      <div class="incoming_msg_img"> </div>  
+                      <div class="received_msg">  
+                        <div class="received_withd_msg">                           
+                          <p>  
+                                <span class="badge badge-dark " style="float:left;">{{ getUserName(msg.userId) }}</span>
+                                {{msg.text}}   
+                          </p>   
+                          <span class="time_date"> {{msg.date | date:'medium'}}</span>                          
+                        </div>  
+                      </div>  
+                    </div>  
+                    <div class="outgoing_msg" *ngIf="msg.type == 'sent'">  
+                      <div class="sent_msg">  
+                        <p>  
+                            {{msg.text}}<span class="badge badge-dark " style="float:right;">{{ getUserName(msg.userId) }}</span>
+                        </p>  
+                        <span class="time_date"> {{msg.date | date:'medium'}}</span>  
+                      </div>  
+                    </div>  
+                  </div>  
+                  </div>  
+                  <div class="type_msg">  
+                    <div class="input_msg_write">  
+                      <input type="text" class="write_msg" [value]="tempMessage"  
+                      (input)="tempMessage=$event.target.value" (keydown.enter)="sendMessage()" placeholder="Type a message" />  
+                      <button class="msg_send_btn" type="button"  (click)="sendMessage()"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>  
+                    </div>  
+                  </div>  
+                </div>  
+              </div>  
+            
+            </div>  
+          </div>  
   
       </div>
     </div>
