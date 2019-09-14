@@ -16,7 +16,7 @@ import { MessageService } from '@services/MessageService';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit  {  
   private CurrentUser: User; //Current logged in user.
   CurrentGroup: Group = new Group; //Already selected group.
 
@@ -27,6 +27,8 @@ export class HomeComponent implements OnInit {
   private tempMessages: TempMessage[] = []; //Which messages have written but didn't send.
   tempMessage: string = " "; //Current message text, from input.
   private message: Message; //Message model for send to API.
+
+  NavbarToggle = true;
 
   constructor(private _Route: Router,
     private authenticationService: AuthenticationService,
@@ -52,25 +54,13 @@ export class HomeComponent implements OnInit {
           this.UserList.push(user);
         })
       });
-    }    
+    }     
   } 
-
-  private subscribeToEvents(): void {    
-    this.chatService.messageReceived.subscribe((message: Message) => {  
-      this._ngZone.run(() => {  
-        if (message.userId !== this.CurrentUser.id) {  
-          message.type = "received";  
-          this.messages.push(message);  
-        }  
-      });  
-    });  
-  }
 
   logout() {
     this.authenticationService.logout();
     this._Route.navigate(['/login']);
   }
-
   getGroups(){
     this.groupService.GetAll().forEach(data => {
       data.forEach(item=>{
@@ -87,13 +77,24 @@ export class HomeComponent implements OnInit {
 
         this.GroupList.push(group);
       })
+    }).then(()=>{
+      this.selectGroup(this.CurrentGroup.id, true);
     });
-  }  
-  
-  selectGroup(id){    
+  } 
+  get sortGroups() {
+    this.GroupList = this.GroupList.sort((a, b) => a.name.localeCompare(b.name)).sort(a => {
+      if(a.isMain){
+        return -1;
+      }else{
+        return 1;
+      }
+    });
+    return this.GroupList;
+  }
+  selectGroup(id, loadAnyWay:boolean=false){    
     if(id==null){
       return;
-    }else if(this.CurrentGroup && id===this.CurrentGroup.id){
+    }else if(this.CurrentGroup && id===this.CurrentGroup.id && !loadAnyWay){
       return;
     }
 
@@ -109,12 +110,11 @@ export class HomeComponent implements OnInit {
     this.tempMessage=  " ";
     this.messages = [];
     
-    this.CurrentGroup = group;    
+    this.CurrentGroup = group;        
     this.getMessages();
   }
-
   getMessages(){
-    if(this.CurrentGroup && this.CurrentGroup.id){
+    if((this.CurrentGroup && this.CurrentGroup.id)){
 
       this.messageService.getByGroupId(this.CurrentGroup.id).forEach(data => {
         data.forEach(item=>{  
@@ -134,7 +134,6 @@ export class HomeComponent implements OnInit {
       }
     }
   }
-
   get sortMessages() {
     return this.messages.sort((a, b) => {
       return <any>new Date(a.date) - <any>new Date(b.date);
@@ -166,6 +165,16 @@ export class HomeComponent implements OnInit {
       this.tempMessages = this.tempMessages.filter(obj => obj !== _sentMessage);
     }  
   }  
+  private subscribeToEvents(): void {    
+    this.chatService.messageReceived.subscribe((message: Message) => {  
+      this._ngZone.run(() => {  
+        if (message.userId !== this.CurrentUser.id) {  
+          message.type = "received";  
+          this.messages.push(message);  
+        }  
+      });  
+    });  
+  }
 
   getUserName(id){
       if(this.UserList){
@@ -177,7 +186,6 @@ export class HomeComponent implements OnInit {
         }
     }
   }
-
   getMessageCountForGroup(groupId){
     //   if(this.Mesa){
     //     var user = this.UserList.find(item=>item.id===id);
@@ -194,4 +202,11 @@ export class HomeComponent implements OnInit {
     console.log(value);
   }
 
+  toggleNavBar(){
+    if(this.NavbarToggle){
+      this.NavbarToggle = false;
+    }else{
+      this.NavbarToggle = true;
+    }
+  }
 }
