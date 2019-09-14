@@ -28,11 +28,41 @@ namespace NGA.API.SignalR
             _mapper = mapper;
         }
 
+        //public Task JoinGroup(Guid groupId)
+        //{
+        //    return Groups.AddToGroupAsync(Context.ConnectionId, groupId.ToString());
+        //}
+
+        //public Task LeaveGroup(Guid groupId)
+        //{
+        //    return Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId.ToString());
+        //}
+
+        public override async Task OnConnectedAsync()
+        {
+            var httpContext = Context.GetHttpContext();
+            var groupId = httpContext.Request.Query["GroupId"];
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
+
+            await base.OnConnectedAsync();
+        }
+
+        //public override async Task OnDisconnectedAsync(Exception exception)
+        //{
+        //    await Groups.RemoveFromGroupAsync(Context.ConnectionId);
+
+        //    await base.OnDisconnectedAsync(exception);
+        //}
+
+
         public async Task SendMessage(MessageVM message)
         {
+            //if(Groups.Any)
+
             var model = _mapper.Map<MessageAddVM>(message);
             await _service.Add(model, message.UserId);
-            await Clients.All.SendAsync("ReceiveMessage", message);
+
+            await Clients.Group(message.GroupId.ToString()).SendAsync("ReceiveMessage", message);
         }
 
     }

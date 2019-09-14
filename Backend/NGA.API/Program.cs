@@ -47,18 +47,24 @@ namespace NGA.API
                 .AddCommandLine(args)
                 .Build();
 
+            var hostUrl = config["hosturl"];
+            if (string.IsNullOrEmpty(hostUrl))
+                hostUrl = "http://localhost:5008";
+
             return WebHost.CreateDefaultBuilder(args)
                 .UseConfiguration(config)
                 .UseStartup<Startup>()
-                .UseKestrel((hostingContext, options) =>
-                {
-                    options.Listen(IPAddress.Loopback, config.GetValue<int>("Host:Port"));
-                    options.AddServerHeader = false;
-                    options.Listen(IPAddress.Loopback, config.GetValue<int>("Host:PortSSL"), listenOptions =>
-                    {
-                        listenOptions.UseHttps();
-                    });
-                })
+                .UseUrls(hostUrl)
+                //.UseKestrel((hostingContext, options) =>
+                //{                    
+                //    options.Listen(IPAddress.Loopback, config.GetValue<int>("Host:Port"));
+                //    options.Listen(IPAddress.Loopback, config.GetValue<int>("Host:Port"));
+                //    options.AddServerHeader = false;
+                //    options.Listen(IPAddress.Loopback, config.GetValue<int>("Host:PortSSL"), listenOptions =>
+                //    {
+                //        listenOptions.UseHttps();
+                //    });
+                //})
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();
