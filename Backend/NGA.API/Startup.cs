@@ -45,7 +45,7 @@ namespace NGA.API
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials()
-                .WithOrigins("http://localhost:4200")
+                .WithOrigins("http://localhost:4200", "http://192.168.0.102:4200")
                  ));
             #endregion
 

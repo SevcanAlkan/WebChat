@@ -34,11 +34,11 @@ export class HomeComponent implements OnInit  {
     private authenticationService: AuthenticationService,
      private userService: UserService,
      private groupService :GroupService,
-     private chatService: ChatService,
      private messageService: MessageService,
+     private chatService: ChatService,
      private _ngZone: NgZone) {
-     this.authenticationService.currentUser.subscribe(x => this.CurrentUser = x);   
-        this.subscribeToEvents(); 
+      this.authenticationService.currentUser.subscribe(x => this.CurrentUser = x);         
+      this.subscribeToEvents(); 
    }
 
   ngOnInit() {
@@ -110,7 +110,8 @@ export class HomeComponent implements OnInit  {
     this.tempMessage=  " ";
     this.messages = [];
     
-    this.CurrentGroup = group;        
+    this.CurrentGroup = group;  
+    this.chatService.updateGroupId(this.CurrentGroup.id);  
     this.getMessages();
   }
   getMessages(){
@@ -131,7 +132,7 @@ export class HomeComponent implements OnInit  {
       var _tempMessage = this.tempMessages.find(a=>a.groupId===this.CurrentGroup.id);
       if(_tempMessage && _tempMessage.text){
         this.tempMessage = _tempMessage.text;
-      }
+      }      
     }
   }
   get sortMessages() {
