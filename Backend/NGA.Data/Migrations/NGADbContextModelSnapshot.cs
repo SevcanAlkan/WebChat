@@ -19,44 +19,90 @@ namespace NGA.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("NGA.Domain.Animal", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime?>("BirthDate");
-
-                    b.Property<Guid>("CreateBy");
-
-                    b.Property<DateTime>("CreateDT");
-
-                    b.Property<byte>("Gender")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue((byte)1);
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<string>("ClaimType");
 
-                    b.Property<string>("NickName")
-                        .HasMaxLength(100);
+                    b.Property<string>("ClaimValue");
 
-                    b.Property<byte>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue((byte)1);
-
-                    b.Property<Guid>("TypeId");
-
-                    b.Property<Guid?>("UpdateBy");
-
-                    b.Property<DateTime?>("UpdateDT");
+                    b.Property<Guid>("RoleId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TypeId");
+                    b.HasIndex("RoleId");
 
-                    b.ToTable("Animal");
+                    b.ToTable("AspNetRoleClaims");
                 });
 
-            modelBuilder.Entity("NGA.Domain.AnimalType", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ClaimType");
+
+                    b.Property<string>("ClaimValue");
+
+                    b.Property<Guid>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+                {
+                    b.Property<string>("LoginProvider");
+
+                    b.Property<string>("ProviderKey");
+
+                    b.Property<string>("ProviderDisplayName");
+
+                    b.Property<Guid>("UserId");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+                {
+                    b.Property<Guid>("UserId");
+
+                    b.Property<Guid>("RoleId");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+                {
+                    b.Property<Guid>("UserId");
+
+                    b.Property<string>("LoginProvider");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("NGA.Domain.Group", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -65,12 +111,22 @@ namespace NGA.Data.Migrations
 
                     b.Property<DateTime>("CreateDT");
 
+                    b.Property<string>("Description")
+                        .HasMaxLength(250);
+
                     b.Property<bool>("IsDeleted");
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(100);
+                    b.Property<bool>("IsMain")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(false);
 
-                    b.Property<Guid?>("ParentId");
+                    b.Property<bool>("IsPrivate")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
 
                     b.Property<Guid?>("UpdateBy");
 
@@ -78,7 +134,35 @@ namespace NGA.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AnimalType");
+                    b.ToTable("Group");
+                });
+
+            modelBuilder.Entity("NGA.Domain.GroupUser", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("CreateBy");
+
+                    b.Property<DateTime>("CreateDT");
+
+                    b.Property<Guid>("GroupId");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<Guid?>("UpdateBy");
+
+                    b.Property<DateTime?>("UpdateDT");
+
+                    b.Property<Guid>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("GroupUser");
                 });
 
             modelBuilder.Entity("NGA.Domain.Log", b =>
@@ -141,7 +225,7 @@ namespace NGA.Data.Migrations
                     b.ToTable("LogErrors");
                 });
 
-            modelBuilder.Entity("NGA.Domain.Nest", b =>
+            modelBuilder.Entity("NGA.Domain.Message", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -150,58 +234,27 @@ namespace NGA.Data.Migrations
 
                     b.Property<DateTime>("CreateDT");
 
+                    b.Property<Guid>("GroupId");
+
                     b.Property<bool>("IsDeleted");
 
-                    b.Property<DateTime?>("LastCheckDate");
-
-                    b.Property<DateTime?>("LastRepaireDate");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(100);
-
-                    b.Property<byte>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue((byte)1);
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(500);
 
                     b.Property<Guid?>("UpdateBy");
 
                     b.Property<DateTime?>("UpdateDT");
 
-                    b.Property<double>("XCordinate");
-
-                    b.Property<double>("YCordinate");
+                    b.Property<Guid>("UserId");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Nest");
-                });
+                    b.HasIndex("GroupId");
 
-            modelBuilder.Entity("NGA.Domain.NestAnimal", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.HasIndex("UserId");
 
-                    b.Property<Guid>("AnimalId");
-
-                    b.Property<Guid>("CreateBy");
-
-                    b.Property<DateTime>("CreateDT");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<Guid>("NestId");
-
-                    b.Property<Guid?>("UpdateBy");
-
-                    b.Property<DateTime?>("UpdateDT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AnimalId");
-
-                    b.HasIndex("NestId");
-
-                    b.ToTable("NestAnimal");
+                    b.ToTable("Message");
                 });
 
             modelBuilder.Entity("NGA.Domain.Parameter", b =>
@@ -239,23 +292,57 @@ namespace NGA.Data.Migrations
                     b.ToTable("Parameter");
                 });
 
+            modelBuilder.Entity("NGA.Domain.Role", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("CanJoinAnyGroup");
+
+                    b.Property<bool>("CanManageGroups");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken();
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles");
+                });
+
             modelBuilder.Entity("NGA.Domain.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Bio")
+                    b.Property<string>("About")
                         .HasMaxLength(250);
 
-                    b.Property<Guid>("CreateBy");
+                    b.Property<int>("AccessFailedCount");
 
-                    b.Property<DateTime>("CreateDT");
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken();
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
                         .HasMaxLength(20);
 
-                    b.Property<bool>("IsApproved")
+                    b.Property<string>("Email")
+                        .HasMaxLength(256);
+
+                    b.Property<bool>("EmailConfirmed");
+
+                    b.Property<bool>("IsAdmin")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValue(false);
 
@@ -263,36 +350,103 @@ namespace NGA.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasDefaultValue(false);
 
-                    b.Property<bool>("IsDeleted");
-
                     b.Property<DateTime?>("LastLoginDateTime");
 
-                    b.Property<string>("PaswordHash")
-                        .IsRequired()
-                        .HasMaxLength(50);
+                    b.Property<bool>("LockoutEnabled");
 
-                    b.Property<byte>("Role")
+                    b.Property<DateTimeOffset?>("LockoutEnd");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("PasswordHash");
+
+                    b.Property<string>("PhoneNumber");
+
+                    b.Property<bool>("PhoneNumberConfirmed");
+
+                    b.Property<string>("SecurityStamp");
+
+                    b.Property<byte>("Status")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue((byte)1);
+                        .HasDefaultValue((byte)4);
 
-                    b.Property<Guid?>("UpdateBy");
-
-                    b.Property<DateTime?>("UpdateDT");
+                    b.Property<bool>("TwoFactorEnabled");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasMaxLength(15);
+                        .HasMaxLength(256);
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.HasIndex("NormalizedEmail")
+                        .HasName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("NGA.Domain.Animal", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("NGA.Domain.AnimalType", "Type")
-                        .WithMany("Animals")
-                        .HasForeignKey("TypeId")
+                    b.HasOne("NGA.Domain.Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+                {
+                    b.HasOne("NGA.Domain.User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+                {
+                    b.HasOne("NGA.Domain.User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+                {
+                    b.HasOne("NGA.Domain.Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("NGA.Domain.User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+                {
+                    b.HasOne("NGA.Domain.User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("NGA.Domain.GroupUser", b =>
+                {
+                    b.HasOne("NGA.Domain.Group", "Group")
+                        .WithMany("Users")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("NGA.Domain.User", "User")
+                        .WithMany("Groups")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -304,16 +458,16 @@ namespace NGA.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("NGA.Domain.NestAnimal", b =>
+            modelBuilder.Entity("NGA.Domain.Message", b =>
                 {
-                    b.HasOne("NGA.Domain.Animal", "Animal")
-                        .WithMany("NestAnimals")
-                        .HasForeignKey("AnimalId")
+                    b.HasOne("NGA.Domain.Group", "Group")
+                        .WithMany("Messages")
+                        .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("NGA.Domain.Nest", "Nest")
-                        .WithMany("NestAnimals")
-                        .HasForeignKey("NestId")
+                    b.HasOne("NGA.Domain.User", "User")
+                        .WithMany("Messages")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

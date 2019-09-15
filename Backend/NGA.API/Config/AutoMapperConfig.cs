@@ -11,42 +11,7 @@ namespace NGA.API.Config
     public class AutoMapperConfig : Profile
     {
         public AutoMapperConfig()
-        {
-            #region Animal
-            CreateMap<Animal, AnimalVM>();
-            CreateMap<Animal, AnimalAddVM>();
-            CreateMap<Animal, AnimalUpdateVM>();
-
-            CreateMap<AnimalVM, Animal>();
-            CreateMap<AnimalVM, AnimalAddVM>();
-            CreateMap<AnimalVM, AnimalUpdateVM>();
-
-            CreateMap<AnimalAddVM, Animal>();
-            CreateMap<AnimalAddVM, AnimalVM>();
-            CreateMap<AnimalAddVM, AnimalUpdateVM>();
-
-            CreateMap<AnimalUpdateVM, Animal>();
-            CreateMap<AnimalUpdateVM, AnimalVM>();
-            CreateMap<AnimalUpdateVM, AnimalAddVM>();
-            #endregion
-
-            #region AnimalType
-            CreateMap<AnimalType, AnimalTypeVM>();
-            CreateMap<AnimalType, AnimalTypeAddVM>();
-            CreateMap<AnimalType, AnimalTypeUpdateVM>();
-
-            CreateMap<AnimalTypeVM, AnimalType>();
-            CreateMap<AnimalTypeVM, AnimalTypeAddVM>();
-            CreateMap<AnimalTypeVM, AnimalTypeUpdateVM>();
-
-            CreateMap<AnimalTypeAddVM, AnimalType>();
-            CreateMap<AnimalTypeAddVM, AnimalTypeVM>();
-            CreateMap<AnimalTypeAddVM, AnimalTypeUpdateVM>();
-
-            CreateMap<AnimalTypeUpdateVM, AnimalType>();
-            CreateMap<AnimalTypeUpdateVM, AnimalTypeVM>();
-            CreateMap<AnimalTypeUpdateVM, AnimalTypeAddVM>();
-            #endregion
+        {           
             
             #region Parameter
             CreateMap<Parameter, ParameterVM>();
@@ -66,58 +31,67 @@ namespace NGA.API.Config
             CreateMap<ParameterUpdateVM, ParameterAddVM>();
             #endregion
             
-            #region Nest
-            CreateMap<Nest, NestVM>();
-            CreateMap<Nest, NestAddVM>();
-            CreateMap<Nest, NestUpdateVM>();
+            #region Group
+            CreateMap<Group, GroupVM>();
+            CreateMap<Group, GroupAddVM>();
+            CreateMap<Group, GroupUpdateVM>();
 
-            CreateMap<NestVM, Nest>();
-            CreateMap<NestVM, NestAddVM>();
-            CreateMap<NestVM, NestUpdateVM>();
+            CreateMap<GroupVM, Group>();
+            CreateMap<GroupVM, GroupAddVM>();
+            CreateMap<GroupVM, GroupUpdateVM>();
 
-            CreateMap<NestAddVM, Nest>();
-            CreateMap<NestAddVM, NestVM>();
-            CreateMap<NestAddVM, NestUpdateVM>();
+            CreateMap<GroupAddVM, Group>();
+            CreateMap<GroupAddVM, GroupVM>();
+            CreateMap<GroupAddVM, GroupUpdateVM>();
 
-            CreateMap<NestUpdateVM, Nest>();
-            CreateMap<NestUpdateVM, NestVM>();
-            CreateMap<NestUpdateVM, NestAddVM>();
+            CreateMap<GroupUpdateVM, Group>();
+            CreateMap<GroupUpdateVM, GroupVM>();
+            CreateMap<GroupUpdateVM, GroupAddVM>();
             #endregion
             
-            #region NestAnimal
-            CreateMap<NestAnimal, NestAnimalVM>();
-            CreateMap<NestAnimal, NestAnimalAddVM>();
-            CreateMap<NestAnimal, NestAnimalUpdateVM>();
+            #region Message
+            CreateMap<Message, MessageVM>();
+            CreateMap<Message, MessageAddVM>();
+            CreateMap<Message, MessageUpdateVM>();
 
-            CreateMap<NestAnimalVM, NestAnimal>();
-            CreateMap<NestAnimalVM, NestAnimalAddVM>();
-            CreateMap<NestAnimalVM, NestAnimalUpdateVM>();
+            CreateMap<MessageVM, Message>();
+            CreateMap<MessageVM, MessageAddVM>();
+            CreateMap<MessageVM, MessageUpdateVM>();
 
-            CreateMap<NestAnimalAddVM, NestAnimal>();
-            CreateMap<NestAnimalAddVM, NestAnimalVM>();
-            CreateMap<NestAnimalAddVM, NestAnimalUpdateVM>();
+            CreateMap<MessageAddVM, Message>();
+            CreateMap<MessageAddVM, MessageVM>();
+            CreateMap<MessageAddVM, MessageUpdateVM>();
 
-            CreateMap<NestAnimalUpdateVM, NestAnimal>();
-            CreateMap<NestAnimalUpdateVM, NestAnimalVM>();
-            CreateMap<NestAnimalUpdateVM, NestAnimalAddVM>();
+            CreateMap<MessageUpdateVM, Message>();
+            CreateMap<MessageUpdateVM, MessageVM>();
+            CreateMap<MessageUpdateVM, MessageAddVM>();
             #endregion
 
             #region User
             CreateMap<User, UserVM>();
             CreateMap<User, UserAddVM>();
             CreateMap<User, UserUpdateVM>();
+            CreateMap<User, UserAuthenticateVM>();
 
             CreateMap<UserVM, User>();
             CreateMap<UserVM, UserAddVM>();
             CreateMap<UserVM, UserUpdateVM>();
+            CreateMap<UserVM, UserAuthenticateVM>();
 
             CreateMap<UserAddVM, User>();
             CreateMap<UserAddVM, UserVM>();
             CreateMap<UserAddVM, UserUpdateVM>();
+            CreateMap<UserAddVM, UserAuthenticateVM>();
 
             CreateMap<UserUpdateVM, User>();
             CreateMap<UserUpdateVM, UserVM>();
             CreateMap<UserUpdateVM, UserAddVM>();
+            CreateMap<UserUpdateVM, UserAuthenticateVM>();
+
+            CreateMap<UserAuthenticateVM, User>();
+            CreateMap<UserAuthenticateVM, UserVM>();
+            CreateMap<UserAuthenticateVM, UserAddVM>();
+            CreateMap<UserAuthenticateVM, UserUpdateVM>();
             #endregion
 
         }

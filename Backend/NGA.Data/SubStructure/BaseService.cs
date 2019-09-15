@@ -47,7 +47,7 @@ namespace NGA.Data.SubStructure
         where G : BaseVM, IBaseVM, new()
     {
         protected UnitOfWork uow;
-        private readonly IMapper mapper;
+        protected readonly IMapper mapper;
 
         public BaseService(UnitOfWork _uow, IMapper _mapper)
         {
@@ -82,7 +82,7 @@ namespace NGA.Data.SubStructure
         {
             try
             {
-                D dm = uow.Repository<D>().Query().Where(x => x.Id == id).FirstOrDefault();
+                D dm = Repository.Query().Where(x => x.Id == id).FirstOrDefault();
                 if (Validation.IsNull(dm))
                     return null;
 
@@ -100,7 +100,7 @@ namespace NGA.Data.SubStructure
         {
             try
             {
-                return uow.Repository<D>().Query().ProjectTo<G>().ToList();
+                return Repository.Query().ProjectTo<G>().ToList();
             }
             catch (Exception e)
             {
@@ -112,7 +112,7 @@ namespace NGA.Data.SubStructure
         {
             try
             {
-                return uow.Repository<D>().Query().Where(expr).ProjectTo<G>().ToList();
+                return Repository.Query().Where(expr).ProjectTo<G>().ToList();
             }
             catch (Exception e)
             {
@@ -137,7 +137,7 @@ namespace NGA.Data.SubStructure
                     (entity as ITable).CreateDT = DateTime.Now;
                 }
 
-                uow.Repository<D>().Add(entity);
+                Repository.Add(entity);
 
                 if (isCommit)
                     await Commit();
@@ -167,7 +167,7 @@ namespace NGA.Data.SubStructure
                     (entity as ITable).UpdateDT = DateTime.Now;
                 }
 
-                uow.Repository<D>().Update(entity);
+                Repository.Update(entity);
 
                 if (isCommit)
                     await Commit();
@@ -196,7 +196,7 @@ namespace NGA.Data.SubStructure
                 }
 
                 entity.IsDeleted = true;
-                uow.Repository<D>().Update(entity);
+                Repository.Update(entity);
 
                 if (isCommit)
                     await Commit();
@@ -225,7 +225,7 @@ namespace NGA.Data.SubStructure
                 }
 
                 entity.IsDeleted = false;
-                uow.Repository<D>().Update(entity);
+                Repository.Update(entity);
 
                 if (isCommit)
                     await Commit();
