@@ -4,6 +4,7 @@ import { catchError, tap, map } from 'rxjs/operators'
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';  
 import { environment } from '@environments/environment';
 import { BaseVM } from './BaseModel';
+import { APIResultVM } from '@models/APIResultVM';
 
 @Injectable({  
     providedIn: 'root'  
@@ -28,16 +29,16 @@ export abstract class BaseService<T extends BaseVM>{
         );  
     }  
   
-    public GetById(id) :Observable<T>{  
-        var editUrl = this.apiUrl + 'GetById?id=' + id;  
+    public GetById(id) :Observable<APIResultVM>{  
+        var url = this.apiUrl + 'GetById?id=' + id;  
         let headers = new HttpHeaders({ 'Content-Type': 'application/json' });  
-        return this.http.get<T>(editUrl, { headers: headers }).pipe(tap(data => data),  
+        return this.http.get<APIResultVM>(url, { headers: headers }).pipe(tap(data => data),  
             catchError(this.handleError)  
         );  
     }  
   
     public Add(model: T) {  
-        let headers = new HttpHeaders({ 'Content-Type': 'application/json' });   
+        let headers = new HttpHeaders({ 'Content-Type': 'application/json' });         
         return this.http.post<any>(this.apiUrl + "add", model, { headers: headers })  
             .pipe(  
                 catchError(this.handleError)  
@@ -45,18 +46,18 @@ export abstract class BaseService<T extends BaseVM>{
     }  
 
     public Update(model: T) {  
-        var putUrl = this.apiUrl + '/update?id=' + model.id;  
+        var url = this.apiUrl + 'update?id=' + model.id;  
         let headers = new HttpHeaders({ 'Content-Type': 'application/json' });   
-        return this.http.put<any>(putUrl, model, { headers: headers })  
+        return this.http.put<any>(url, model, { headers: headers })  
             .pipe(  
                 catchError(this.handleError)  
             );  
     }  
   
     public Delete(id) {  
-        var deleteUrl = this.apiUrl + '/delete?id=' + id;  
+        var url = this.apiUrl + 'delete?id=' + id;  
         let headers = new HttpHeaders({ 'Content-Type': 'application/json' });   
-        return this.http.delete<any>(deleteUrl, { headers: headers })  
+        return this.http.delete<any>(url, { headers: headers })  
             .pipe(  
                 catchError(this.handleError)  
             );  

@@ -47,7 +47,10 @@
                             <li>
                                 <a href="/profile"><span>Profile</span></a>
                             </li>
-                            </ul>
+                            <li>
+                                <a href="/group"><span>Add Group</span></a>
+                            </li>
+                        </ul>
                     </div>
                     </div>
                 <!-- sidebar-search  -->
@@ -72,6 +75,9 @@
         
         <div class="container">           
             <h3 class=" text-center chat_header" style="float: right">{{ CurrentGroup.name }}
+                <span (click)="editGroup()">
+                        <i class="material-icons">edit</i>
+                </span> 
                 <span (click)="toggleNavBar()">
                         <i class="material-icons">view_headline</i>
                 </span> 

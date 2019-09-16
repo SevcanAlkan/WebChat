@@ -488,8 +488,7 @@ img{ max-width:100%;}
   overflow: hidden;
   width: 40%; border-right:1px solid #c4c4c4;
 }
-.inbox_msg {
-  border: 1px solid #c4c4c4;
+.inbox_msg { 
   clear: both;
   overflow: hidden;
 }

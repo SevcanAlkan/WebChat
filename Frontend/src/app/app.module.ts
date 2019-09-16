@@ -18,13 +18,15 @@ import { ErrorInterceptor } from './helpers/ErrorInterceptor';
 
 //Services
 import { ChatService } from '@services/ChatService';
+import { GroupComponent } from './group/group.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ProfileComponent,
     LoginComponent,
-    HomeComponent
+    HomeComponent,
+    GroupComponent
   ],
   imports: [
     BrowserModule,
