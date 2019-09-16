@@ -43,6 +43,20 @@ namespace NGA.API.Controllers
         }
 
 
+        public JsonResult UserNameIsExist(string userName)
+        {
+            try
+            {
+                var result = _service.Any(userName);
+
+                return new JsonResult(result);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, null, AppStatusCode.ERR01001)));
+            }
+        }
+
         public JsonResult Get()
         {
             try

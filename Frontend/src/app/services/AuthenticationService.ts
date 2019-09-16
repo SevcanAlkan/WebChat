@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map,tap } from 'rxjs/operators';
 
 import { environment } from '@environments/environment';
-import { User, UserLoginVM } from '@models/User';
+import { User, UserLoginVM, UserRegisterVM } from '@models/User';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
@@ -42,6 +42,17 @@ export class AuthenticationService {
         // remove user from local storage to log user out
         localStorage.removeItem('currentUser');
         this.currentUserSubject.next(null);
+    }
+
+    register(user:UserRegisterVM){      
+        let headers = new HttpHeaders({ 'Content-Type': 'application/json' }); 
+        var result = this.http.post<UserRegisterVM>(`${environment.apiUrl}/api/user/register`, user, { headers: headers }) 
+        .pipe(map(user => {              
+            catchError(this.handleError);
+            return user;                          
+        }));                     
+
+        return result;
     }
 
     private handleError(error: HttpErrorResponse) {  

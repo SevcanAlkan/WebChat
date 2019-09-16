@@ -51,6 +51,13 @@ namespace NGA.Data.Service
             return result;
         }
 
+        public bool Any(string userName)
+        {
+            var result = con.Set<User>().Any(a => a.UserName == userName);
+
+            return result;
+        }
+
         #endregion
     }
 
@@ -58,5 +65,6 @@ namespace NGA.Data.Service
     {
         List<UserVM> GetAll();
         List<UserListVM> GetUserList();
+        bool Any(string userName);
     }
 }
