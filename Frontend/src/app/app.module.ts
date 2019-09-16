@@ -19,6 +19,7 @@ import { ErrorInterceptor } from './helpers/ErrorInterceptor';
 //Services
 import { ChatService } from '@services/ChatService';
 import { GroupComponent } from './group/group.component';
+import { RegisterComponent } from './register/register.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { GroupComponent } from './group/group.component';
     ProfileComponent,
     LoginComponent,
     HomeComponent,
-    GroupComponent
+    GroupComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,

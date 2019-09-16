@@ -32,14 +32,14 @@ export class HomeComponent implements OnInit  {
 
   constructor(private _Route: Router,
     private authenticationService: AuthenticationService,
-     private userService: UserService,
-     private groupService :GroupService,
-     private messageService: MessageService,
-     private chatService: ChatService,
-     private _ngZone: NgZone) {
-      this.authenticationService.currentUser.subscribe(x => this.CurrentUser = x);         
-      this.subscribeToEvents(); 
-   }
+    private userService: UserService,
+    private groupService :GroupService,
+    private messageService: MessageService,
+    private chatService: ChatService,
+    private _ngZone: NgZone) {
+    this.authenticationService.currentUser.subscribe(x => this.CurrentUser = x);         
+    this.subscribeToEvents(); 
+  }
 
   ngOnInit() {
     //Load groups

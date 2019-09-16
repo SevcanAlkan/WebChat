@@ -13,7 +13,7 @@ export class User extends BaseVM{
     public about: string;
 
     public statusVal: number;
-
+    
     public token: string;
 
     constructor(){
@@ -40,4 +40,19 @@ export class UserListVM extends BaseVM{
     public userName: string;
     public isAdmin: boolean;
     public displayName: string;
+}
+
+export class UserRegisterVM{
+    public userName: string;
+    public passwordHash: string;
+  
+    public isAdmin: boolean;
+
+    public displayName: string;
+    public about: string;
+
+    public status: number;
+
+    constructor(){
+    }
 }
