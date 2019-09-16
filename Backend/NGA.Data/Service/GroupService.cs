@@ -39,7 +39,7 @@ namespace NGA.Data.Service
 
         public override Task<APIResultVM> Update(Guid id, GroupUpdateVM model, Guid? userId = null, bool isCommit = true)
         {
-            if(model.IsMain && Repository.Query().Any(a=> a.Id != id))
+            if(model.IsMain && Repository.Query().Any(a=> a.Id != id && a.IsMain))
             {
                 return Task.Run(() =>
                 {

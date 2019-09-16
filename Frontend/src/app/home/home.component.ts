@@ -199,6 +199,10 @@ export class HomeComponent implements OnInit  {
     return 0; //Add feature to get unreaded messages
   }
 
+  editGroup(){
+    this._Route.navigate(['group', this.CurrentGroup.id]);
+  }
+
   search(value){
     console.log(value);
   }

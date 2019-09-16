@@ -12,6 +12,7 @@ import { GroupComponent } from './group/group.component';
 const routes: Routes = [
   { path: '', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'group',component: GroupComponent, canActivate: [AuthGuard] },
+  { path: 'group/:id',component: GroupComponent, canActivate: [AuthGuard] },
   { path: 'profile',component: ProfileComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
 
