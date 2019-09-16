@@ -11,6 +11,9 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { ProfileComponent } from './profile/profile.component';
 import { HomeComponent } from './home/home.component';
+import { GroupComponent } from './group/group.component';
+import { RegisterComponent } from './register/register.component';
+import { ChatComponent } from './chat/chat.component';
 
 //Helpers
 import { JwtInterceptor } from './helpers/JwtInterceptor';
@@ -18,8 +21,6 @@ import { ErrorInterceptor } from './helpers/ErrorInterceptor';
 
 //Services
 import { ChatService } from '@services/ChatService';
-import { GroupComponent } from './group/group.component';
-import { RegisterComponent } from './register/register.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { RegisterComponent } from './register/register.component';
     LoginComponent,
     HomeComponent,
     GroupComponent,
-    RegisterComponent
+    RegisterComponent,
+    ChatComponent
   ],
   imports: [
     BrowserModule,

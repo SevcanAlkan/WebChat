@@ -1,4 +1,70 @@
+<div class="col-md-6 offset-md-3 mt-5">    
+        <div class="card">
+            <h4 class="card-header">Profile</h4>
+            <div class="card-body">
 
-Profile Works
+                <form>
+                    <div class="form-group">
+                        <label for="userName">User Name</label>
+                        <input class="form-control" [(ngModel)]="user.userName" [ngModelOptions]="{standalone: true}" id="userNameHelp">                    
+                        <small id="userNameHelp" class="form-text text-muted">Uniqe name of user, you will use on Login page</small>
+                        <div *ngIf="userNameIsntValid">This field is required, 
+                            must be at least 4 characters, 
+                            must be less than 15 characters
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="displayName">Display Name</label>
+                        <input class="form-control" [(ngModel)]="user.displayName" [ngModelOptions]="{standalone: true}" id="displayName" aria-describedby="displayNameHelp">                    
+                        <small id="displayNameHelp" class="form-text text-muted">Visible name for other users</small>
+                        <div *ngIf="displayNameIsntValid">This field is required, must be at least 4 characters and must be less than 20 characters</div>
+                    </div>
 
-<router-outlet></router-outlet>
+                    <div class="form-group">
+                        <label for="passworld">Password</label>
+                        <input class="form-control" type="password" [(ngModel)]="user.passwordHash" [ngModelOptions]="{standalone: true}" id="password">                    
+                        <div *ngIf="passwordIsntValid">
+                            <ul>
+                                <li>Passwords is required</li>
+                                <li>Passwords must be at least 4 characters</li>
+                                <li>Passwords must be less than 50 characters</li>
+                                <li>Passwords must have at least one non alphanumeric character</li>
+                                <li>Passwords must have at least one digit ('0'-'9')</li>
+                                <li>Passwords must have at least one lowercase ('a'-'z')</li>
+                                <li>Passwords must have at least one uppercase ('A'-'Z')</li>
+                            </ul>                            
+                        </div>
+
+                        <label for="comparePassword">Compare Password</label>
+                        <input class="form-control" type="password" [(ngModel)]="comparePassword" [ngModelOptions]="{standalone: true}" id="comparePassword">                    
+                        <div *ngIf="comparePasswordIsntValid">The password not same with other!</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="about">About</label>
+                        <input class="form-control" [(ngModel)]="user.about" [ngModelOptions]="{standalone: true}" id="about" aria-describedby="aboutHelp">
+                        <small id="aboutHelp" class="form-text text-muted">This text will show on Profile page of User</small>
+                        <div *ngIf="aboutIsntValid">About text must be less than 250 characters</div>
+                    </div>
+
+
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="isAdmin" [(ngModel)]="user.isAdmin"
+                        [ngModelOptions]="{standalone: true}">
+                        <label class="form-check-label" for="isAdmin" >Is Admin</label>        
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="float-left">
+                                <div class="btn-group" role="group">                         
+                                    <button type="submit" class="btn btn-primary" (click)="save()">Submit</button>
+                                    <button class="btn btn-light" (click)="returnBack()">Cancel</button>
+                                </div>       
+                            </div>
+                        </div>
+                    </div>    
+                </form>
+
+        </div>
+    </div>
+</div>

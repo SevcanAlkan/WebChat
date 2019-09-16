@@ -1,32 +1,73 @@
 import { EventEmitter, Injectable } from '@angular/core';  
+import { Subject } from 'rxjs';
 import { HubConnection, HubConnectionBuilder, LogLevel, HubConnectionState } from '@aspnet/signalr';  
-import { Message } from '@models/message';  
+import { Message, TempMessage } from '@models/message';  
 import { environment } from '@environments/environment';
+import { UserListVM, User } from '@models/User';
+import { Group } from '@models/Group';
   
 @Injectable()  
 export class ChatService {  
   messageReceived = new EventEmitter<Message>();  
   connectionEstablished = new EventEmitter<Boolean>();  
   
-  private groupId = " ";
+  CurrentUser = new Subject<User>(); 
+  CurrentGroup = new Subject<Group>();
+  UserList = new Subject<UserListVM[]>(); 
+  tempMessage: string = "";
+
+  private groupId;  
+  private tempMessages:TempMessage[] = [];
   private connectionIsEstablished = false;  
   private _hubConnection: HubConnection;  
   
-  constructor() {     
-  }  
-  
-  updateGroupId(_groupId=""){
-    this.groupId = _groupId;
-    if(this._hubConnection && this._hubConnection.state == HubConnectionState.Connected){
-    this._hubConnection.stop().then(() => {
-      this.createConnection();  
-      this.registerOnServerEvents();  
-      this.startConnection();  
-    });
-    }else{
+  constructor() { 
+    this.CurrentGroup.subscribe(x => {
+      if(this._hubConnection && this._hubConnection.state == HubConnectionState.Connected){
+      this._hubConnection.stop().then(() => {
         this.createConnection();  
         this.registerOnServerEvents();  
         this.startConnection();  
+      });
+      }else{
+          this.createConnection();  
+          this.registerOnServerEvents();  
+          this.startConnection();  
+      }
+
+      this.groupId = x.id;
+    });    
+  }  
+
+  saveTempMessage(){
+    if(this.groupId && this.tempMessage != ""){
+      var _tempMessage = this.tempMessage;
+      this.clearTempMessage();
+      var _tempMessageVM = new TempMessage();
+      _tempMessageVM.text = _tempMessage;
+      _tempMessageVM.groupId = this.groupId;    
+      this.tempMessages.push(_tempMessageVM); 
+    }      
+  }
+
+  getTempMessage(){
+    if(this.groupId){   
+      var _tempMessage = this.tempMessages.find(a=> a.groupId == this.groupId);
+      if(_tempMessage != null && _tempMessage.text !== 'undefined'){
+        this.tempMessage = _tempMessage.text;
+        return _tempMessage.text;
+      }else{
+        this.tempMessage = "";
+        return "";
+      }
+    }
+  }
+
+  clearTempMessage(){
+    this.tempMessage = "";
+    let _sentMessage = this.tempMessages.find(a => a.groupId == this.groupId);
+    if(_sentMessage) {
+      this.tempMessages = this.tempMessages.filter(obj => obj !== _sentMessage);
     }
   }
 
