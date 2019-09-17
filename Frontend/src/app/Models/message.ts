@@ -12,3 +12,10 @@ export class TempMessage{
     text;
     groupId;
 }
+
+export class MessageVM extends BaseVM {
+    text;
+    groupId;
+    userId;
+    createDT;
+}

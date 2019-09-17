@@ -1,0 +1,35 @@
+<div class="col-md-6 offset-md-3 mt-5">    
+    <div class="card">
+        <h4 class="card-header">Search Results For: [{{ searchText }}]</h4>
+        <div class="card-body">
+
+            <table class="table table-borderless">
+                <thead>
+                    <tr>
+                    <th scope="col">Message Text</th>
+                    <th scope="col">Sent DateTime</th>
+                    <th scope="col">Sent By</th>
+                    <th scope="col">Group Name</th>
+                    </tr>
+                </thead>
+                <tbody *ngFor="let item of searchResult">
+                    <tr>
+                    <th scope="row">{{item.text}}</th>
+                    <td>{{item.createDT | date:'medium'}}</td>
+                    <td>{{getUserName(item.userId)}}</td>
+                    <td>{{getGroupName(item.groupId)}}</td>
+                    </tr>                   
+                </tbody>
+            </table>
+
+            <div class="row">
+                <div class="col">                    
+                    <div class="float-right">
+                        <button class="btn btn-light" (click)="returnBack()">Return Back</button>
+                    </div>
+                </div>
+            </div>   
+                
+        </div>
+    </div>
+</div>

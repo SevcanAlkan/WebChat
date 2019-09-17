@@ -10,7 +10,6 @@ import { GroupService } from '@services/GroupService';
 import { AuthenticationService } from '@services/AuthenticationService';
 import { ChatService } from '@services/ChatService';
 import { MessageService } from '@services/MessageService';
-
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -27,6 +26,8 @@ export class HomeComponent implements OnInit  {
   private tempMessages: TempMessage[] = []; //Which messages have written but didn't send.
   tempMessage: string = ""; //Current message text, from input.
   private message: Message; //Message model for send to API.
+
+  private searchText: string = "";
 
   NavbarToggle = true;
 
@@ -46,21 +47,16 @@ export class HomeComponent implements OnInit  {
     this.getGroups();
     //Load old messages
     this.getMessages();
-
-    var users = this.userService.getUserList();
-    if(users){
-      users.forEach((item: UserListVM[]) => {
-        item.forEach(user => {
-          this.UserList.push(user);
-        })
-      });
-    }     
+    //Load info of all registered users
+    this.loadUsers();
   } 
 
   logout() {
     this.authenticationService.logout();
     this._Route.navigate(['/login']);
   }
+
+  //Functions for load data
   getGroups(){
     this.groupService.GetAll().forEach(data => {
       data.forEach(item=>{
@@ -91,32 +87,6 @@ export class HomeComponent implements OnInit  {
     });
     return this.GroupList;
   }
-  selectGroup(id, loadAnyWay:boolean=false){    
-    if(id==null || (id == this.CurrentGroup.id && !loadAnyWay)){
-      return;
-    }else if(this.CurrentGroup && id===this.CurrentGroup.id && !loadAnyWay){
-      return;
-    }
-
-    var group = this.GroupList.find(item=>item.id===id);
-    if(group==null){
-      return;
-    }  
-    
-    if(this.tempMessage != ""){
-      this.clearTempMessageOfGroup(this.CurrentGroup.id);
-      var _tempMessage = new TempMessage();
-      _tempMessage.text = this.tempMessage;
-      _tempMessage.groupId = this.CurrentGroup.id;    
-      this.tempMessages.push(_tempMessage);
-      this.tempMessage=  "";    
-    }
-    
-    this.messages = [];
-    this.CurrentGroup = group;  
-    this.chatService.updateGroupId(this.CurrentGroup.id);  
-    this.getMessages();
-  }
   getMessages(){
     this.messages = [];
     
@@ -145,7 +115,45 @@ export class HomeComponent implements OnInit  {
       return <any>new Date(a.date) - <any>new Date(b.date);
     });
   }
+  loadUsers(){
+    var users = this.userService.getUserList();
+    this.UserList = [];
+    if(users){
+      users.forEach((item: UserListVM[]) => {
+        item.forEach(user => {
+          this.UserList.push(user);
+        })
+      });
+    }   
+  }    
+  //-------------------------
 
+  selectGroup(id, loadAnyWay:boolean=false){    
+    if(id==null || (id == this.CurrentGroup.id && !loadAnyWay)){
+      return;
+    }else if(this.CurrentGroup && id===this.CurrentGroup.id && !loadAnyWay){
+      return;
+    }
+
+    var group = this.GroupList.find(item=>item.id===id);
+    if(group==null){
+      return;
+    }  
+    
+    if(this.tempMessage != ""){
+      this.clearTempMessageOfGroup(this.CurrentGroup.id);
+      var _tempMessage = new TempMessage();
+      _tempMessage.text = this.tempMessage;
+      _tempMessage.groupId = this.CurrentGroup.id;    
+      this.tempMessages.push(_tempMessage);
+      this.tempMessage=  "";    
+    }
+    
+    this.messages = [];
+    this.CurrentGroup = group;  
+    this.chatService.updateGroupId(this.CurrentGroup.id);  
+    this.getMessages();
+  }
   sendMessage(message: Message) {  
      if (this.tempMessage) {  
       var text = "";
@@ -197,6 +205,9 @@ export class HomeComponent implements OnInit  {
         if(user){
           return user.displayName;
         }else{
+          this.loadUsers();
+          this.selectGroup(this.CurrentGroup.id, true);
+
           return "Undefined User";
         }
     }
@@ -227,9 +238,13 @@ export class HomeComponent implements OnInit  {
     this._Route.navigate(['group', this.CurrentGroup.id]);
   }
 
-  search(value){
-    console.log(value);
-  }
+  search(){
+    if(this.searchText == null || this.searchText == "" || String(this.searchText).length < 4){
+      return;
+    }else{
+      this._Route.navigate(['search', this.searchText]);
+    }   
+  }  
 
   toggleNavBar(){
     if(this.NavbarToggle){

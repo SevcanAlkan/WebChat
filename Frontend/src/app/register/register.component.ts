@@ -140,4 +140,12 @@ export class RegisterComponent implements OnInit {
     this.router.navigate(['login']);
   }
 
+  cancel(){
+    if(this.alreadyRegistredUser){
+      this.router.navigate(['/']);
+    }else{
+      this.router.navigate(['login']);
+    }
+  }
+
 }
