@@ -56,19 +56,20 @@
                 <!-- sidebar-header  -->
                 <div class="sidebar-search">
                     <div>
-                    <div class="input-group">
-                        <input type="text" class="form-control search-menu" #SearchTxt (keyup.enter)="search(SearchTxt.value)" placeholder="Search...">
-                        <div class="input-group-append">
-                        <span class="input-group-text">
-                            <i class="fa fa-search" aria-hidden="true"></i>
-                        </span>
+                        <div class="input-group">
+                            <input type="text" class="form-control search-menu" [(ngModel)]="searchText" 
+                                (keyup.enter)="search()" placeholder="Search...(min 4 Char)">
+                            <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="fa fa-search" aria-hidden="true"></i>
+                            </span>
+                            </div>
                         </div>
-                    </div>
                     </div>
                 </div>
                 <div class="sidebar-menu">
                     <div>
-                        <ul class="list-group">
+                        <ul class="list-group">                          
                             <li>
                                 <a href="/profile"><span>Profile</span></a>
                             </li>
@@ -94,36 +95,36 @@
             </nav>
         
         </div>
-        
+                
         <div id="content" class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-left: 0px;padding-right: 0px;"
-             #scrollMe style="overflow: scroll; height: xyz;">
+            #scrollMe style="overflow: scroll; height: xyz;">
         
         <div class="container">                      
                 <div class="messaging">  
                     <div class="inbox_msg">  
                         <div class="mesgs">  
                             <div class="msg_history">  
-                            <div *ngFor="let msg of sortMessages">  
-                            <div class="incoming_msg" *ngIf="msg.type == 'received'"> 
-                                <div class="received_msg">  
-                                <div class="received_withd_msg">                           
-                                    <p>  
-                                        <span class="badge badge-dark " style="float:left;" (click)="showProfile(msg.userId)">{{ getUserName(msg.userId) }}</span>
-                                        {{msg.text}}   
-                                    </p>   
-                                    <span class="time_date"> {{msg.date | date:'medium'}}</span>                          
+                                <div *ngFor="let msg of sortMessages">  
+                                    <div class="incoming_msg" *ngIf="msg.type == 'received'"> 
+                                        <div class="received_msg">  
+                                        <div class="received_withd_msg">                           
+                                            <p>  
+                                                <span class="badge badge-dark " style="float:left;" (click)="showProfile(msg.userId)">{{ getUserName(msg.userId) }}</span>
+                                                {{msg.text}}   
+                                            </p>   
+                                            <span class="time_date"> {{msg.date | date:'medium'}}</span>                          
+                                        </div>  
+                                        </div>  
+                                    </div>  
+                                    <div class="outgoing_msg" *ngIf="msg.type == 'sent'">  
+                                        <div class="sent_msg">  
+                                        <p>  
+                                            {{msg.text}}<span class="badge badge-dark " style="float:right;" (click)="showProfile(msg.userId)">{{ getUserName(msg.userId) }}</span>
+                                        </p>  
+                                        <span class="time_date"> {{msg.date | date:'medium'}}</span>  
+                                        </div>  
+                                    </div>  
                                 </div>  
-                                </div>  
-                            </div>  
-                            <div class="outgoing_msg" *ngIf="msg.type == 'sent'">  
-                                <div class="sent_msg">  
-                                <p>  
-                                    {{msg.text}}<span class="badge badge-dark " style="float:right;" (click)="showProfile(msg.userId)">{{ getUserName(msg.userId) }}</span>
-                                </p>  
-                                <span class="time_date"> {{msg.date | date:'medium'}}</span>  
-                                </div>  
-                            </div>  
-                            </div>  
                             </div>  
                         </div>  
                     </div>  
@@ -143,7 +144,7 @@
                         </div>
                     </form>
                 </nav>
-            </div>
+        </div>        
     </div>
 </div>
   

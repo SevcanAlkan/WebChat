@@ -560,6 +560,7 @@ img{ max-width:100%;}
   margin: 0;
   padding: 5px 10px 5px 12px;
   width: 100%;
+  word-wrap:break-word;
 }
 .time_date {
   color: #747474;
@@ -579,6 +580,7 @@ img{ max-width:100%;}
   margin: 0; color:#fff;
   padding: 5px 10px 5px 12px;
   width:100%;
+  word-wrap:break-word;
 }
 .outgoing_msg{ overflow:hidden; margin:26px 0 26px;}
 .sent_msg {
@@ -616,5 +618,4 @@ img{ max-width:100%;}
 
 .navbar-nav > .nav-item > a {
   position: relative; 
-  }
-  
+}

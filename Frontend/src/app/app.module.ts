@@ -20,6 +20,8 @@ import { ErrorInterceptor } from './helpers/ErrorInterceptor';
 import { ChatService } from '@services/ChatService';
 import { GroupComponent } from './group/group.component';
 import { RegisterComponent } from './register/register.component';
+import { SearchService } from './services/SearchService';
+import { SearchComponent } from './search/search.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +30,8 @@ import { RegisterComponent } from './register/register.component';
     LoginComponent,
     HomeComponent,
     GroupComponent,
-    RegisterComponent
+    RegisterComponent,
+    SearchComponent
   ],
   imports: [
     BrowserModule,
@@ -41,7 +44,7 @@ import { RegisterComponent } from './register/register.component';
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-    ChatService
+    ChatService, SearchService
   ]
 })
 export class AppModule { }
