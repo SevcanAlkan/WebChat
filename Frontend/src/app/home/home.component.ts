@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit  {
 
   messages: Message[] = [];  
   private tempMessages: TempMessage[] = []; //Which messages have written but didn't send.
-  tempMessage: string = " "; //Current message text, from input.
+  tempMessage: string = ""; //Current message text, from input.
   private message: Message; //Message model for send to API.
 
   NavbarToggle = true;
@@ -92,7 +92,7 @@ export class HomeComponent implements OnInit  {
     return this.GroupList;
   }
   selectGroup(id, loadAnyWay:boolean=false){    
-    if(id==null){
+    if(id==null || (id == this.CurrentGroup.id && !loadAnyWay)){
       return;
     }else if(this.CurrentGroup && id===this.CurrentGroup.id && !loadAnyWay){
       return;
@@ -103,18 +103,23 @@ export class HomeComponent implements OnInit  {
       return;
     }  
     
-    var _tempMessage = new TempMessage();
-    _tempMessage.text = this.tempMessage;
-    _tempMessage.groupId = this.CurrentGroup.id;    
-    this.tempMessages.push(_tempMessage);
-    this.tempMessage=  " ";
-    this.messages = [];
+    if(this.tempMessage != ""){
+      this.clearTempMessageOfGroup(this.CurrentGroup.id);
+      var _tempMessage = new TempMessage();
+      _tempMessage.text = this.tempMessage;
+      _tempMessage.groupId = this.CurrentGroup.id;    
+      this.tempMessages.push(_tempMessage);
+      this.tempMessage=  "";    
+    }
     
+    this.messages = [];
     this.CurrentGroup = group;  
     this.chatService.updateGroupId(this.CurrentGroup.id);  
     this.getMessages();
   }
   getMessages(){
+    this.messages = [];
+    
     if((this.CurrentGroup && this.CurrentGroup.id)){
 
       this.messageService.getByGroupId(this.CurrentGroup.id).forEach(data => {
@@ -162,10 +167,15 @@ export class HomeComponent implements OnInit  {
 
       //Clear temp message
       this.tempMessage = "";  
-      let _sentMessage = this.tempMessages.find(a => a.groupId === this.message.groupId); 
-      this.tempMessages = this.tempMessages.filter(obj => obj !== _sentMessage);
+      this.clearTempMessageOfGroup(this.message.groupId);
     }  
   }  
+
+  clearTempMessageOfGroup(groupId){
+    let _sentMessage = this.tempMessages.find(a => a.groupId === groupId); 
+    this.tempMessages = this.tempMessages.filter(obj => obj !== _sentMessage);    
+  }
+
   private subscribeToEvents(): void {    
     this.chatService.messageReceived.subscribe((message: Message) => {  
       this._ngZone.run(() => {  
@@ -179,6 +189,10 @@ export class HomeComponent implements OnInit  {
 
   getUserName(id){
       if(this.UserList){
+        if(id == this.CurrentUser.id){
+          return "You";
+        }
+
         var user = this.UserList.find(item=>item.id===id);
         if(user){
           return user.displayName;
@@ -187,6 +201,16 @@ export class HomeComponent implements OnInit  {
         }
     }
   }
+
+  showProfile(id){
+    if(id == null || id== ''){
+      return;
+    }else if(id == this.CurrentUser.id){
+      this._Route.navigate(['profile']);  
+    }
+    this._Route.navigate(['profile', id]);
+  }
+
   getMessageCountForGroup(groupId){
     //   if(this.Mesa){
     //     var user = this.UserList.find(item=>item.id===id);

@@ -10,7 +10,7 @@ import { APIResultVM } from '@models/APIResultVM';
     providedIn: 'root'  
 })  
   
-export abstract class BaseService<T extends BaseVM>{  
+export abstract class BaseService<T extends BaseVM, U extends BaseVM>{  
   
     protected apiUrl = "";  
     username: any;  
@@ -45,7 +45,7 @@ export abstract class BaseService<T extends BaseVM>{
             );  
     }  
 
-    public Update(model: T) {  
+    public Update(model: U) {  
         var url = this.apiUrl + 'update?id=' + model.id;  
         let headers = new HttpHeaders({ 'Content-Type': 'application/json' });   
         return this.http.put<any>(url, model, { headers: headers })  

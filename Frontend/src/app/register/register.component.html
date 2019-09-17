@@ -12,6 +12,7 @@
                             must be at least 4 characters, 
                             must be less than 15 characters
                         </div>
+                        <div *ngIf="userNameAlreadyTaken">The user name must be uniqe!</div>    
                     </div>
                     <div class="form-group">
                         <label for="displayName">Display Name</label>
@@ -38,7 +39,13 @@
                         <label for="comparePassword">Compare Password</label>
                         <input class="form-control" type="password" [(ngModel)]="comparePassword" [ngModelOptions]="{standalone: true}" id="comparePassword">                    
                         <div *ngIf="comparePasswordIsntValid">The password not same with other!</div>
-                    </div>
+
+                        <div *ngIf="alreadyRegistredUser">
+                            <label for="oldPassword">Old Password</label>
+                            <input class="form-control" type="password" [(ngModel)]="userRec.oldPassword" [ngModelOptions]="{standalone: true}" id="oldPassword">                    
+                            <div *ngIf="OldPasswordIsntValid">You must enter old password</div>
+                        </div>
+                    </div>                    
 
                     <div class="form-group">
                         <label for="about">About</label>
