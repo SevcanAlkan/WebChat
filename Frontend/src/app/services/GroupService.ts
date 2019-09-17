@@ -8,7 +8,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angul
 })  
   
 @Injectable()
-export class GroupService extends BaseService<Group> {
+export class GroupService extends BaseService<Group, Group> {
   constructor(http: HttpClient) {
     super(http, "group");    
   }

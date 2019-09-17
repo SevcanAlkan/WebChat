@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 })  
   
 @Injectable()
-export class MessageService extends BaseService<Message> {
+export class MessageService extends BaseService<Message, Message> {
   constructor(http: HttpClient) {
     super(http, "message");    
   }

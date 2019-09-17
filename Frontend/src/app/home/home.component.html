@@ -1,7 +1,32 @@
-<div class="container-fluid">
+<nav class="navbar fixed-top navbar-expand-md navbar-dark bg-dark">
+    <div class="w-100 order-1 order-md-0">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a (click)="toggleNavBar()" class="float-right">
+                    <i class="material-icons md-light">view_headline</i>
+                </a> 
+            </li>            
+        </ul>
+    </div>
+    <div class="mx-auto order-0">
+        <a class="navbar-brand mx-auto" > {{ CurrentGroup.name }} </a>
+    </div>
+    <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <span (click)="editGroup()">
+                    <i class="material-icons">edit</i>
+                </span> 
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+<div class="container-fluid" style="margin-top: 70px; margin-bottom:70px;">
     <div class="row">
             <div class="page-wrapper chiller-theme " [ngClass]="{'toggled':NavbarToggle}">       
-            <nav id="sidebar" class="sidebar-wrapper">
+            <nav id="sidebar" class="sidebar-wrapper" style="margin-top: 50px;">
                 <div class="sidebar-content">
                 <div class="sidebar-brand">
                     <a href="/">WebChat</a>                      
@@ -73,16 +98,7 @@
         <div id="content" class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-left: 0px;padding-right: 0px;"
              #scrollMe style="overflow: scroll; height: xyz;">
         
-        <div class="container">           
-            <h3 class=" text-center chat_header" style="float: right">{{ CurrentGroup.name }}
-                <span (click)="editGroup()">
-                        <i class="material-icons">edit</i>
-                </span> 
-                <span (click)="toggleNavBar()">
-                        <i class="material-icons">view_headline</i>
-                </span> 
-            </h3>  
-            
+        <div class="container">                      
                 <div class="messaging">  
                     <div class="inbox_msg">  
                         <div class="mesgs">  
@@ -92,7 +108,7 @@
                                 <div class="received_msg">  
                                 <div class="received_withd_msg">                           
                                     <p>  
-                                        <span class="badge badge-dark " style="float:left;">{{ getUserName(msg.userId) }}</span>
+                                        <span class="badge badge-dark " style="float:left;" (click)="showProfile(msg.userId)">{{ getUserName(msg.userId) }}</span>
                                         {{msg.text}}   
                                     </p>   
                                     <span class="time_date"> {{msg.date | date:'medium'}}</span>                          
@@ -102,7 +118,7 @@
                             <div class="outgoing_msg" *ngIf="msg.type == 'sent'">  
                                 <div class="sent_msg">  
                                 <p>  
-                                    {{msg.text}}<span class="badge badge-dark " style="float:right;">{{ getUserName(msg.userId) }}</span>
+                                    {{msg.text}}<span class="badge badge-dark " style="float:right;" (click)="showProfile(msg.userId)">{{ getUserName(msg.userId) }}</span>
                                 </p>  
                                 <span class="time_date"> {{msg.date | date:'medium'}}</span>  
                                 </div>  

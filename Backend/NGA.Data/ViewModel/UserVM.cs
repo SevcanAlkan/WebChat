@@ -57,14 +57,14 @@ namespace NGA.Data.ViewModel
 
     }
 
-    public class UserUpdateVM : UpdateVM
+    public class UserUpdateVM : BaseVM
     {
         [Required, MaxLength(15)]
         public string UserName { get; set; }
         [Required, MaxLength(50)]
         public string PasswordHash { get; set; }
+        public string OldPassword { get; set; }
 
-        public DateTime? LastLoginDateTime { get; set; }
 
         [DefaultValue(false)]
         public bool IsAdmin { get; set; }

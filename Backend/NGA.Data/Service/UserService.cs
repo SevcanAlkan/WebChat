@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using NGA.Core;
 using NGA.Core.Helper;
 using NGA.Core.Model;
@@ -58,6 +59,23 @@ namespace NGA.Data.Service
             return result;
         }
 
+        public User GetById(Guid id)
+        {
+            var rec = con.Set<User>().Where(a => a.Id == id).FirstOrDefault();
+
+            if (rec == null)
+            {
+                return null;   
+            }
+
+            rec.AccessFailedCount = 0;
+            rec.ConcurrencyStamp = "";
+            //rec.PasswordHash = "";
+            rec.SecurityStamp = "";
+
+            return rec;
+        }
+
         #endregion
     }
 
@@ -66,5 +84,6 @@ namespace NGA.Data.Service
         List<UserVM> GetAll();
         List<UserListVM> GetUserList();
         bool Any(string userName);
+        User GetById(Guid id);
     }
 }
