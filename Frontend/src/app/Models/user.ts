@@ -5,7 +5,7 @@ export class User extends BaseVM{
     public userName: string;
     public passwordHash: string;
     public lastLoginDateTime: number;
-  
+    public createDateTime: number;
     public isAdmin: boolean;
     public isBanned: boolean;
 
@@ -13,7 +13,7 @@ export class User extends BaseVM{
     public about: string;
 
     public statusVal: number;
-
+    
     public token: string;
 
     constructor(){
@@ -24,10 +24,9 @@ export class User extends BaseVM{
         this.displayName="";
         this.about="";
         this.isAdmin=false;
-        this.isBanned=false;
-        this.lastLoginDateTime=Date.now();
+        this.isBanned=false;        
         this.statusVal=4;
-        this.token="";
+        this.token="";        
     }
 }
 
@@ -41,3 +40,36 @@ export class UserListVM extends BaseVM{
     public isAdmin: boolean;
     public displayName: string;
 }
+
+export class UserRegisterVM{
+    public userName: string;
+    public passwordHash: string;
+  
+    public isAdmin: boolean;
+
+    public displayName: string;
+    public about: string;
+
+    public status: number;
+
+    constructor(){
+    }
+}
+
+export class UserUpdateVM extends BaseVM{
+    public userName: string;
+    public passwordHash: string;
+    public oldPassword: string;
+    public isAdmin: boolean;
+    public isBanned: boolean;
+
+    public displayName: string;
+    public about: string;
+
+    public status: number;
+
+    constructor(){
+        super();
+    }
+}
+

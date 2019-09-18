@@ -42,6 +42,20 @@ namespace NGA.API.Controllers
             _mapper = mapper;
         }
 
+        [AllowAnonymous]
+        public JsonResult UserNameIsExist(string userName)
+        {
+            try
+            {
+                var result = _service.Any(userName);
+
+                return new JsonResult(result);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, null, AppStatusCode.ERR01001)));
+            }
+        }
 
         public JsonResult Get()
         {
@@ -60,6 +74,59 @@ namespace NGA.API.Controllers
             }
         }
 
+        public JsonResult GetById(Guid id)
+        {
+            try
+            {
+                if (Validation.IsNullOrEmpty(id))
+                    return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.WRG01002));
+
+                var result = _service.GetById(id);
+
+                if (result == null)
+                    return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.WRG01001));
+
+                return new JsonResult(APIResult.CreateVMWithRec<User>(result, true, result.Id));
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, null, AppStatusCode.ERR01001)));
+            }
+        }
+
+        public async Task<JsonResult> Update(UserUpdateVM model)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(model.Id.ToString());
+                if (user != null)
+                {
+                    user.About = model.About;
+                    user.DisplayName = model.DisplayName;
+                    user.IsAdmin = model.IsAdmin;                    
+                    user.UserName = model.UserName;
+
+                    IdentityResult result;
+
+                    if (model.OldPassword != model.PasswordHash)
+                    {
+                        result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.PasswordHash);
+                        if (!result.Succeeded)
+                            return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.WRG01001));
+                    }
+                    result = await _userManager.UpdateAsync(user);
+                    if (!result.Succeeded)
+                        return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.WRG01001));                    
+                }
+
+                return new JsonResult(APIResult.CreateVM(true, user.Id));
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, null, AppStatusCode.ERR01001)));
+            }
+        }
+
         [AllowAnonymous]
         public async Task<JsonResult> CreateToken(UserLoginVM model)
         {
@@ -69,12 +136,13 @@ namespace NGA.API.Controllers
                 return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.WRG01004));
 
             var user = await _userManager.FindByNameAsync(model.UserName);
-
+            user.LastLoginDateTime = DateTime.UtcNow;
+            await _userManager.UpdateAsync(user);
 
             UserAuthenticateVM returnVM = new UserAuthenticateVM();
             returnVM = _mapper.Map<User, UserAuthenticateVM>(user);
             returnVM.Token = GetToken(user);
-
+            
             return new JsonResult(returnVM);
         }
 
@@ -97,6 +165,8 @@ namespace NGA.API.Controllers
                 {
                     User entity = _mapper.Map<UserAddVM, User>(model);
                     entity.Id = Guid.NewGuid();
+                    entity.CreateDateTime = DateTime.UtcNow;
+                    entity.LastLoginDateTime = DateTime.UtcNow;
                     var identityResult = await _userManager.CreateAsync(entity, model.PasswordHash);
                     if (identityResult.Succeeded)
                     {
@@ -117,7 +187,7 @@ namespace NGA.API.Controllers
             }
             catch (Exception ex)
             {
-                return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, null, AppStatusCode.ERR01001)));                
+                return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, null, AppStatusCode.ERR01001)));
             }
             return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.ERR01001));
         }
@@ -145,7 +215,7 @@ namespace NGA.API.Controllers
                 audience: _config.GetValue<String>("Jwt:Audience"),
                 issuer: _config.GetValue<String>("Jwt:Issuer")
                 );
-            
+
             return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
     }

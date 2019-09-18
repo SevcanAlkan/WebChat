@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NGA.Domain
 {
-    public class GroupUserBase : Table
+    public class GroupUserBase : Base
     {
         public Guid UserId { get; set; }
         public Guid GroupId { get; set; }

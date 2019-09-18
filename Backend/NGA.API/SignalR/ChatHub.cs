@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Connections.Features;
 using Microsoft.AspNetCore.SignalR;
+using NGA.Core.Validation;
+using NGA.Data;
 using NGA.Data.Service;
 using NGA.Data.ViewModel;
+using NGA.Domain;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -18,53 +21,102 @@ namespace NGA.API.SignalR
     [AllowAnonymous]
     public class ChatHub : Hub
     {
-        static List<Guid> dic = new List<Guid>();
+        internal static List<Connection> Connections = new List<Connection>();
 
+        private NGADbContext _con;
         private IMessageService _service;
         private readonly IMapper _mapper;
-        public ChatHub(IMessageService service, IMapper mapper)
+        public ChatHub(IMessageService service, IMapper mapper, NGADbContext con)
         {
             _service = service;
             _mapper = mapper;
+            _con = con;
         }
-
-        //public Task JoinGroup(Guid groupId)
-        //{
-        //    return Groups.AddToGroupAsync(Context.ConnectionId, groupId.ToString());
-        //}
-
-        //public Task LeaveGroup(Guid groupId)
-        //{
-        //    return Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId.ToString());
-        //}
 
         public override async Task OnConnectedAsync()
         {
             var httpContext = Context.GetHttpContext();
-            var groupId = httpContext.Request.Query["GroupId"];
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
+            //var groupId = httpContext.Request.Query["GroupId"];
+            var userIdStr = httpContext.Request.Query["UserId"].FirstOrDefault();
+            Guid userId = new Guid(userIdStr);
+
+            var user = _con.Users.SingleOrDefault(s => s.Id == userId);
+
+            if (user == null)
+                return;
+
+            Connection connection = new Connection();
+            connection.ConnectionID = Context.ConnectionId;
+            connection.Connected = true;
+            connection.UserId = userId;
+            //connection.GroupId = new Guid(groupId);
+
+            Connections.Add(connection);
 
             await base.OnConnectedAsync();
         }
 
-        //public override async Task OnDisconnectedAsync(Exception exception)
-        //{
-        //    await Groups.RemoveFromGroupAsync(Context.ConnectionId);
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            var connection = Connections.Find(a => a.ConnectionID == Context.ConnectionId);
+            if (connection != null)
+                Connections.Remove(connection);
 
-        //    await base.OnDisconnectedAsync(exception);
-        //}
+            return base.OnDisconnectedAsync(exception);
+        }
 
+
+        public async Task AddToGroup(Guid groupId)
+        {
+            var connection = Connections.Find(a => a.ConnectionID == Context.ConnectionId);
+            if (connection != null)
+            {
+                Connections.Remove(connection);
+
+                if (_con.Groups.Any(a => (a.Id == groupId && !a.IsPrivate)
+                || _con.GroupUsers.Any(x => x.GroupId == groupId && x.UserId == connection.UserId)))
+                {
+                    connection.GroupId = groupId;
+                    Connections.Add(connection);
+
+                    await Groups.AddToGroupAsync(connection.ConnectionID, connection.GroupId.ToString());
+                }
+            }
+        }
+
+        public async Task RemoveFromGroup(Guid groupId)
+        {
+            var connection = Connections.Find(a => a.ConnectionID == Context.ConnectionId);
+            if (connection != null)
+            {
+                Connections.Remove(connection);
+                connection.GroupId = null;
+                Connections.Add(connection);
+
+                await Groups.RemoveFromGroupAsync(connection.ConnectionID, connection.GroupId.ToString());
+            }            
+        }
 
         public async Task SendMessage(MessageVM message)
         {
-            //if(Groups.Any)
+            var connection = Connections.Find(a => a.ConnectionID == Context.ConnectionId);
+            if (connection != null && connection.GroupId == message.GroupId)
+            {
+                var model = _mapper.Map<MessageAddVM>(message);
+                await _service.Add(model, message.UserId);
 
-            var model = _mapper.Map<MessageAddVM>(message);
-            await _service.Add(model, message.UserId);
-
-            await Clients.Group(message.GroupId.ToString()).SendAsync("ReceiveMessage", message);
+                await Clients.Group(message.GroupId.ToString()).SendAsync("ReceiveMessage", message);
+            }
         }
 
+        public async Task SendPrivateMessage(string message, Guid userId)
+        {
+            var connection = Connections.Find(a => a.UserId == userId);
+            if (connection != null)
+            {
+                await Clients.User(connection.UserId.ToString()).SendAsync("ReceiveMessage", message);
+            }                
+        }
     }
 
 
@@ -75,5 +127,5 @@ namespace NGA.API.SignalR
     }
 
 
-    
+
 }

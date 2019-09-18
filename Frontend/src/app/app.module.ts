@@ -18,13 +18,20 @@ import { ErrorInterceptor } from './helpers/ErrorInterceptor';
 
 //Services
 import { ChatService } from '@services/ChatService';
+import { GroupComponent } from './group/group.component';
+import { RegisterComponent } from './register/register.component';
+import { SearchService } from './services/SearchService';
+import { SearchComponent } from './search/search.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ProfileComponent,
     LoginComponent,
-    HomeComponent
+    HomeComponent,
+    GroupComponent,
+    RegisterComponent,
+    SearchComponent
   ],
   imports: [
     BrowserModule,
@@ -37,7 +44,7 @@ import { ChatService } from '@services/ChatService';
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-    ChatService
+    ChatService, SearchService
   ]
 })
 export class AppModule { }

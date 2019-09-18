@@ -1,4 +1,58 @@
+<div class="col-md-6 offset-md-3 mt-5">    
+        <div class="card">
+            <h4 class="card-header">Profile <span class="float-right">@{{user.userName}}</span></h4>
+            <div class="card-body">
 
-Sevcabn
+                <div class="jumbotron jumbotron-fluid">
+                    <div class="container">
+                        <div>
+                            <h1 class="display-4">{{ user.displayName }}</h1>    
+                            <span class="user-status" [ngSwitch]=" user.statusVal">                   
+                                <span class="badge badge-success" *ngSwitchCase="1">Online</span>
+                                <span class="badge badge-warning" *ngSwitchCase="2">Idle</span>
+                                <span class="badge badge-danger" *ngSwitchCase="3">DontDisturb</span>
+                                <span class="badge badge-secondary" *ngSwitchCase="4">Invisible</span>
+                                <span class="badge badge-secondary" *ngSwitchDefault>Invisible</span>
+                            </span>
+                        </div>                        
+                        <p class="lead">{{ user.about }}</p>
+                    </div>
+                </div>
 
-<router-outlet></router-outlet>
+                <div class="row">
+                    <div class="col-12">
+                        <div *ngIf="user.isAdmin">
+                            <span class="badge badge-secondary">Admin</span>
+                        </div>
+                        <div *ngIf="user.isBanned">
+                            <span class="badge badge-danger">Banned</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6">
+                        <label for="createDateTime">Create Date: </label>
+                        <small id="createDateTime">{{ user.createDateTime | date:'medium' }} </small>                           
+                    </div>
+                    <div class="col-6">
+                        <label for="lastLoginDate">Last Login: </label>
+                        <small id="lastLoginDate" class="italic">{{ user.lastLoginDateTime | date:'medium' }} </small>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <div class="float-right">
+                            <div class="btn-group" role="group">                  
+                                <div *ngIf="isEditable">       
+                                    <button class="btn btn-warning" (click)="edit()">Edit</button>
+                                </div>
+                                <button class="btn btn-light" (click)="returnBack()">Return Back</button>
+                            </div>       
+                        </div>
+                    </div>
+                </div>                    
+        </div>
+    </div>
+</div>

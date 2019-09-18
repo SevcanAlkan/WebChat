@@ -19,5 +19,39 @@ namespace NGA.API.Controllers
         {
 
         }
+
+        public virtual JsonResult GetByUserId(Guid userId)
+        {
+            try
+            {
+                var result = _service.GetByUserId(userId);
+
+                if (result == null)
+                    return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.WRG01001));
+
+                return new JsonResult(result);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, null, AppStatusCode.ERR01001)));
+            }
+        }
+
+        public virtual JsonResult GetUsers(Guid groupId)
+        {
+            try
+            {
+                var result = _service.GetUsers(groupId);
+
+                if (result == null)
+                    return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.WRG01001));
+
+                return new JsonResult(result);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, null, AppStatusCode.ERR01001)));
+            }
+        }
     }
 }

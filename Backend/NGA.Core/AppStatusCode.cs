@@ -59,6 +59,11 @@ namespace NGA.Core
         /// </summary>
         public const string WRG01004 = "WRG01004";
 
+        /// <summary>
+        /// Main group can't duplicate or delete
+        /// </summary>
+        public const string WRG01005 = "WRG01005";
+
         #endregion
 
         #region INF

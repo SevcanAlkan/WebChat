@@ -1,7 +1,34 @@
-<div class="container-fluid">
+<nav class="navbar fixed-top navbar-expand navbar-dark bg-dark">
+    <div class="w-100 order-0 order-md-0">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a (click)="toggleNavBar()" class="float-right">
+                    <i class="material-icons md-light">view_headline</i>
+                </a> 
+            </li>            
+        </ul>
+    </div>
+    <div class="mx-auto order-1 order-md-1">
+        <a class="navbar-brand mx-auto" > {{ CurrentGroup.name }} </a>
+    </div>
+    <div class="navbar-collapse collapse w-100 order-2 dual-collapse2" *ngIf="CurrentUser.isAdmin">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <span (click)="editGroup()">
+                    <i class="material-icons">edit</i>
+                </span> 
+            </li>
+        </ul>
+    </div>
+    <div class="navbar-collapse collapse w-100 order-2 dual-collapse2" *ngIf="!CurrentUser.isAdmin">
+    </div>        
+</nav>
+
+
+<div class="container-fluid" style="margin-top: 70px; margin-bottom:70px;">
     <div class="row">
             <div class="page-wrapper chiller-theme " [ngClass]="{'toggled':NavbarToggle}">       
-            <nav id="sidebar" class="sidebar-wrapper">
+            <nav id="sidebar" class="sidebar-wrapper" style="margin-top: 50px;">
                 <div class="sidebar-content">
                 <div class="sidebar-brand">
                     <a href="/">WebChat</a>                      
@@ -18,7 +45,10 @@
                     <span class="user-name">
                         <strong ng-if="CurrentUser">{{ CurrentUser.displayName }}</strong> 
                     </span>
-                    <span class="user-role">Role</span>
+                    <span class="user-role" [ngSwitch]=" CurrentUser.isAdmin">
+                        <span class="badge badge-light" *ngSwitchCase="0">Normal User</span>
+                        <span class="badge badge-danger" *ngSwitchCase="1">Admin</span>
+                    </span>
                     <span class="user-status" [ngSwitch]=" CurrentUser.statusVal">                   
                         <span class="badge badge-success" *ngSwitchCase="1">Online</span>
                         <span class="badge badge-warning" *ngSwitchCase="2">Idle</span>
@@ -31,23 +61,27 @@
                 <!-- sidebar-header  -->
                 <div class="sidebar-search">
                     <div>
-                    <div class="input-group">
-                        <input type="text" class="form-control search-menu" #SearchTxt (keyup.enter)="search(SearchTxt.value)" placeholder="Search...">
-                        <div class="input-group-append">
-                        <span class="input-group-text">
-                            <i class="fa fa-search" aria-hidden="true"></i>
-                        </span>
+                        <div class="input-group">
+                            <input type="text" class="form-control search-menu" [(ngModel)]="searchText" 
+                                (keyup.enter)="search()" placeholder="Search...(min 4 Char)">
+                            <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="fa fa-search" aria-hidden="true"></i>
+                            </span>
+                            </div>
                         </div>
-                    </div>
                     </div>
                 </div>
                 <div class="sidebar-menu">
                     <div>
-                        <ul class="list-group">
+                        <ul class="list-group">                          
                             <li>
                                 <a href="/profile"><span>Profile</span></a>
                             </li>
-                            </ul>
+                            <li *ngIf="CurrentUser.isAdmin">
+                                <a href="/group"><span>Add Group</span></a>
+                            </li>
+                        </ul>
                     </div>
                     </div>
                 <!-- sidebar-search  -->
@@ -56,7 +90,7 @@
                     <li *ngFor="let item of sortGroups">
                         <a href="#" id="{{item.id}}" (click)="selectGroup(item.id)">
                         <span>{{ item.name }}</span>
-                        <span class="badge badge-light">{{ getMessageCountForGroup(item.id) }}</span>
+                        <!-- <span class="badge badge-light">{{ getMessageCountForGroup(item.id) }}</span> -->
                         </a>
                     </li>
                     </ul>
@@ -66,42 +100,36 @@
             </nav>
         
         </div>
-        
+                
         <div id="content" class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-left: 0px;padding-right: 0px;"
-             #scrollMe style="overflow: scroll; height: xyz;">
+            #scrollMe style="overflow: scroll; height: xyz;">
         
-        <div class="container">           
-            <h3 class=" text-center chat_header" style="float: right">{{ CurrentGroup.name }}
-                <span (click)="toggleNavBar()">
-                        <i class="material-icons">view_headline</i>
-                </span> 
-            </h3>  
-            
+        <div class="container">                      
                 <div class="messaging">  
                     <div class="inbox_msg">  
                         <div class="mesgs">  
                             <div class="msg_history">  
-                            <div *ngFor="let msg of sortMessages">  
-                            <div class="incoming_msg" *ngIf="msg.type == 'received'"> 
-                                <div class="received_msg">  
-                                <div class="received_withd_msg">                           
-                                    <p>  
-                                        <span class="badge badge-dark " style="float:left;">{{ getUserName(msg.userId) }}</span>
-                                        {{msg.text}}   
-                                    </p>   
-                                    <span class="time_date"> {{msg.date | date:'medium'}}</span>                          
+                                <div *ngFor="let msg of sortMessages">  
+                                    <div class="incoming_msg" *ngIf="msg.type == 'received'"> 
+                                        <div class="received_msg">  
+                                        <div class="received_withd_msg">                           
+                                            <p>  
+                                                <span class="badge badge-dark " style="float:left;" (click)="showProfile(msg.userId)">{{ getUserName(msg.userId) }}</span>
+                                                {{msg.text}}   
+                                            </p>   
+                                            <span class="time_date"> {{msg.date | date:'medium'}}</span>                          
+                                        </div>  
+                                        </div>  
+                                    </div>  
+                                    <div class="outgoing_msg" *ngIf="msg.type == 'sent'">  
+                                        <div class="sent_msg">  
+                                        <p>  
+                                            {{msg.text}}<span class="badge badge-dark " style="float:right;" (click)="showProfile(msg.userId)">{{ getUserName(msg.userId) }}</span>
+                                        </p>  
+                                        <span class="time_date"> {{msg.date | date:'medium'}}</span>  
+                                        </div>  
+                                    </div>  
                                 </div>  
-                                </div>  
-                            </div>  
-                            <div class="outgoing_msg" *ngIf="msg.type == 'sent'">  
-                                <div class="sent_msg">  
-                                <p>  
-                                    {{msg.text}}<span class="badge badge-dark " style="float:right;">{{ getUserName(msg.userId) }}</span>
-                                </p>  
-                                <span class="time_date"> {{msg.date | date:'medium'}}</span>  
-                                </div>  
-                            </div>  
-                            </div>  
                             </div>  
                         </div>  
                     </div>  
@@ -121,7 +149,7 @@
                         </div>
                     </form>
                 </nav>
-            </div>
+        </div>        
     </div>
 </div>
   

@@ -488,8 +488,7 @@ img{ max-width:100%;}
   overflow: hidden;
   width: 40%; border-right:1px solid #c4c4c4;
 }
-.inbox_msg {
-  border: 1px solid #c4c4c4;
+.inbox_msg { 
   clear: both;
   overflow: hidden;
 }
@@ -500,8 +499,9 @@ img{ max-width:100%;}
 .srch_bar {
   display: inline-block;
   text-align: right;
-  width: 60%; padding:
+  width: 60%; 
 }
+
 .headind_srch{ padding:10px 29px 10px 20px; overflow:hidden; border-bottom:1px solid #c4c4c4;}
 
 .recent_heading h4 {
@@ -560,6 +560,7 @@ img{ max-width:100%;}
   margin: 0;
   padding: 5px 10px 5px 12px;
   width: 100%;
+  word-wrap:break-word;
 }
 .time_date {
   color: #747474;
@@ -579,6 +580,7 @@ img{ max-width:100%;}
   margin: 0; color:#fff;
   padding: 5px 10px 5px 12px;
   width:100%;
+  word-wrap:break-word;
 }
 .outgoing_msg{ overflow:hidden; margin:26px 0 26px;}
 .sent_msg {
@@ -608,4 +610,12 @@ img{ max-width:100%;}
 .messaging { padding: 0 0 0 0;}
 .msg_history {
   height: 100%;
+}
+
+.navbar>*{
+  color: white !important;
+}
+
+.navbar-nav > .nav-item > a {
+  position: relative; 
 }

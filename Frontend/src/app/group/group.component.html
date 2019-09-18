@@ -1,0 +1,114 @@
+<div class="col-md-6 offset-md-3 mt-5">    
+    <div class="card">
+        <h4 class="card-header">Group Detail</h4>
+        <div class="card-body">
+
+            <form>
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input class="form-control" [(ngModel)]="group.name" [ngModelOptions]="{standalone: true}" id="name">                    
+                    <div *ngIf="nameIsntValid">Name is required, Name must be at least 3 characters and Name must be less than 100 characters</div>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <input class="form-control" [(ngModel)]="group.description" [ngModelOptions]="{standalone: true}" id="description" aria-describedby="descriptionHelp">
+                    <small id="descriptionHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                    <div *ngIf="descIsntValid">Desctiption must be less than 250 characters</div>
+                </div>
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="isPrivate" [(ngModel)]="group.isPrivate"
+                    [ngModelOptions]="{standalone: true}" (click)="isPrivateClick()">
+                    <label class="form-check-label" for="isPrivate">Is Private Group</label>        
+                </div>
+
+                <div *ngIf="group.isPrivate">
+                                       
+                    <div class="row">
+                        <div class="col">  
+                            <h6 class="">Users</h6>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">  
+
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" [(ngModel)]="userSearchKey" [ngModelOptions]="{standalone: true}" placeholder="Enter value to search user" aria-describedby="userSearchButton">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" (click)="searchUser()" type="button" id="userSearchButton">Search</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row"> 
+                        <div class="col">  
+                            <table class="table table-borderless">
+                                <thead>
+                                    <tr>
+                                    <th scope="col">Username</th>
+                                    <th scope="col">Display Name</th>
+                                    <th scope="col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody *ngFor="let item of filteredUserList">
+                                    <tr>
+                                    <th scope="row">{{item.userName}}</th>
+                                    <td>{{item.displayName}}</td>
+                                    <td><button class="btn btn-success float-right" (click)="addUser(item.id)">Add</button></td>
+                                    </tr>                   
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <br/>
+
+                    <div class="row">
+                        <div class="col">  
+                            <h6 class="">Added Users</h6>
+                        </div>
+                    </div>
+
+                    <div class="row"> 
+                        <div class="col">  
+                            <table class="table table-borderless">
+                                <thead>
+                                    <tr>
+                                    <th scope="col">Username</th>
+                                    <th scope="col">Display Name</th>
+                                    <th scope="col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody *ngFor="let item of selectedUsers">
+                                    <tr>
+                                    <th scope="row">{{item.userName}}</th>
+                                    <td>{{item.displayName}}</td>
+                                    <td><button class="btn btn-danger float-right" (click)="removeUser(item.id)">Remove</button></td>
+                                    </tr>                   
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>                
+                              
+                <div class="row">
+                    <div class="col">
+                        <div class="float-left">
+                            <div class="btn-group" role="group">                         
+                                <button type="submit" class="btn btn-primary" (click)="save()">Submit</button>
+                                <button class="btn btn-light" (click)="returnBack()">Cancel</button>
+                            </div>       
+                        </div>
+                        <div class="float-right" *ngIf="this.isDeleteVisible">
+                            <button class="btn btn-danger float-right" (click)="delete()">Delete</button>
+                        </div>
+                    </div>
+                </div>    
+            </form>
+
+        </div>
+    </div>
+</div>

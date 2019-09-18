@@ -134,14 +134,15 @@ namespace NGA.API
 
             services.AddSingleton(mapper);
             services.AddDbContext<NGADbContext>(ServiceLifetime.Transient);
-            services.AddSingleton<UnitOfWork>();
-            services.AddSingleton(typeof(IRepository<>), typeof(Repository<>));
+            services.AddTransient<UnitOfWork>();
+            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 
-            services.AddSingleton<IParameterService, ParameterService>();
-            services.AddSingleton<IGroupService, GroupService>();
-            services.AddSingleton<IMessageService, MessageService>();
-            services.AddSingleton<IUserService, UserService>();
-            services.AddScoped(typeof(IBaseService<,,,>), typeof(BaseService<,,,>));
+            services.AddTransient<IParameterService, ParameterService>();
+            services.AddTransient<IGroupService, GroupService>();
+            services.AddTransient<IGroupUserService, GroupUserService>();
+            services.AddTransient<IMessageService, MessageService>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient(typeof(IBaseService<,,,>), typeof(BaseService<,,,>));
 
             services.AddSingleton<ChatHub>();
 

@@ -19,6 +19,8 @@ namespace NGA.Domain
     //    public Guid RoleId { get; set; }
 
         public UserStatus Status { get; set; }
+
+        public DateTime CreateDateTime { get; set; }
     }
 
     public class User : UserBase

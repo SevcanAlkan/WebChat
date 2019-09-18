@@ -12,6 +12,7 @@ namespace NGA.Domain
         public string Description { get; set; }
         public bool IsMain { get; set; }
         public bool IsPrivate { get; set; }
+        public bool IsOneToOneChat { get; set; }
     }
 
     public class Group : GroupBase
