@@ -79,6 +79,7 @@ export class HomeComponent implements OnInit  {
         group.description = item.description;
         group.isMain = item.isMain;
         group.isPrivate = item.isPrivate;
+        group.users = [];
 
         if(group.isMain){
           this.CurrentGroup = group;

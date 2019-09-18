@@ -22,4 +22,12 @@ export class GroupService extends BaseService<Group, Group> {
         catchError(this.handleError)  
     );  
   }  
+
+  public GetUsers(groupId: string):Observable<string[]> {  
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });   
+    return this.http.get<string[]>(this.apiUrl + "GetUsers?groupId=" + groupId, { headers: headers })
+    .pipe(map((data: string[]) => data),  
+        catchError(this.handleError)  
+    );  
+  } 
 }

@@ -3,6 +3,9 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { GroupService } from '@services/GroupService';
 import { Group } from '@models/Group';
 import { APIResultVM } from '@models/APIResultVM';
+import { UserService } from '@services/UserService';
+import { UserListVM, User } from '@models/User';
+import { AuthenticationService } from '@services/AuthenticationService';
 
 @Component({
   selector: 'app-group',
@@ -19,8 +22,17 @@ export class GroupComponent implements OnInit {
   private nameIsntValid:boolean = false;
   private descIsntValid:boolean = false;
 
-  constructor(private groupService :GroupService, private router: Router, private route: ActivatedRoute) {
+  private userSearchKey: string = "";
+  private userList: UserListVM[] = [];  
+  private filteredUserList: UserListVM[] = [];  
+  private selectedUsers: UserListVM[] = [];  
 
+  private CurrentUser: User;
+  
+  constructor(private groupService : GroupService, private userService : UserService,
+     private router: Router, private route: ActivatedRoute,
+     private authenticationService: AuthenticationService) {
+      this.authenticationService.currentUser.subscribe(x => this.CurrentUser = x); 
    }
 
   ngOnInit() {
@@ -31,23 +43,39 @@ export class GroupComponent implements OnInit {
         if(item.rec) {
           this.group = item.rec;
           this.oldRec = item.rec;
-          this.isNew = false;  
-          
+          this.isNew = false;   
+
+          this.userService.getUserList().subscribe(x => {
+            x.forEach((item: UserListVM) => {    
+              this.userList.push(item);                
+            });  
+
+            this.groupService.GetUsers(this.id).subscribe(x => {
+              if(x && x.length>0){
+                this.group.users  = x;  
+                this.selectedUsers = this.userList.filter(a => this.group.users.some(x => x == a.id));                           
+              }
+            });
+          });             
+
           if(!this.group.isMain){
             this.isDeleteVisible = true
-          } 
+          }           
         }
       });
     }else{
       this.isNew = true;
       this.isDeleteVisible = false;
     }
+
+    
   }
 
   ngOnDestroy() {
   }
 
-  save(){
+  //send user list
+  save(){ 
     if(String(this.group.name).length < 3 || String(this.group.name).length > 100){
       this.nameIsntValid = true;
       return;
@@ -64,7 +92,7 @@ export class GroupComponent implements OnInit {
 
     if(this.group){
       if(this.group.id && !this.isNew && this.oldRec){
-        this.group.isMain = this.oldRec.isMain;
+        this.group.isMain = this.oldRec.isMain;        
         this.groupService.Update(this.group).subscribe( () => {
           this.returnBack();
         });
@@ -89,4 +117,47 @@ export class GroupComponent implements OnInit {
   returnBack(){
     this.router.navigate(['/']);
   }
+
+  isPrivateClick(){
+    if(!this.group.isPrivate){
+      this.userSearchKey = "";
+      this.filteredUserList = [];
+      this.group.users = [];
+    }
+  }
+
+  searchUser(){    
+    if(this.userList && this.userList.length>0){
+      this.filteredUserList = this.userList.filter(a => 
+        (a.userName.includes(this.userSearchKey) || a.displayName.includes(this.userSearchKey))
+        && (this.group.users == null || !this.group.users.some(x => x == a.id)));
+
+      this.userSearchKey = "";
+    }else{
+      this.addUser(this.CurrentUser.id);
+    }
+  }
+
+  addUser(userId){
+    var user = this.userList.find(a=>a.id == userId);
+
+    if(user){
+      if(!this.group.users){
+        this.group.users = [];
+      }
+      this.group.users.push(user.id);
+      this.selectedUsers.push(user);
+
+      this.filteredUserList = this.filteredUserList.filter(x=> x != user);
+    }    
+  }
+
+  removeUser(userId){      
+    var user = this.userList.find(a=>a.id == userId);
+
+    if(user){
+      this.selectedUsers  = this.selectedUsers.filter(x=> x != user);    
+      this.group.users = this.group.users.filter(x=> x != userId);    
+    }
+  }  
 }

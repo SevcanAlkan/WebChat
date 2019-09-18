@@ -11,8 +11,8 @@ namespace NGA.API.Config
     public class AutoMapperConfig : Profile
     {
         public AutoMapperConfig()
-        {           
-            
+        {
+
             #region Parameter
             CreateMap<Parameter, ParameterVM>();
             CreateMap<Parameter, ParameterAddVM>();
@@ -30,25 +30,43 @@ namespace NGA.API.Config
             CreateMap<ParameterUpdateVM, ParameterVM>();
             CreateMap<ParameterUpdateVM, ParameterAddVM>();
             #endregion
-            
-            #region Group
-            CreateMap<Group, GroupVM>();
-            CreateMap<Group, GroupAddVM>();
-            CreateMap<Group, GroupUpdateVM>();
 
-            CreateMap<GroupVM, Group>();
+            #region Group
+            CreateMap<Group, GroupVM>().ForMember(x => x.Users, opt => opt.Ignore());
+            CreateMap<Group, GroupAddVM>().ForMember(x => x.Users, opt => opt.Ignore());
+            CreateMap<Group, GroupUpdateVM>().ForMember(x => x.Users, opt => opt.Ignore());
+
+            CreateMap<GroupVM, Group>().ForMember(x => x.Users, opt => opt.Ignore());
             CreateMap<GroupVM, GroupAddVM>();
             CreateMap<GroupVM, GroupUpdateVM>();
 
-            CreateMap<GroupAddVM, Group>();
+            CreateMap<GroupAddVM, Group>().ForMember(x => x.Users, opt => opt.Ignore());
             CreateMap<GroupAddVM, GroupVM>();
             CreateMap<GroupAddVM, GroupUpdateVM>();
 
-            CreateMap<GroupUpdateVM, Group>();
+            CreateMap<GroupUpdateVM, Group>().ForMember(x => x.Users, opt => opt.Ignore());
             CreateMap<GroupUpdateVM, GroupVM>();
             CreateMap<GroupUpdateVM, GroupAddVM>();
             #endregion
-            
+
+            #region Message
+            CreateMap<GroupUser, GroupUserVM>();
+            CreateMap<GroupUser, GroupUserAddVM>();
+            CreateMap<GroupUser, GroupUserUpdateVM>();
+
+            CreateMap<GroupUserVM, GroupUser>();
+            CreateMap<GroupUserVM, GroupUserAddVM>();
+            CreateMap<GroupUserVM, GroupUserUpdateVM>();
+
+            CreateMap<GroupUserAddVM, GroupUser>();
+            CreateMap<GroupUserAddVM, GroupUserVM>();
+            CreateMap<GroupUserAddVM, GroupUserUpdateVM>();
+
+            CreateMap<GroupUserUpdateVM, GroupUser>();
+            CreateMap<GroupUserUpdateVM, GroupUserVM>();
+            CreateMap<GroupUserUpdateVM, GroupUserAddVM>();
+            #endregion
+
             #region Message
             CreateMap<Message, MessageVM>();
             CreateMap<Message, MessageAddVM>();
@@ -97,5 +115,5 @@ namespace NGA.API.Config
         }
     }
 
-   
+
 }

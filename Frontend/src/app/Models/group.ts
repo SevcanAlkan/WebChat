@@ -5,4 +5,5 @@ export class Group extends BaseVM{
     public description: string; 
     public isMain: boolean;
     public isPrivate: boolean;
+    public users: string[];
 }

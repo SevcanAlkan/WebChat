@@ -15,6 +15,7 @@ namespace NGA.Data.ViewModel
         public bool IsMain { get; set; }
         public bool IsPrivate { get; set; }
         public bool IsOneToOneChat { get; set; }
+        public List<Guid> Users { get; set; }
     }
 
     public class GroupAddVM : AddVM
@@ -26,6 +27,8 @@ namespace NGA.Data.ViewModel
         public bool IsMain { get; set; }
         public bool IsPrivate { get; set; }
         public bool IsOneToOneChat { get; set; }
+
+        public List<Guid> Users { get; set; }
     }
 
     public class GroupUpdateVM : UpdateVM
@@ -37,5 +40,7 @@ namespace NGA.Data.ViewModel
         public bool IsMain { get; set; }
         public bool IsPrivate { get; set; }
         public bool IsOneToOneChat { get; set; }
+
+        public List<Guid> Users { get; set; }
     }
 }

@@ -11,7 +11,7 @@
     <div class="mx-auto order-0">
         <a class="navbar-brand mx-auto" > {{ CurrentGroup.name }} </a>
     </div>
-    <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+    <div class="navbar-collapse collapse w-100 order-3 dual-collapse2" *ngIf="CurrentUser.isAdmin">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
                 <span (click)="editGroup()">
@@ -20,6 +20,8 @@
             </li>
         </ul>
     </div>
+    <div class="navbar-collapse collapse w-100 order-3 dual-collapse2" *ngIf="!CurrentUser.isAdmin">
+    </div>        
 </nav>
 
 
@@ -43,7 +45,10 @@
                     <span class="user-name">
                         <strong ng-if="CurrentUser">{{ CurrentUser.displayName }}</strong> 
                     </span>
-                    <span class="user-role">Role</span>
+                    <span class="user-role" [ngSwitch]=" CurrentUser.isAdmin">
+                        <span class="badge badge-light" *ngSwitchCase="0">Normal User</span>
+                        <span class="badge badge-danger" *ngSwitchCase="1">Admin</span>
+                    </span>
                     <span class="user-status" [ngSwitch]=" CurrentUser.statusVal">                   
                         <span class="badge badge-success" *ngSwitchCase="1">Online</span>
                         <span class="badge badge-warning" *ngSwitchCase="2">Idle</span>
@@ -73,7 +78,7 @@
                             <li>
                                 <a href="/profile"><span>Profile</span></a>
                             </li>
-                            <li>
+                            <li *ngIf="CurrentUser.isAdmin">
                                 <a href="/group"><span>Add Group</span></a>
                             </li>
                         </ul>
@@ -85,7 +90,7 @@
                     <li *ngFor="let item of sortGroups">
                         <a href="#" id="{{item.id}}" (click)="selectGroup(item.id)">
                         <span>{{ item.name }}</span>
-                        <span class="badge badge-light">{{ getMessageCountForGroup(item.id) }}</span>
+                        <!-- <span class="badge badge-light">{{ getMessageCountForGroup(item.id) }}</span> -->
                         </a>
                     </li>
                     </ul>
