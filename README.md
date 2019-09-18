@@ -17,12 +17,12 @@ API is configured to work as standalone. Before the start API you must do belowi
 2. Open **Package Manager Console**, then select NGA.Data project and run **Update-Database** command.
 3. You can start the API now.
 
-> You must add users to DB via sending POST Requests. **DB Initializer** class only adds default Groups to DB!
+> ~~You must add users to DB via sending POST Requests.~~ **DB Initializer** class only adds default Groups to DB!
 
-4. Adding Users to DB;
-    * HTTP Request type: **POST**
-    * Route: `http://localhost:5008/api/user/createtoken`
-    * Model;
+4. DB dosen't have any user, you must create test users. You can use register option on Login page(**V0.2 or higher**). 
+    *  ~~HTTP Request type: **POST**~~
+    *  ~~Route: `http://localhost:5008/api/user/createtoken`~~
+    *  ~~Model;~~
     ``` json
         {
             "UserName": "admin", 
@@ -36,9 +36,6 @@ API is configured to work as standalone. Before the start API you must do belowi
         }
 
     ```
-
-    > You will need some users for test project.
-
 5. Open FrontEnd folder and run `ng serve` command for start Angular!
 
 
