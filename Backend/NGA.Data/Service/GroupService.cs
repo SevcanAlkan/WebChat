@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using NGA.Core;
 using NGA.Core.Helper;
 using NGA.Core.Model;
+using NGA.Core.Validation;
 using NGA.Data.SubStructure;
 using NGA.Data.ViewModel;
 using NGA.Domain;
@@ -27,6 +29,18 @@ namespace NGA.Data.Service
 
         #region Methods                
 
+
+        public List<GroupVM> GetByUserId(Guid userId)
+        {
+            if (Validation.IsNullOrEmpty(userId))
+            {
+                return new List<GroupVM>();
+            }
+
+            var groups = this.Repository.Query().Where(a => !a.IsPrivate || (a.Users.Any(x => x.UserId == userId))).ProjectTo<GroupVM>().ToList();
+
+            return groups;
+        }
         public override Task<APIResultVM> Add(GroupAddVM model, Guid? userId = null, bool isCommit = true)
         {
             if (model.IsMain)
@@ -69,5 +83,6 @@ namespace NGA.Data.Service
 
     public interface IGroupService : IBaseService<GroupAddVM, GroupUpdateVM, GroupVM, Group>
     {
+        List<GroupVM> GetByUserId(Guid userId);
     }
 }

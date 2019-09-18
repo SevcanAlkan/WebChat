@@ -15,6 +15,7 @@ namespace NGA.Data.ViewModel
         public Guid UserId { get; set; }
         public Guid GroupId { get; set; }
         public DateTime Date { get; set; }
+        public Guid? ToUserId { get; set; }
     }
 
     public class MessageAddVM : AddVM
@@ -25,6 +26,7 @@ namespace NGA.Data.ViewModel
         public Guid UserId { get; set; }
         [GuidValidation]
         public Guid GroupId { get; set; }
+        public Guid? ToUserId { get; set; }
     }
 
     public class MessageUpdateVM : UpdateVM
@@ -35,5 +37,6 @@ namespace NGA.Data.ViewModel
         public Guid UserId { get; set; }
         [GuidValidation]
         public Guid GroupId { get; set; }
+        public Guid? ToUserId { get; set; }
     }
 }
