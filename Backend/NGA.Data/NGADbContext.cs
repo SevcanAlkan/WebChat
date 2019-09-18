@@ -59,7 +59,7 @@ namespace NGA.Data
         public DbSet<Group> Groups { get; set; }
         public DbSet<GroupUser> GroupUsers { get; set; }
         public DbSet<Message> Messages { get; set; }
-    
+
         public DbSet<Parameter> Parameters { get; set; }
         public DbSet<Log> Logs { get; set; }
         public DbSet<LogError> LogErrors { get; set; }

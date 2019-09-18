@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Message, TempMessage } from '@models/message';
@@ -10,6 +10,7 @@ import { GroupService } from '@services/GroupService';
 import { AuthenticationService } from '@services/AuthenticationService';
 import { ChatService } from '@services/ChatService';
 import { MessageService } from '@services/MessageService';
+import { Observable } from 'rxjs';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -34,21 +35,25 @@ export class HomeComponent implements OnInit  {
   constructor(private _Route: Router,
     private authenticationService: AuthenticationService,
     private userService: UserService,
-    private groupService :GroupService,
+    private groupService : GroupService,
     private messageService: MessageService,
     private chatService: ChatService,
     private _ngZone: NgZone) {
-    this.authenticationService.currentUser.subscribe(x => this.CurrentUser = x);         
-    this.subscribeToEvents(); 
+    this.authenticationService.currentUser.subscribe(x => this.CurrentUser = x); 
+    this.chatService.openConnection(this.CurrentUser.id);
+    this.subscribeToEvents();
   }
 
   ngOnInit() {
-    //Load groups
-    this.getGroups();
-    //Load old messages
-    this.getMessages();
-    //Load info of all registered users
-    this.loadUsers();
+    this.chatService.hubIsReady.subscribe(()=>{
+      //Load groups
+      this.getGroups();
+      //Load old messages
+      this.getMessages();
+      //Load info of all registered users
+      this.loadUsers();
+    });
+    
   } 
 
   logout() {
@@ -58,7 +63,15 @@ export class HomeComponent implements OnInit  {
 
   //Functions for load data
   getGroups(){
-    this.groupService.GetAll().forEach(data => {
+    var groups: Observable<Group[]>;
+
+    if(this.CurrentUser.isAdmin){
+      groups = this.groupService.GetAll();
+    }else{
+      groups = this.groupService.GetByUserId(this.CurrentUser.id);
+    }
+
+    groups.forEach(data => {
       data.forEach(item=>{
         var group = new Group();
         group.id = item.id;
@@ -66,6 +79,7 @@ export class HomeComponent implements OnInit  {
         group.description = item.description;
         group.isMain = item.isMain;
         group.isPrivate = item.isPrivate;
+        group.users = [];
 
         if(group.isMain){
           this.CurrentGroup = group;
@@ -151,7 +165,7 @@ export class HomeComponent implements OnInit  {
     
     this.messages = [];
     this.CurrentGroup = group;  
-    this.chatService.updateGroupId(this.CurrentGroup.id);  
+    this.chatService.updateGroupId(this.CurrentGroup.id);      
     this.getMessages();
   }
   sendMessage(message: Message) {  
@@ -184,16 +198,21 @@ export class HomeComponent implements OnInit  {
     this.tempMessages = this.tempMessages.filter(obj => obj !== _sentMessage);    
   }
 
-  private subscribeToEvents(): void {    
-    this.chatService.messageReceived.subscribe((message: Message) => {  
-      this._ngZone.run(() => {  
-        if (message.userId !== this.CurrentUser.id) {  
-          message.type = "received";  
-          this.messages.push(message);  
-        }  
-      });  
-    });  
-  }
+  private subscribeToEvents () {  
+    this.chatService.connectionEstablished.subscribe(x => {
+      if(x){
+        this.chatService.messageReceived.subscribe((message: Message) => {  
+          this._ngZone.run(() => {  
+            if (message.userId !== this.CurrentUser.id) {  
+              message.type = "received";  
+              this.messages.push(message);  
+            }  
+          });  
+        }); 
+      }        
+    }); 
+  };
+
 
   getUserName(id){
       if(this.UserList){

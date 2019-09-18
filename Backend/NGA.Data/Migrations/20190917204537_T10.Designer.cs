@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NGA.Data;
 
 namespace NGA.Data.Migrations
 {
     [DbContext(typeof(NGADbContext))]
-    partial class NGADbContextModelSnapshot : ModelSnapshot
+    [Migration("20190917204537_T10")]
+    partial class T10
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -144,9 +146,17 @@ namespace NGA.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<Guid>("CreateBy");
+
+                    b.Property<DateTime>("CreateDT");
+
                     b.Property<Guid>("GroupId");
 
                     b.Property<bool>("IsDeleted");
+
+                    b.Property<Guid?>("UpdateBy");
+
+                    b.Property<DateTime?>("UpdateDT");
 
                     b.Property<Guid>("UserId");
 

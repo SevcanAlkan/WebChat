@@ -139,9 +139,10 @@ namespace NGA.API
 
             services.AddTransient<IParameterService, ParameterService>();
             services.AddTransient<IGroupService, GroupService>();
+            services.AddTransient<IGroupUserService, GroupUserService>();
             services.AddTransient<IMessageService, MessageService>();
             services.AddTransient<IUserService, UserService>();
-            services.AddScoped(typeof(IBaseService<,,,>), typeof(BaseService<,,,>));
+            services.AddTransient(typeof(IBaseService<,,,>), typeof(BaseService<,,,>));
 
             services.AddSingleton<ChatHub>();
 
