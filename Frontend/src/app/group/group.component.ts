@@ -38,6 +38,12 @@ export class GroupComponent implements OnInit {
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id') || null;        
 
+    this.userService.getUserList().subscribe(x => {
+      x.forEach((item: UserListVM) => {    
+        this.userList.push(item);                
+      });  
+    });
+
     if(this.id){      
       this.groupService.GetById(this.id).subscribe((item: APIResultVM) => {     
         if(item.rec) {
@@ -45,19 +51,13 @@ export class GroupComponent implements OnInit {
           this.oldRec = item.rec;
           this.isNew = false;   
 
-          this.userService.getUserList().subscribe(x => {
-            x.forEach((item: UserListVM) => {    
-              this.userList.push(item);                
-            });  
-
-            this.groupService.GetUsers(this.id).subscribe(x => {
-              if(x && x.length>0){
-                this.group.users  = x;  
-                this.selectedUsers = this.userList.filter(a => this.group.users.some(x => x == a.id));                           
-              }
-            });
-          });             
-
+          this.groupService.GetUsers(this.id).subscribe(x => {
+            if(x && x.length>0){
+              this.group.users  = x;  
+              this.selectedUsers = this.userList.filter(a => this.group.users.some(x => x == a.id));                           
+            }
+          });
+                      
           if(!this.group.isMain){
             this.isDeleteVisible = true
           }           

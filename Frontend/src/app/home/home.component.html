@@ -1,5 +1,5 @@
-<nav class="navbar fixed-top navbar-expand-md navbar-dark bg-dark">
-    <div class="w-100 order-1 order-md-0">
+<nav class="navbar fixed-top navbar-expand navbar-dark bg-dark">
+    <div class="w-100 order-0 order-md-0">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
                 <a (click)="toggleNavBar()" class="float-right">
@@ -8,10 +8,10 @@
             </li>            
         </ul>
     </div>
-    <div class="mx-auto order-0">
+    <div class="mx-auto order-1 order-md-1">
         <a class="navbar-brand mx-auto" > {{ CurrentGroup.name }} </a>
     </div>
-    <div class="navbar-collapse collapse w-100 order-3 dual-collapse2" *ngIf="CurrentUser.isAdmin">
+    <div class="navbar-collapse collapse w-100 order-2 dual-collapse2" *ngIf="CurrentUser.isAdmin">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
                 <span (click)="editGroup()">
@@ -20,7 +20,7 @@
             </li>
         </ul>
     </div>
-    <div class="navbar-collapse collapse w-100 order-3 dual-collapse2" *ngIf="!CurrentUser.isAdmin">
+    <div class="navbar-collapse collapse w-100 order-2 dual-collapse2" *ngIf="!CurrentUser.isAdmin">
     </div>        
 </nav>
 
