@@ -1,4 +1,4 @@
-import { BaseVM } from '@common/BaseModel';
+import { BaseVM } from '@app/common/baseModel';
 
 export class Group extends BaseVM{
     public name: string;

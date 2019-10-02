@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';  
-import { BaseService } from '@common/BaseService';
+import { BaseService } from '@app/common/baseService';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';  
 import { Message } from '@models/message';
 import { map, catchError } from 'rxjs/operators';

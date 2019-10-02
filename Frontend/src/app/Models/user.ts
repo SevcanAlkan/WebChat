@@ -1,4 +1,4 @@
-import { BaseVM } from '@common/BaseModel';
+import { BaseVM } from '@app/common/baseModel';
 import { Guid } from '@app/common/guid';
 
 export class User extends BaseVM{

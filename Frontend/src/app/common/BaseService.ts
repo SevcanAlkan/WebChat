@@ -3,7 +3,7 @@ import { Observable, throwError } from 'rxjs'
 import { catchError, tap, map } from 'rxjs/operators'  
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';  
 import { environment } from '@environments/environment';
-import { BaseVM } from './BaseModel';
+import { BaseVM } from './baseModel';
 import { APIResultVM } from '@models/APIResultVM';
 
 @Injectable({  

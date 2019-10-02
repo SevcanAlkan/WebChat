@@ -1,0 +1,5 @@
+ul.val-warning > li{
+    font: italic;
+    color: red;
+    font-size: small;
+}

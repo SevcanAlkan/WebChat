@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';  
 import { Group } from '@app/models/Group';
-import { BaseService } from '@common/BaseService';
+import { BaseService } from '@app/common/baseService';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';  
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';

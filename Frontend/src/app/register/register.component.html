@@ -2,69 +2,73 @@
         <div class="card">
             <h4 class="card-header">Register New User</h4>
             <div class="card-body">
-
-                <form>
+                <form [formGroup]="registerForm" (ngSubmit)="save()">
                     <div class="form-group">
                         <label for="userName">User Name</label>
-                        <input class="form-control" [(ngModel)]="user.userName" [ngModelOptions]="{standalone: true}" id="userNameHelp">                    
+                        <input class="form-control" id="userNameHelp" formControlName="userName" />                    
                         <small id="userNameHelp" class="form-text text-muted">Uniqe name of user, you will use on Login page</small>
-                        <div *ngIf="userNameIsntValid">This field is required, 
-                            must be at least 4 characters, 
-                            must be less than 15 characters
-                        </div>
-                        <div *ngIf="userNameAlreadyTaken">The user name must be uniqe!</div>    
+                        <ul class="val-warning" *ngIf="(userName.dirty || userName.touched) && userName.invalid">
+                            <li *ngIf="userName.errors.required">This field is required</li>
+                            <li *ngIf="userName.errors.minlength">The username must be at least 4 characters</li>
+                            <li *ngIf="userName.errors.maxlength">The username must be less than 15 characters</li>
+                            <li *ngIf="userName.errors.isTaken">The user name must be uniqe</li>                                                        
+                        </ul>  
                     </div>
                     <div class="form-group">
                         <label for="displayName">Display Name</label>
-                        <input class="form-control" [(ngModel)]="user.displayName" [ngModelOptions]="{standalone: true}" id="displayName" aria-describedby="displayNameHelp">                    
-                        <small id="displayNameHelp" class="form-text text-muted">Visible name for other users</small>
-                        <div *ngIf="displayNameIsntValid">This field is required, must be at least 4 characters and must be less than 20 characters</div>
+                        <input class="form-control" id="displayName" formControlName="displayName" aria-describedby="displayNameHelp" />                    
+                        <small id="displayNameHelp" class="form-text text-muted">Visible name for other users</small>                      
+                        <ul class="val-warning" *ngIf="(displayName.dirty || displayName.touched) && displayName.invalid">
+                            <li *ngIf="displayName.errors.required">This field is required</li>
+                            <li *ngIf="displayName.errors.minlength">This field must be at least 4 characters</li>
+                            <li *ngIf="displayName.errors.maxlength">This fieldmust be less than 20 characters</li>                                     
+                        </ul>  
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" formGroupName="passwordGroup">
                         <label for="passworld">Password</label>
-                        <input class="form-control" type="password" [(ngModel)]="user.passwordHash" [ngModelOptions]="{standalone: true}" id="password">                    
-                        <div *ngIf="passwordIsntValid">
-                            <ul>
-                                <li>Passwords is required</li>
-                                <li>Passwords must be at least 4 characters</li>
-                                <li>Passwords must be less than 50 characters</li>
-                                <li>Passwords must have at least one non alphanumeric character</li>
-                                <li>Passwords must have at least one digit ('0'-'9')</li>
-                                <li>Passwords must have at least one lowercase ('a'-'z')</li>
-                                <li>Passwords must have at least one uppercase ('A'-'Z')</li>
-                            </ul>                            
-                        </div>
+                        <input class="form-control" type="password" id="password" formControlName="password">                                        
+                        <ul class="val-warning" *ngIf="(password.dirty || password.touched) && password.invalid">
+                            <li *ngIf="password.errors.required">This field is required</li>
+                            <li *ngIf="password.errors.minlength">This field must be at least 4 characters</li>
+                            <li *ngIf="password.errors.maxlength">This fieldmust be less than 50 characters</li>  
+                            <li *ngIf="password.errors.passwordIsntStrong">Password must have one non alphanumeric character, one digit ('0'-'9'), one lowercase ('a'-'z'), one uppercase ('A'-'Z')</li>                                     
+                        </ul> 
 
                         <label for="comparePassword">Compare Password</label>
-                        <input class="form-control" type="password" [(ngModel)]="comparePassword" [ngModelOptions]="{standalone: true}" id="comparePassword">                    
-                        <div *ngIf="comparePasswordIsntValid">The password not same with other!</div>
+                        <input class="form-control" type="password" id="comparePassword" formControlName="confirmPassword">                    
+                        <div></div>
+                        <ul class="val-warning" *ngIf="(confirmPassword.dirty || confirmPassword.touched)  && confirmPassword.invalid">
+                            <li *ngIf="confirmPassword.errors.notSame">The passwords arent same!</li>
+                        </ul> 
 
                         <div *ngIf="alreadyRegistredUser">
                             <label for="oldPassword">Old Password</label>
-                            <input class="form-control" type="password" [(ngModel)]="userRec.oldPassword" [ngModelOptions]="{standalone: true}" id="oldPassword">                    
-                            <div *ngIf="OldPasswordIsntValid">You must enter old password</div>
+                            <input class="form-control" type="password" id="oldPassword" formControlName="oldPassword">                    
+                            <ul class="val-warning" *ngIf="(oldPassword.dirty || oldPassword.touched) && oldPassword.invalid">
+                                <li *ngIf="oldPassword.errors.mustEnterOldPass">You must enter old password</li>
+                                <li *ngIf="oldPassword.errors.oldPassNotCorrect">Old password isn't correct</li>
+                            </ul>       
                         </div>
                     </div>                    
 
                     <div class="form-group">
                         <label for="about">About</label>
-                        <input class="form-control" [(ngModel)]="user.about" [ngModelOptions]="{standalone: true}" id="about" aria-describedby="aboutHelp">
+                        <input class="form-control" id="about" formControlName="about" aria-describedby="aboutHelp">
                         <small id="aboutHelp" class="form-text text-muted">This text will show on Profile page of User</small>
-                        <div *ngIf="aboutIsntValid">About text must be less than 250 characters</div>
+                        <div *ngIf="about.invalid && about.errors.maxlength">About text must be less than 250 characters</div>
                     </div>
 
 
                     <div class="form-group form-check">
-                        <input type="checkbox" class="form-check-input" id="isAdmin" [(ngModel)]="user.isAdmin"
-                        [ngModelOptions]="{standalone: true}">
+                        <input type="checkbox" class="form-check-input" id="isAdmin" formControlName="isAdmin">
                         <label class="form-check-label" for="isAdmin" >Is Admin</label>        
                     </div>
                     <div class="row">
                         <div class="col">
                             <div class="float-left">
                                 <div class="btn-group" role="group">                         
-                                    <button type="submit" class="btn btn-primary" (click)="save()">Submit</button>
+                                    <button type="submit" class="btn btn-primary" [disabled]="!registerForm.valid || submitted">Submit</button>
                                     <button class="btn btn-light" (click)="cancel()">Cancel</button>
                                 </div>       
                             </div>
