@@ -11,7 +11,7 @@ using NGA.Data.Service;
 using NGA.Data.ViewModel;
 using NGA.Domain;
 
-namespace NGA.API.Controllers
+namespace NGA.API.Controllers.V2
 {
     public class ParameterController : DefaultApiCRUDController<ParameterAddVM, ParameterUpdateVM, ParameterVM, IParameterService>
     {

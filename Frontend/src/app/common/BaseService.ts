@@ -4,12 +4,14 @@ import { catchError, tap, map } from 'rxjs/operators'
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';  
 import { environment } from '@environments/environment';
 import { BaseVM } from './baseModel';
-import { APIResultVM } from '@models/APIResultVM';
+import { APIResultVM } from '@app/common/APIResultVM';
 
 @Injectable({  
     providedIn: 'root'  
 })  
   
+//Add API version header!
+
 export abstract class BaseService<T extends BaseVM, U extends BaseVM>{  
   
     protected apiUrl = "";  

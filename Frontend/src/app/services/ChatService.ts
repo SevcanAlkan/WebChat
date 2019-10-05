@@ -7,9 +7,9 @@ import { promise } from 'protractor';
   
 @Injectable()  
 export class ChatService {  
-  messageReceived = new EventEmitter<Message>();  
-  connectionEstablished = new EventEmitter<Boolean>();  
-  hubIsReady = new Subject<boolean>();
+  MessageReceived = new EventEmitter<Message>();  
+  ConnectionEstablished = new EventEmitter<Boolean>();  
+  HubIsReady = new Subject<boolean>();
   
   private groupId = "";
   private userId = "";
@@ -19,7 +19,7 @@ export class ChatService {
   constructor() {  
   }  
   
-  openConnection(userId){
+  OpenConnection(userId){
     this.userId = userId;
 
     if(this._hubConnection && this._hubConnection.state == HubConnectionState.Connected){
@@ -34,12 +34,15 @@ export class ChatService {
       this.startConnection();  
     }
   }
+  CloseConnection(){
+
+  }
 
   IsConnected() : boolean{
     return this._hubConnection && this._hubConnection.state == HubConnectionState.Connected;
   }
 
-  updateGroupId(_groupId=""){
+  UpdateGroupId(_groupId=""){
     if( _groupId == null || _groupId == ""){
       return;
     }
@@ -62,11 +65,11 @@ export class ChatService {
     this._hubConnection.invoke('RemoveFromGroup', this.groupId);    
   } 
 
-  sendMessage(message: Message) {  
+  SendMessage(message: Message) {  
     this._hubConnection.invoke('SendMessage', message);  
   }  
 
-  sendPrivateMessage(message: Message, userId:string) {  
+  SendPrivateMessage(message: Message, userId:string) {  
     this._hubConnection.invoke('SendPrivateMessage', message, userId);  
   }  
   

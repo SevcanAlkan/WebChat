@@ -5,11 +5,11 @@ import { Message, TempMessage } from '@models/message';
 import { Group } from '@models/Group';
 import { User, UserListVM } from '@models/User';
 
-import { UserService } from '@services/UserService';
-import { GroupService } from '@services/GroupService';
-import { AuthenticationService } from '@services/AuthenticationService';
-import { ChatService } from '@services/ChatService';
-import { MessageService } from '@services/MessageService';
+import { UserService } from '@app/services/userService';
+import { GroupService } from '@app/services/groupService';
+import { AuthenticationService } from '@app/services/authenticationService';
+import { ChatService } from '@app/services/chatService';
+import { MessageService } from '@app/services/messageService';
 import { Observable } from 'rxjs';
 @Component({
   selector: 'app-home',
@@ -39,9 +39,11 @@ export class HomeComponent implements OnInit  {
     private messageService: MessageService,
     private chatService: ChatService,
     private _ngZone: NgZone) {
+
     this.authenticationService.currentUser.subscribe(x => this.CurrentUser = x); 
     this.chatService.openConnection(this.CurrentUser.id);
     this.subscribeToEvents();
+
   }
 
   ngOnInit() {
@@ -55,6 +57,11 @@ export class HomeComponent implements OnInit  {
     });
     
   } 
+  ngOnDestroy() : any {
+    this.chatService.connectionEstablished.unsubscribe();
+    this.chatService.messageReceived.unsubscribe();
+    this.chatService
+  }
 
   logout() {
     this.authenticationService.logout();
@@ -198,7 +205,7 @@ export class HomeComponent implements OnInit  {
     this.tempMessages = this.tempMessages.filter(obj => obj !== _sentMessage);    
   }
 
-  private subscribeToEvents () {  
+  subscribeToEvents () {  
     this.chatService.connectionEstablished.subscribe(x => {
       if(x){
         this.chatService.messageReceived.subscribe((message: Message) => {  

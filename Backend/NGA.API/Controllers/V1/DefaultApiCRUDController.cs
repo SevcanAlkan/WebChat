@@ -12,7 +12,7 @@ using NGA.Core.Validation;
 using NGA.Data.Logger;
 using NGA.Data.SubStructure;
 
-namespace NGA.API.Controllers.V2
+namespace NGA.API.Controllers.V1
 {
     public abstract class DefaultApiCRUDController<A, U, G, S> : DefaultApiController
              where A : AddVM, IAddVM, new()
@@ -36,7 +36,7 @@ namespace NGA.API.Controllers.V2
                 if (result == null)
                     return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.WRG01001));
 
-                return new JsonResult(result);
+                return new JsonResult(new List<G>());
             }
             catch (Exception ex)
             {

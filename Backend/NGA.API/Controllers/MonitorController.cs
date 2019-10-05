@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Newtonsoft.Json;
 using NGA.Data.ViewModel;
 
-namespace NGA.API.Controllers
+namespace NGA.API.Controllers.V2
 {
     //SOURCE: https://stackoverflow.com/questions/41908957/get-all-registered-routes-in-asp-net-core
 

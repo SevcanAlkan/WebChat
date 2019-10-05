@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 
-import { AuthenticationService } from '@services/AuthenticationService';
+import { AuthenticationService } from '@app/services/authenticationService';
 
 @Component({
   selector: 'app-login',
@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private authenticationService: AuthenticationService) {
-      if (this.authenticationService.currentUserValue) { 
+      if (this.authenticationService.CurrentUserValue) { 
         this.router.navigate(['/']);
       }
     }

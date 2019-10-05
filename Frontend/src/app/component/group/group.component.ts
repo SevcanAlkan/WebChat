@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { GroupService } from '@services/GroupService';
+import { GroupService } from '@app/services/groupService';
 import { Group } from '@models/Group';
-import { APIResultVM } from '@models/APIResultVM';
-import { UserService } from '@services/UserService';
+import { APIResultVM } from '@app/common/APIResultVM';
+import { UserService } from '@app/services/userService';
 import { UserListVM, User } from '@models/User';
-import { AuthenticationService } from '@services/AuthenticationService';
+import { AuthenticationService } from '@app/services/authenticationService';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-group',
@@ -13,29 +14,39 @@ import { AuthenticationService } from '@services/AuthenticationService';
   styleUrls: ['./group.component.css']
 })
 export class GroupComponent implements OnInit {
-  private group: Group = new Group();
+  private group: Group;
   private oldRec: Group;
-  private isNew: boolean = false;
+  private isNew: boolean;
   private id: string;
-  private isDeleteVisible: boolean = false;
+  private isDeleteVisible: boolean;
 
-  private nameIsntValid:boolean = false;
-  private descIsntValid:boolean = false;
+  private nameIsntValid: boolean;
+  private descIsntValid: boolean;
 
-  private userSearchKey: string = "";
-  private userList: UserListVM[] = [];  
-  private filteredUserList: UserListVM[] = [];  
-  private selectedUsers: UserListVM[] = [];  
+  private userSearchKey: string;
+  private userList: UserListVM[];  
+  private filteredUserList: UserListVM[];  
+  private selectedUsers: UserListVM[];  
 
-  private CurrentUser: User;
+  private CurrentUser : User;
   
   constructor(private groupService : GroupService, private userService : UserService,
      private router: Router, private route: ActivatedRoute,
-     private authenticationService: AuthenticationService) {
-      this.authenticationService.currentUser.subscribe(x => this.CurrentUser = x); 
+     private authenticationService: AuthenticationService) { 
+       this.group = new Group();
+       this.isNew = false;
+       this.isDeleteVisible = false;
+       this.nameIsntValid = false;
+       this.descIsntValid = false;
+       this.userSearchKey = "";
+       this.userList = [];
+       this.filteredUserList = [];
+       this.selectedUsers = [];     
    }
 
   ngOnInit() {
+    this.CurrentUser = this.authenticationService.CurrentUserValue; 
+
     this.id = this.route.snapshot.paramMap.get('id') || null;        
 
     this.userService.getUserList().subscribe(x => {
@@ -66,12 +77,18 @@ export class GroupComponent implements OnInit {
     }else{
       this.isNew = true;
       this.isDeleteVisible = false;
-    }
-
-    
+    }  
   }
 
-  ngOnDestroy() {
+  ngOnDestroy() : any {
+    this.CurrentUser = null;
+    this.userSearchKey = null;
+    this.userList = null;  
+    this.filteredUserList = null;  
+    this.selectedUsers = null;  
+    this.group = null;
+    this.oldRec = null;
+
   }
 
   //send user list

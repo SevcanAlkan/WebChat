@@ -2,14 +2,14 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
-import { ProfileComponent } from './profile/profile.component';
-import { LoginComponent } from './login/login.component';
-import { AuthGuard } from '@helper/AuthGuard';
+import { ProfileComponent } from './component/profile/profile.component';
+import { LoginComponent } from './component/login/login.component';
+import { AuthGuard } from '@app/helpers/authGuard';
 import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
-import { GroupComponent } from './group/group.component';
-import { RegisterComponent } from './register/register.component';
-import { SearchComponent } from './search/search.component';
+import { HomeComponent } from './component/home/home.component';
+import { GroupComponent } from './component/group/group.component';
+import { RegisterComponent } from './component/register/register.component';
+import { SearchComponent } from './component/search/search.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, canActivate: [AuthGuard] },

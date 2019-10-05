@@ -8,20 +8,20 @@ import { AppRoutingModule } from './app-routing.module';
 
 //App Componenets
 import { AppComponent } from './app.component';
-import { LoginComponent } from './login/login.component';
-import { ProfileComponent } from './profile/profile.component';
-import { HomeComponent } from './home/home.component';
+import { LoginComponent } from './component/login/login.component';
+import { ProfileComponent } from './component/profile/profile.component';
+import { HomeComponent } from './component/home/home.component';
 
 //Helpers
-import { JwtInterceptor } from './helpers/JwtInterceptor';
-import { ErrorInterceptor } from './helpers/ErrorInterceptor';
+import { JwtInterceptor } from './helpers/jwtInterceptor';
+import { ErrorInterceptor } from './helpers/errorInterceptor';
 
 //Services
-import { ChatService } from '@services/ChatService';
-import { GroupComponent } from './group/group.component';
-import { RegisterComponent } from './register/register.component';
-import { SearchService } from './services/SearchService';
-import { SearchComponent } from './search/search.component';
+import { ChatService } from '@app/services/chatService';
+import { GroupComponent } from './component/group/group.component';
+import { RegisterComponent } from './component/register/register.component';
+import { SearchService } from './services/searchService';
+import { SearchComponent } from './component/search/search.component';
 
 @NgModule({
   declarations: [

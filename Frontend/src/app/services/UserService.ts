@@ -4,7 +4,7 @@ import { BaseService } from '@app/common/baseService';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';  
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { APIResultVM } from '@app/models/APIResultVM';
+import { APIResultVM } from '@app/common/APIResultVM';
 
 @Injectable({  
     providedIn: 'root'  

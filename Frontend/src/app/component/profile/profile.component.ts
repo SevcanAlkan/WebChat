@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from '@models/User';
-import { UserService } from '@app/services/UserService';
+import { UserService } from '@app/services/userService';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AuthenticationService } from '@app/services/AuthenticationService';
+import { AuthenticationService } from '@app/services/authenticationService';
 
 @Component({
   selector: 'app-profile',

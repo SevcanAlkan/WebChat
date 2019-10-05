@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { MessageVM } from '@models/message';
-import { SearchService } from '@services/SearchService';
+import { SearchService } from '@app/services/searchService';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Group } from '@models/Group';
 import { UserListVM } from '@models/User';
-import { GroupService } from '@services/GroupService';
-import { UserService } from '@services/UserService';
+import { GroupService } from '@app/services/groupService';
+import { UserService } from '@app/services/userService';
 
 @Component({
   selector: 'app-search',
