@@ -1,7 +1,7 @@
-import { BaseVM } from '@app/common/baseModel';
+import { BaseVM, AddVM, UpdateVM } from '@app/common/baseModel';
 import { Guid } from '@app/common/guid';
 
-export class User extends BaseVM{
+export class UserVM extends BaseVM{
     public userName: string;
     public passwordHash: string;
     public lastLoginDateTime: number;
@@ -30,18 +30,7 @@ export class User extends BaseVM{
     }
 }
 
-export class UserLoginVM{
-    public UserName: string;
-    public PasswordHash: string;
-}
-
-export class UserListVM extends BaseVM{
-    public userName: string;
-    public isAdmin: boolean;
-    public displayName: string;
-}
-
-export class UserRegisterVM{
+export class UserRegisterVM extends AddVM{
     public userName: string;
     public passwordHash: string;
   
@@ -53,10 +42,11 @@ export class UserRegisterVM{
     public status: number;
 
     constructor(){
+        super();
     }
 }
 
-export class UserUpdateVM extends BaseVM{
+export class UserUpdateVM extends UpdateVM{
     public userName: string;
     public passwordHash: string;
     public oldPassword: string;
@@ -73,3 +63,13 @@ export class UserUpdateVM extends BaseVM{
     }
 }
 
+export class UserLoginVM{
+    public UserName: string;
+    public PasswordHash: string;
+}
+
+export class UserListVM extends BaseVM{
+    public userName: string;
+    public isAdmin: boolean;
+    public displayName: string;
+}

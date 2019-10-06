@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MessageVM } from '@models/message';
+import { MessageSearchVM } from '@models/message';
 import { SearchService } from '@app/services/searchService';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Group } from '@models/Group';
@@ -14,7 +14,7 @@ import { UserService } from '@app/services/userService';
 })
 export class SearchComponent implements OnInit {
 
-  private searchResult: MessageVM[] = [];
+  private searchResult: MessageSearchVM[] = [];
   private searchText: string = "";
 
   private GroupList: Group[] = []; 

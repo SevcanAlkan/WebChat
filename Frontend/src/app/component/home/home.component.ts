@@ -1,8 +1,8 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Message, TempMessage } from '@models/message';
-import { Group } from '@models/Group';
+import { MessageVM, TempMessage } from '@models/message';
+import { GroupVM } from '@models/Group';
 import { User, UserListVM } from '@models/User';
 
 import { UserService } from '@app/services/userService';
@@ -18,15 +18,15 @@ import { Observable } from 'rxjs';
 })
 export class HomeComponent implements OnInit  {  
   private CurrentUser: User; //Current logged in user.
-  CurrentGroup: Group = new Group; //Already selected group.
+  CurrentGroup: GroupVM = new GroupVM; //Already selected group.
 
-  private GroupList: Group[] = []; 
+  private GroupList: GroupVM[] = []; 
   private UserList: UserListVM[] = [];  
 
-  messages: Message[] = [];  
+  messages: MessageVM[] = [];  
   private tempMessages: TempMessage[] = []; //Which messages have written but didn't send.
   tempMessage: string = ""; //Current message text, from input.
-  private message: Message; //Message model for send to API.
+  private message: MessageVM; //Message model for send to API.
 
   private searchText: string = "";
 
@@ -175,7 +175,7 @@ export class HomeComponent implements OnInit  {
     this.chatService.updateGroupId(this.CurrentGroup.id);      
     this.getMessages();
   }
-  sendMessage(message: Message) {  
+  sendMessage(message: MessageVM) {  
      if (this.tempMessage) {  
       var text = "";
       if(this.tempMessage.length >= 500){
@@ -184,7 +184,7 @@ export class HomeComponent implements OnInit  {
         text = this.tempMessage;
       }
       
-      this.message = new Message();  
+      this.message = new MessageVM();  
       this.message.userId = this.CurrentUser.id; 
       this.message.groupId = this.CurrentGroup.id;  
       this.message.type = "sent";  

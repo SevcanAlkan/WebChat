@@ -1,21 +1,32 @@
-import { BaseVM } from '@app/common/baseModel';
+import { BaseVM, AddVM, UpdateVM } from '@app/common/baseModel';
 
-export class Message extends BaseVM {
-    text;
-    groupId;
-    userId;
-    date;
-    type;
+export class MessageVM extends BaseVM {
+    public text: String;
+    public groupId: String;
+    public userId: String;
+    public date: Date;
+    public type: String;
+}
+
+export class MessageAddVM extends AddVM {
+    public text: String;
+    public groupId: String;
+    public userId: String;
+    public date: Date;
+}
+
+export class MessageUpdateVM extends UpdateVM {
+    public text: String;
 }
 
 export class TempMessage{
-    text;
-    groupId;
+    public text: String;
+    public groupId: String;
 }
 
-export class MessageVM extends BaseVM {
-    text;
-    groupId;
-    userId;
-    createDT;
+export class MessageSearchVM extends BaseVM {
+    public text: String;
+    public groupId: String;
+    public userId: String;
+    public createDT: Date;
 }

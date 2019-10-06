@@ -1,13 +1,13 @@
 import { EventEmitter, Injectable } from '@angular/core';  
 import { HubConnection, HubConnectionBuilder, LogLevel, HubConnectionState } from '@aspnet/signalr';  
-import { Message } from '@models/message';  
+import { MessageVM } from '@models/message';  
 import { environment } from '@environments/environment';
 import { Observable, Subject } from 'rxjs';
 import { promise } from 'protractor';
   
 @Injectable()  
 export class ChatService {  
-  MessageReceived = new EventEmitter<Message>();  
+  MessageReceived = new EventEmitter<MessageVM>();  
   ConnectionEstablished = new EventEmitter<Boolean>();  
   HubIsReady = new Subject<boolean>();
   
@@ -65,11 +65,11 @@ export class ChatService {
     this._hubConnection.invoke('RemoveFromGroup', this.groupId);    
   } 
 
-  SendMessage(message: Message) {  
+  SendMessage(message: MessageVM) {  
     this._hubConnection.invoke('SendMessage', message);  
   }  
 
-  SendPrivateMessage(message: Message, userId:string) {  
+  SendPrivateMessage(message: MessageVM, userId:string) {  
     this._hubConnection.invoke('SendPrivateMessage', message, userId);  
   }  
   

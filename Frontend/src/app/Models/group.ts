@@ -1,4 +1,4 @@
-import { BaseVM, AddVM } from '@app/common/baseModel';
+import { BaseVM, AddVM, UpdateVM } from '@app/common/baseModel';
 
 export class GroupVM extends BaseVM{
     public name: string;
@@ -15,7 +15,7 @@ export class GroupAddVM extends AddVM{
     public users: string[];
 }
 
-export class GroupAddVM extends UpdateVM{
+export class GroupUpdateVM extends UpdateVM{
     public name: string;
     public description: string; 
     public isMain: boolean;
