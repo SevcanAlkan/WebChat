@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { GroupService } from '@app/services/groupService';
-import { Group } from '@models/Group';
+import { GroupService } from '@app/services/GroupService';
+import { GroupVM, GroupUpdateVM, GroupAddVM } from '@app/models/Group';
 import { APIResultVM } from '@app/common/APIResultVM';
-import { UserService } from '@app/services/userService';
-import { UserListVM, User } from '@models/User';
-import { AuthenticationService } from '@app/services/authenticationService';
-import { Observable } from 'rxjs';
+import { UserService } from '@services/UserService';
+import { UserListVM, UserVM } from '@app/models/User';
+import { AuthenticationService } from '@services/AuthenticationService';
+import { Observable, Subscription, Subject, of } from 'rxjs';
+import { takeUntil, map, mapTo } from 'rxjs/operators';
 
 @Component({
   selector: 'app-group',
@@ -14,8 +15,10 @@ import { Observable } from 'rxjs';
   styleUrls: ['./group.component.css']
 })
 export class GroupComponent implements OnInit {
-  private group: Group;
-  private oldRec: Group;
+  private unSubscribe$: Subject<void>;
+
+  private group: GroupVM;
+  private oldRec: GroupVM;
   private isNew: boolean;
   private id: string;
   private isDeleteVisible: boolean;
@@ -28,20 +31,12 @@ export class GroupComponent implements OnInit {
   private filteredUserList: UserListVM[];  
   private selectedUsers: UserListVM[];  
 
-  private CurrentUser : User;
+  private CurrentUser : UserVM;
   
   constructor(private groupService : GroupService, private userService : UserService,
      private router: Router, private route: ActivatedRoute,
      private authenticationService: AuthenticationService) { 
-       this.group = new Group();
-       this.isNew = false;
-       this.isDeleteVisible = false;
-       this.nameIsntValid = false;
-       this.descIsntValid = false;
-       this.userSearchKey = "";
-       this.userList = [];
-       this.filteredUserList = [];
-       this.selectedUsers = [];     
+      this.loadDefaultValues(); 
    }
 
   ngOnInit() {
@@ -49,22 +44,28 @@ export class GroupComponent implements OnInit {
 
     this.id = this.route.snapshot.paramMap.get('id') || null;        
 
-    this.userService.getUserList().subscribe(x => {
+    this.userService.getUserList()
+    .pipe(takeUntil(this.unSubscribe$))
+    .subscribe(x => {
       x.forEach((item: UserListVM) => {    
         this.userList.push(item);                
       });  
-    });
+    });    
 
     if(this.id){      
-      this.groupService.GetById(this.id).subscribe((item: APIResultVM) => {     
+      this.groupService.GetById(this.id)
+      .pipe(takeUntil(this.unSubscribe$))
+      .subscribe((item: APIResultVM) => {     
         if(item.rec) {
           this.group = item.rec;
           this.oldRec = item.rec;
           this.isNew = false;   
 
-          this.groupService.GetUsers(this.id).subscribe(x => {
+          this.groupService.GetUsers(this.id)
+          .pipe(takeUntil(this.unSubscribe$))
+          .subscribe(x => {
             if(x && x.length>0){
-              this.group.users  = x;  
+              this.group.users = x;  
               this.selectedUsers = this.userList.filter(a => this.group.users.some(x => x == a.id));                           
             }
           });
@@ -78,21 +79,32 @@ export class GroupComponent implements OnInit {
       this.isNew = true;
       this.isDeleteVisible = false;
     }  
+
+    window.onunload = () => this.ngOnDestroy();
   }
 
   ngOnDestroy() : any {
-    this.CurrentUser = null;
-    this.userSearchKey = null;
-    this.userList = null;  
-    this.filteredUserList = null;  
-    this.selectedUsers = null;  
-    this.group = null;
-    this.oldRec = null;
+    this.unSubscribe$.next();
+    this.unSubscribe$.complete();
 
+    this.loadDefaultValues();
+  }
+
+  private loadDefaultValues() : void {
+    this.group = new GroupVM();
+    this.isNew = false;
+    this.isDeleteVisible = false;
+    this.nameIsntValid = false;
+    this.descIsntValid = false;
+    this.userSearchKey = "";
+    this.userList = [];
+    this.filteredUserList = [];
+    this.selectedUsers = []; 
+    this.unSubscribe$ = new Subject<void>();   
   }
 
   //send user list
-  save(){ 
+  save() : void { 
     if(String(this.group.name).length < 3 || String(this.group.name).length > 100){
       this.nameIsntValid = true;
       return;
@@ -109,20 +121,28 @@ export class GroupComponent implements OnInit {
 
     if(this.group){
       if(this.group.id && !this.isNew && this.oldRec){
-        this.group.isMain = this.oldRec.isMain;        
-        this.groupService.Update(this.group).subscribe( () => {
-          this.returnBack();
-        });
+        this.group.isMain = this.oldRec.isMain;       
+        of(this.group).pipe(
+          takeUntil(this.unSubscribe$),
+          map<GroupVM, GroupUpdateVM>(x => x)).subscribe(rec => {
+          this.groupService.Update(rec, this.group.id).subscribe( () => {
+            this.returnBack();
+          });
+        }); 
       }else{
         this.group.isMain = false;
-        this.groupService.Add(this.group).subscribe( () => {
-          this.returnBack();
-        });
+        of(this.group).pipe(
+          takeUntil(this.unSubscribe$),
+          map<GroupVM, GroupAddVM>(x => x)).subscribe(rec => {
+            this.groupService.Add(rec).subscribe( () => {
+              this.returnBack();
+            });
+        });        
       }
     }
   }
 
-  delete(){
+  delete() : void {
     if(this.group.id && !this.isNew)
     {
       this.groupService.Delete(this.group.id).subscribe( () => {
@@ -131,11 +151,11 @@ export class GroupComponent implements OnInit {
     }
   }
 
-  returnBack(){
+  private returnBack() : void {
     this.router.navigate(['/']);
   }
 
-  isPrivateClick(){
+  isPrivateClick() : void {
     if(!this.group.isPrivate){
       this.userSearchKey = "";
       this.filteredUserList = [];
@@ -143,8 +163,8 @@ export class GroupComponent implements OnInit {
     }
   }
 
-  searchUser(){    
-    if(this.userList && this.userList.length>0){
+  searchUser() : void {    
+    if(this.userList && this.userList.length > 0){
       this.filteredUserList = this.userList.filter(a => 
         (a.userName.includes(this.userSearchKey) || a.displayName.includes(this.userSearchKey))
         && (this.group.users == null || !this.group.users.some(x => x == a.id)));
@@ -155,7 +175,7 @@ export class GroupComponent implements OnInit {
     }
   }
 
-  addUser(userId){
+  addUser(userId: string) : void {
     var user = this.userList.find(a=>a.id == userId);
 
     if(user){
@@ -169,7 +189,7 @@ export class GroupComponent implements OnInit {
     }    
   }
 
-  removeUser(userId){      
+  removeUser(userId: string) : void {      
     var user = this.userList.find(a=>a.id == userId);
 
     if(user){

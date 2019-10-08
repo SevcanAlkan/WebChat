@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { User } from '@models/User';
-import { UserService } from '@app/services/userService';
+import { UserVM } from '@app/models/User';
+import { UserService } from '@services/UserService';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AuthenticationService } from '@app/services/authenticationService';
+import { AuthenticationService } from '@services/AuthenticationService';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-profile',
@@ -10,14 +12,15 @@ import { AuthenticationService } from '@app/services/authenticationService';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
-
-  private user:User = new User();//It stores user data of current or which user id passed via route param.
+  private unSubscribe$: Subject<void>;
+  
+  private user: UserVM;//It stores user data of current or which user id passed via route param.
   private id: string; //Route parameter value
-  private isEditable:boolean = false;
+  private isEditable: boolean;
 
   constructor(private authenticationService: AuthenticationService, private userService :UserService,
     private router: Router, private route: ActivatedRoute) {
-
+      this.loadDefaultValues(); 
     }
 
   ngOnInit() {
@@ -25,23 +28,40 @@ export class ProfileComponent implements OnInit {
 
     if(this.id == null || this.id == ''){
       //Load current user
-      this.authenticationService.currentUser.subscribe(x => { 
-        this.id = x.id
-      });
+      this.authenticationService.currentUser
+        .pipe(takeUntil(this.unSubscribe$))
+        .subscribe(x => { 
+          this.id = x.id
+        });
 
       this.isEditable = true;
     }else{        
       this.isEditable = false;
     }    
 
-    this.userService.GetById(this.id).subscribe(x => {
-      if(x && x.rec){
-       this.user = x.rec;
-      }
-    });
+    this.userService.GetById(this.id)
+      .pipe(takeUntil(this.unSubscribe$))
+      .subscribe(x => {
+        if(x && x.rec){
+        this.user = x.rec;
+        }
+      });
+
+    window.onunload = () => this.ngOnDestroy();
   }
 
-  ngDestroy(){    
+  ngOnDestroy() : any {
+    this.unSubscribe$.next();
+    this.unSubscribe$.complete();
+
+    this.loadDefaultValues();
+  }
+
+  private loadDefaultValues() : void {
+    this.user = null;
+    this.isEditable = false;
+
+    this.unSubscribe$ = new Subject<void>();   
   }
 
   edit(){

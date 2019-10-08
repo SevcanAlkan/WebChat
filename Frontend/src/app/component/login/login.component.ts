@@ -3,7 +3,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 
-import { AuthenticationService } from '@app/services/authenticationService';
+import { AuthenticationService } from '@services/AuthenticationService';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -12,11 +13,13 @@ import { AuthenticationService } from '@app/services/authenticationService';
 })
 
 export class LoginComponent implements OnInit {
+  private unSubscribe$: Subject<void>; //Not used on this component
+  
   loginForm: FormGroup;
-  loading = false;
-  submitted = false;
+  loading: boolean;
+  submitted: boolean;
   returnUrl: string;
-  error = '';
+  error: string;
 
   constructor( private formBuilder: FormBuilder,
     private route: ActivatedRoute,
@@ -25,15 +28,39 @@ export class LoginComponent implements OnInit {
       if (this.authenticationService.CurrentUserValue) { 
         this.router.navigate(['/']);
       }
+
+      this.loadDefaultValues(); 
     }
 
   ngOnInit() {
-    this.loginForm = this.formBuilder.group({
-        username: ['', Validators.required],
-        password: ['', Validators.required]
-    });
+    this.loginForm = this.createFrom();
 
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+
+    window.onunload = () => this.ngOnDestroy();
+  }
+
+  ngOnDestroy() : any {
+    this.unSubscribe$.next();
+    this.unSubscribe$.complete();
+
+    this.loadDefaultValues();
+  }
+
+  private loadDefaultValues() : void {
+    this.loading = false;
+    this.submitted = false;
+    this.error = '';
+    this.loginForm = this.createFrom();
+
+    this.unSubscribe$ = new Subject<void>();   
+  }
+
+  private createFrom() : FormGroup {
+    return this.formBuilder.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required]
+    });
   }
 
   get f() { return this.loginForm.controls; }

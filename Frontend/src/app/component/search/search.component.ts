@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { MessageSearchVM } from '@models/message';
-import { SearchService } from '@app/services/searchService';
+import { MessageSearchVM } from '@models/Message';
+import { SearchService } from '@services/SearchService';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Group } from '@models/Group';
+import { GroupVM } from '@models/Group';
 import { UserListVM } from '@models/User';
-import { GroupService } from '@app/services/groupService';
-import { UserService } from '@app/services/userService';
+import { GroupService } from '@services/GroupService';
+import { UserService } from '@services/UserService';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-search',
@@ -13,15 +15,18 @@ import { UserService } from '@app/services/userService';
   styleUrls: ['./search.component.css']
 })
 export class SearchComponent implements OnInit {
+  private unSubscribe$: Subject<void>;
+  
+  private searchResult: MessageSearchVM[];
+  private searchText: string;
 
-  private searchResult: MessageSearchVM[] = [];
-  private searchText: string = "";
-
-  private GroupList: Group[] = []; 
-  private UserList: UserListVM[] = [];  
+  private GroupList: GroupVM[]; 
+  private UserList: UserListVM[];  
   
   constructor(private searchService :SearchService, private router: Router, private route: ActivatedRoute,
-    private userService: UserService, private groupService :GroupService) { }
+    private userService: UserService, private groupService :GroupService) { 
+      this.loadDefaultValues(); 
+    }
 
   ngOnInit() {
     this.searchText = this.route.snapshot.paramMap.get('key') || "";
@@ -33,22 +38,42 @@ export class SearchComponent implements OnInit {
     this.loadUsers();
     this.loadGroups();
 
-    this.searchService.Get(this.searchText).subscribe(x => {
-      if(x && x.length > 0){
-        
-        x.forEach((item) => {
-          this.searchResult.push(item);
-          console.log(item);
-        });
-      }            
-    });
+    this.searchService.Get(this.searchText)
+      .pipe(takeUntil(this.unSubscribe$))
+      .subscribe(x => {
+        if(x && x.length > 0){
+          
+          x.forEach((item) => {
+            this.searchResult.push(item);
+            console.log(item);
+          });
+        }            
+      });
+
+    window.onunload = () => this.ngOnDestroy();
   }
 
-  returnBack(){
+  ngOnDestroy() : any {
+    this.unSubscribe$.next();
+    this.unSubscribe$.complete();
+
+    this.loadDefaultValues();
+  }
+
+  private loadDefaultValues() : void {
+    this.searchResult = [];
+    this.searchText = "";
+    this.GroupList = [];
+    this.UserList = [];
+
+    this.unSubscribe$ = new Subject<void>();   
+  }
+
+  private returnBack() : void {
     this.router.navigate(['/']);
   }
 
-  getGroupName(id){
+  getGroupName(id: string) : string {
     var group = this.GroupList.find(item=>item.id===id);
     if(group){
       return group.name;
@@ -57,7 +82,7 @@ export class SearchComponent implements OnInit {
     }
   }
 
-  getUserName(id){
+  getUserName(id: string) : string{
     var user = this.UserList.find(item=>item.id===id);
     if(user){
       return user.displayName;
@@ -66,25 +91,29 @@ export class SearchComponent implements OnInit {
     }
   }
 
-  loadUsers(){
+  private loadUsers() : void{
     this.UserList = [];
 
-    this.userService.getUserList().subscribe(x => { 
-      x.forEach((item: UserListVM) => {        
-          this.UserList.push(item);      
+    this.userService.getUserList()
+      .pipe(takeUntil(this.unSubscribe$))
+      .subscribe(x => { 
+        x.forEach((item: UserListVM) => {        
+            this.UserList.push(item);      
+        });      
       });      
-    });      
   }
   
-  loadGroups(){
-    this.groupService.GetAll().subscribe(x => {
-      x.forEach(item=>{
-        var group = new Group();
-        group.id = item.id;
-        group.name = item.name;
-        
-        this.GroupList.push(group);
-      })
-    });
+  private loadGroups() : void {
+    this.groupService.GetAll()
+      .pipe(takeUntil(this.unSubscribe$))
+      .subscribe(x => {
+        x.forEach(item=>{
+          var group = new GroupVM();
+          group.id = item.id;
+          group.name = item.name;
+          
+          this.GroupList.push(group);
+        })
+      });
   } 
 }

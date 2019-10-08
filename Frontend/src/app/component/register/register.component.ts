@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
-import { UserRegisterVM, User, UserUpdateVM } from '@models/User';
+import { UserRegisterVM, UserVM, UserUpdateVM } from '@app/models/User';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AuthenticationService } from '@app/services/authenticationService';
-import { UserService } from '@app/services/userService';
+import { AuthenticationService } from '@services/AuthenticationService';
+import { UserService } from '@services/UserService';
+import { Subject, Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-register',
@@ -11,28 +13,31 @@ import { UserService } from '@app/services/userService';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-  private user: UserRegisterVM = new UserRegisterVM();
-  private userRec: UserUpdateVM = new UserUpdateVM();
-  private comparePassword: string = '';
-  private id:string;
+  private unSubscribe$: Subject<void>;
+
+  private user: UserRegisterVM;
+  private userRec: UserUpdateVM;
+  private comparePassword: string;
+  private id: string;
   private alreadyRegistredUser: boolean;
-  private submitted = false;
+  private submitted;
 
   private passwordValid: RegExp;
   private registerForm: FormGroup;  
 
   constructor(private router: Router, private authenticationService: AuthenticationService,
-    private userService: UserService, private route: ActivatedRoute, private fb: FormBuilder) { 
-      this.alreadyRegistredUser = false;
-      this.passwordValid = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])");
-      this.registerForm = this.createFrom();
+    private userService: UserService, private route: ActivatedRoute, private fb: FormBuilder) {       
+      
+      this.loadDefaultValues(); 
   }
   
   ngOnInit() {   
     this.id = this.route.snapshot.paramMap.get('id') || null; 
 
     if(this.id != null && this.id != ''){
-      this.userService.GetById(this.id).subscribe(x => {
+      this.userService.GetById(this.id)
+      .pipe(takeUntil(this.unSubscribe$))
+      .subscribe(x => {
         if(x && x.rec){
           this.userRec = x.rec;            
 
@@ -52,6 +57,36 @@ export class RegisterComponent implements OnInit {
 
       this.alreadyRegistredUser = true;
     } 
+
+    window.onunload = () => this.ngOnDestroy();
+  }
+
+  ngOnDestroy() : any {
+    this.unSubscribe$.next();
+    this.unSubscribe$.complete();
+
+    this.alreadyRegistredUser = null;
+    this.passwordValid = null;
+    this.registerForm = this.createFrom();
+
+    this.user = null;
+    this.userRec = null;
+    this.comparePassword = null;
+    this.submitted = null;
+
+    this.unSubscribe$ = null;   
+  }
+  private loadDefaultValues() : void {
+    this.alreadyRegistredUser = false;
+    this.passwordValid = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])");
+    this.registerForm = this.createFrom();
+
+    this.user = new UserRegisterVM();
+    this.userRec = new UserUpdateVM();
+    this.comparePassword = '';
+    this.submitted = false;
+
+    this.unSubscribe$ = new Subject<void>();  
   }
 
   get f() { return this.registerForm.controls; }
@@ -91,9 +126,11 @@ export class RegisterComponent implements OnInit {
       if(userName.value.length > 4
         && ((this.alreadyRegistredUser && this.userRec && this.userRec.userName != userName.value) 
         || !this.alreadyRegistredUser)){
-        this.userService.isUserNameExist(userName.value).subscribe(x =>  {       
-          return x ? userName.setErrors({ isTaken: true }) : null;
-        });      
+          this.userService.isUserNameExist(userName.value)
+          .pipe(takeUntil(this.unSubscribe$))
+          .subscribe(x =>  {       
+            return x ? userName.setErrors({ isTaken: true }) : null;
+          });      
       }else{
         return null;
       } 
@@ -136,9 +173,11 @@ export class RegisterComponent implements OnInit {
       this.user.userName = this.userName.value;
       this.user.status = 4;
 
-      this.authenticationService.register(this.user).subscribe( () => {
-        this.returnBack();
-      });
+      this.authenticationService.register(this.user)
+        .pipe(takeUntil(this.unSubscribe$))
+        .subscribe( () => {
+          this.returnBack();
+        });
     }else{
       
       this.userRec.about = this.about.value;
@@ -148,9 +187,11 @@ export class RegisterComponent implements OnInit {
       this.userRec.userName = this.userName.value;
       this.userRec.oldPassword = this.oldPassword.value;
       
-      this.userService.Update(this.userRec).subscribe(() => {
-        this.returnBack();
-      })
+      this.userService.Update(this.userRec, this.id)
+        .pipe(takeUntil(this.unSubscribe$))
+        .subscribe(() => {
+          this.returnBack();
+        });
     }
 
     this.submitted = false;

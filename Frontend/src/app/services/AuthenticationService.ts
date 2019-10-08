@@ -4,19 +4,19 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map,tap } from 'rxjs/operators';
 
 import { environment } from '@environments/environment';
-import { User, UserLoginVM, UserRegisterVM } from '@models/User';
+import { UserVM, UserLoginVM, UserRegisterVM } from '@app/models/User';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
-    private currentUserSubject: BehaviorSubject<User>;
-    public currentUser: Observable<User>;
+    private currentUserSubject: BehaviorSubject<UserVM>;
+    public currentUser: Observable<UserVM>;
 
     constructor(private http: HttpClient) {
-        this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));
+        this.currentUserSubject = new BehaviorSubject<UserVM>(JSON.parse(localStorage.getItem('currentUser')));
         this.currentUser = this.currentUserSubject.asObservable();
     }
 
-    public get CurrentUserValue() : User {
+    public get CurrentUserValue() : UserVM {
         return this.currentUserSubject.value;
     }
 
@@ -25,8 +25,8 @@ export class AuthenticationService {
         vm.UserName = username;
         vm.PasswordHash = password;
 
-        let headers = new HttpHeaders({ 'Content-Type': 'application/json' }); 
-        var result = this.http.post<User>(`${environment.apiUrl}/api/user/createtoken`, vm, { headers: headers }) 
+        let headers = new HttpHeaders({ 'Content-Type': 'application/json', "api-version": environment.defaultAPIVersion }); 
+        var result = this.http.post<UserVM>(`${environment.apiUrl}/api/user/createtoken`, vm, { headers: headers }) 
         .pipe(map(user => {            
             localStorage.setItem('currentUser', JSON.stringify(user));
             this.currentUserSubject.next(user);     
@@ -45,7 +45,7 @@ export class AuthenticationService {
     }
 
     register(user:UserRegisterVM){      
-        let headers = new HttpHeaders({ 'Content-Type': 'application/json' }); 
+        let headers = new HttpHeaders({ 'Content-Type': 'application/json', "api-version": environment.defaultAPIVersion }); 
         var result = this.http.post<UserRegisterVM>(`${environment.apiUrl}/api/user/register`, user, { headers: headers }) 
         .pipe(map(user => {              
             catchError(this.handleError);

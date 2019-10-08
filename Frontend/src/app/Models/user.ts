@@ -1,5 +1,5 @@
 import { BaseVM, AddVM, UpdateVM } from '@app/common/baseModel';
-import { Guid } from '@app/common/guid';
+import { Guid } from '@app/common/Guid';
 
 export class UserVM extends BaseVM{
     public userName: string;

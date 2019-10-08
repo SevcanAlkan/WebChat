@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';  
-import { BaseService } from '@app/common/baseService';
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';  
-import { Message } from '@models/message';
+import { BaseServiceCRUD } from '@app/common/BaseServiceCRUD';
+import { HttpClient } from '@angular/common/http';  
+import { MessageVM, MessageAddVM, MessageUpdateVM } from '@app/models/Message';
 import { map, catchError } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
@@ -10,16 +10,17 @@ import { Observable } from 'rxjs';
 })  
   
 @Injectable()
-export class MessageService extends BaseService<Message, Message> {
+export class MessageService extends BaseServiceCRUD<MessageVM, MessageAddVM, MessageUpdateVM> {
+
   constructor(http: HttpClient) {
     super(http, "message");    
   }
 
-  public getByGroupId(groupId: string) : Observable<Message[]> {
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });  
+  public getByGroupId(groupId: string) : Observable<MessageVM[]> {
+    let headers = this.getHeaders();
 
-    return this.http.get<Message[]>(this.apiUrl + "GetByGroupId?groupId=" + groupId, { headers: headers })
-    .pipe(map((data: Message[]) => data),  
+    return this.http.get<MessageVM[]>(this.apiUrl + "GetByGroupId?groupId=" + groupId, { headers: headers })
+    .pipe(map((data: MessageVM[]) => data),  
         catchError(this.handleError)  
     );  
   }  

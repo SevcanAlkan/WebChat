@@ -11,17 +11,18 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './component/login/login.component';
 import { ProfileComponent } from './component/profile/profile.component';
 import { HomeComponent } from './component/home/home.component';
+import { SearchComponent } from './component/search/search.component';
+import { GroupComponent } from './component/group/group.component';
+import { RegisterComponent } from './component/register/register.component';
 
 //Helpers
 import { JwtInterceptor } from './helpers/jwtInterceptor';
 import { ErrorInterceptor } from './helpers/errorInterceptor';
 
 //Services
-import { ChatService } from '@app/services/chatService';
-import { GroupComponent } from './component/group/group.component';
-import { RegisterComponent } from './component/register/register.component';
-import { SearchService } from './services/searchService';
-import { SearchComponent } from './component/search/search.component';
+import { ChatService } from '@services/ChatService';
+import { SearchService } from '@services/SearchService';
+
 
 @NgModule({
   declarations: [

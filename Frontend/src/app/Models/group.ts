@@ -5,6 +5,7 @@ export class GroupVM extends BaseVM{
     public description: string; 
     public isMain: boolean;
     public isPrivate: boolean;
+    public users: string[];
 }
 
 export class GroupAddVM extends AddVM{

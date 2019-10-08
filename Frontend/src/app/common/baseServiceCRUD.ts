@@ -1,62 +1,63 @@
 import { Injectable } from '@angular/core';  
-import { Observable, throwError } from 'rxjs';
-import { catchError, tap, map } from 'rxjs/operators';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';  
-import { BaseVM } from './baseModel';
+import { Observable, fromEvent } from 'rxjs';
+import { catchError, tap, map, retry, delay } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from '@angular/common/http';  
+import { BaseVM, AddVM, UpdateVM } from './baseModel';
 import { APIResultVM } from '@app/common/APIResultVM';
 import { BaseService } from './baseService';
+import { APIVersion } from '@environments/APIVersion';
 
 @Injectable({  
     providedIn: 'root'  
 })  
-  
-//Add API version header!
 
-export abstract class BaseServiceCRUD<T extends BaseVM, U extends BaseVM> extends BaseService{  
+export abstract class BaseServiceCRUD<V extends BaseVM, A extends AddVM, U extends UpdateVM> extends BaseService{  
   
     constructor(protected http: HttpClient, _controllerName: string) {  
-        super(http,_controllerName);
+        super(http, _controllerName);
+    }      
+
+    public GetAll(apiVersion: APIVersion = this.apiVerison) : Observable<V[]> {        
+        let headers = this.getHeaders(apiVersion);
+        
+        return this.http.get<V[]>(this.apiUrl + "get", { headers: headers })            
+            .pipe(
+                map((data: V[]) => data),  
+                catchError(this.handleError), 
+                retry(3), 
+                delay(1000)
+            );  
     }  
   
-    public GetAll() : Observable<T[]> {  
-        let headers = new HttpHeaders({ 'Content-Type': 'application/json' });   
-        return this.http.get<T[]>(this.apiUrl + "get", { headers: headers })
-        .pipe(map((data: T[]) => data),  
-            catchError(this.handleError)  
-        );  
+    public GetById(id: string, apiVersion: APIVersion = this.apiVerison) : Observable<APIResultVM> {
+        let headers = this.getHeaders(apiVersion);       
+        return this.http.get<APIResultVM>(this.apiUrl + "GetById", { params: { "id": id }, headers: headers })
+            .pipe(tap(data => data),  
+                catchError(this.handleError)  
+            );  
     }  
   
-    public GetById(id) : Observable<APIResultVM>{  
-        var url = this.apiUrl + 'GetById?id=' + id;  
-        let headers = new HttpHeaders({ 'Content-Type': 'application/json' });  
-        return this.http.get<APIResultVM>(url, { headers: headers }).pipe(tap(data => data),  
-            catchError(this.handleError)  
-        );  
-    }  
-  
-    public Add(model: T) {  
-        let headers = new HttpHeaders({ 'Content-Type': 'application/json' });         
-        return this.http.post<any>(this.apiUrl + "add", model, { headers: headers })  
+    public Add(model: A, apiVersion: APIVersion = this.apiVerison) : Observable<APIResultVM> {         
+        let headers = this.getHeaders(apiVersion);        
+        return this.http.post<APIResultVM>(this.apiUrl + "add", model, { headers: headers })  
             .pipe(  
                 catchError(this.handleError)  
             );  
     }  
 
-    public Update(model: U) {  
-        var url = this.apiUrl + 'update?id=' + model.id;  
-        let headers = new HttpHeaders({ 'Content-Type': 'application/json' });   
-        return this.http.put<any>(url, model, { headers: headers })  
+    public Update(model: U, id: string, apiVersion: APIVersion = this.apiVerison) : Observable<APIResultVM> {  
+        let headers = this.getHeaders(apiVersion);  
+        return this.http.put<APIResultVM>(this.apiUrl + "update", model, { params: { "id": id }, headers: headers })  
             .pipe(  
                 catchError(this.handleError)  
             );  
     }  
   
-    public Delete(id) {  
-        var url = this.apiUrl + 'delete?id=' + id;  
-        let headers = new HttpHeaders({ 'Content-Type': 'application/json' });   
-        return this.http.delete<any>(url, { headers: headers })  
+    public Delete(id: string, apiVersion: APIVersion = this.apiVerison) : Observable<APIResultVM> {  
+        let headers = this.getHeaders(apiVersion);
+        return this.http.delete<APIResultVM>(this.apiUrl + "delete", { params: { "id": id }, headers: headers })  
             .pipe(  
                 catchError(this.handleError)  
             );  
-    }  
+    }      
 }  
