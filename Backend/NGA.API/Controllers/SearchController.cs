@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using NGA.Data.Service;
 using NGA.Domain;
 
-namespace NGA.API.Controllers
+namespace NGA.API.Controllers.V2
 {
     public class SearchController : DefaultApiController
     {

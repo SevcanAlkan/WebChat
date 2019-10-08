@@ -1,36 +1,40 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable, Subject } from 'rxjs';
 
-import { Message, TempMessage } from '@models/message';
-import { Group } from '@models/Group';
-import { User, UserListVM } from '@models/User';
+import { MessageVM, TempMessage } from '@app/models/Message';
+import { GroupVM } from '@app/models/Group';
+import { UserVM , UserListVM } from '@app/models/User';
 
 import { UserService } from '@services/UserService';
 import { GroupService } from '@services/GroupService';
 import { AuthenticationService } from '@services/AuthenticationService';
 import { ChatService } from '@services/ChatService';
 import { MessageService } from '@services/MessageService';
-import { Observable } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit  {  
-  private CurrentUser: User; //Current logged in user.
-  CurrentGroup: Group = new Group; //Already selected group.
+  private unSubscribe$: Subject<void>;
+  
+  private CurrentUser: UserVM; //Current logged in user.
+  CurrentGroup: GroupVM; //Already selected group.
 
-  private GroupList: Group[] = []; 
-  private UserList: UserListVM[] = [];  
+  private GroupList: GroupVM[]; 
+  private UserList: UserListVM[];  
 
-  messages: Message[] = [];  
-  private tempMessages: TempMessage[] = []; //Which messages have written but didn't send.
-  tempMessage: string = ""; //Current message text, from input.
-  private message: Message; //Message model for send to API.
+  messages: MessageVM[];  
+  private tempMessages: TempMessage[]; //Which messages have written but didn't send.
+  tempMessage: string; //Current message text, from input.
+  private message: MessageVM; //Message model for send to API.
 
-  private searchText: string = "";
+  private searchText: string;
 
-  NavbarToggle = true;
+  NavbarToggle: boolean;
 
   constructor(private _Route: Router,
     private authenticationService: AuthenticationService,
@@ -39,13 +43,16 @@ export class HomeComponent implements OnInit  {
     private messageService: MessageService,
     private chatService: ChatService,
     private _ngZone: NgZone) {
-    this.authenticationService.currentUser.subscribe(x => this.CurrentUser = x); 
-    this.chatService.openConnection(this.CurrentUser.id);
-    this.subscribeToEvents();
+      this.loadDefaultValues();
+
+      this.authenticationService.currentUser.pipe(takeUntil(this.unSubscribe$)).subscribe(x => this.CurrentUser = x); 
+      this.chatService.OpenConnection(this.CurrentUser.id);
+      this.subscribeToEvents();    
   }
 
   ngOnInit() {
-    this.chatService.hubIsReady.subscribe(()=>{
+    this.chatService.HubIsReady.pipe(takeUntil(this.unSubscribe$))
+    .subscribe(()=>{
       //Load groups
       this.getGroups();
       //Load old messages
@@ -54,7 +61,29 @@ export class HomeComponent implements OnInit  {
       this.loadUsers();
     });
     
+    window.onunload = () => this.ngOnDestroy();
   } 
+
+  ngOnDestroy() : any {
+    this.unSubscribe$.next();
+    this.unSubscribe$.complete();
+
+    this.loadDefaultValues();   
+  }
+
+  private loadDefaultValues() : void {    
+    this.CurrentGroup = new GroupVM();
+    this.GroupList = [];
+    this.UserList = [];
+    this.messages = [];
+    this.tempMessages = [];
+    this.tempMessage = "";
+    this.message = new MessageVM();
+    this.searchText = "";
+    this.NavbarToggle = true;
+
+    this.unSubscribe$ = new Subject<void>();   
+  }
 
   logout() {
     this.authenticationService.logout();
@@ -63,7 +92,7 @@ export class HomeComponent implements OnInit  {
 
   //Functions for load data
   getGroups(){
-    var groups: Observable<Group[]>;
+    var groups: Observable<GroupVM[]>;
 
     if(this.CurrentUser.isAdmin){
       groups = this.groupService.GetAll();
@@ -73,7 +102,7 @@ export class HomeComponent implements OnInit  {
 
     groups.forEach(data => {
       data.forEach(item=>{
-        var group = new Group();
+        var group = new GroupVM();
         group.id = item.id;
         group.name = item.name;
         group.description = item.description;
@@ -165,10 +194,10 @@ export class HomeComponent implements OnInit  {
     
     this.messages = [];
     this.CurrentGroup = group;  
-    this.chatService.updateGroupId(this.CurrentGroup.id);      
+    this.chatService.UpdateGroupId(this.CurrentGroup.id);      
     this.getMessages();
   }
-  sendMessage(message: Message) {  
+  sendMessage(message: MessageVM) {  
      if (this.tempMessage) {  
       var text = "";
       if(this.tempMessage.length >= 500){
@@ -177,7 +206,7 @@ export class HomeComponent implements OnInit  {
         text = this.tempMessage;
       }
       
-      this.message = new Message();  
+      this.message = new MessageVM();  
       this.message.userId = this.CurrentUser.id; 
       this.message.groupId = this.CurrentGroup.id;  
       this.message.type = "sent";  
@@ -185,7 +214,7 @@ export class HomeComponent implements OnInit  {
       this.message.date = new Date(); 
       
       this.messages.push(this.message);  
-      this.chatService.sendMessage(this.message);  
+      this.chatService.SendMessage(this.message);  
 
       //Clear temp message
       this.tempMessage = "";  
@@ -198,18 +227,20 @@ export class HomeComponent implements OnInit  {
     this.tempMessages = this.tempMessages.filter(obj => obj !== _sentMessage);    
   }
 
-  private subscribeToEvents () {  
-    this.chatService.connectionEstablished.subscribe(x => {
-      if(x){
-        this.chatService.messageReceived.subscribe((message: Message) => {  
-          this._ngZone.run(() => {  
-            if (message.userId !== this.CurrentUser.id) {  
-              message.type = "received";  
-              this.messages.push(message);  
-            }  
-          });  
-        }); 
-      }        
+  subscribeToEvents () {  
+    this.chatService.ConnectionEstablished.pipe(takeUntil(this.unSubscribe$))
+      .subscribe(x => {
+        if(x){
+          this.chatService.MessageReceived.pipe(takeUntil(this.unSubscribe$))
+            .subscribe((message: MessageVM) => {  
+              this._ngZone.run(() => {  
+                if (message.userId !== this.CurrentUser.id) {  
+                  message.type = "received";  
+                  this.messages.push(message);  
+                }  
+              });  
+          }); 
+        }        
     }); 
   };
 

@@ -1,21 +1,21 @@
 import { Injectable } from '@angular/core';
-import { MessageVM } from '@models/message';
+import { MessageSearchVM } from '@app/models/Message';
 import { Observable } from 'rxjs';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
-import { environment } from '@environments/environment';
+import { BaseService } from '@app/common/baseService';
 
 @Injectable()
-export class SearchService {
+export class SearchService extends BaseService {
     protected apiUrl = "";  
 
-    constructor(protected http: HttpClient) {          
-        this.apiUrl = environment.apiUrl + "/api/search/";
+    constructor(protected http: HttpClient) { 
+        super(http, "search");         
     }  
 
-    public Get(key) : Observable<MessageVM[]>{  
+    public Get(key: string) : Observable<MessageSearchVM[]> {  
         var url = this.apiUrl + 'Get?key=' + key;  
-        let headers = new HttpHeaders({ 'Content-Type': 'application/json' });  
-        return this.http.get<MessageVM[]>(url, { headers: headers }).pipe(tap(data => data));  
+        let headers = this.getHeaders();
+        return this.http.get<MessageSearchVM[]>(url, { headers: headers }).pipe(tap(data => data));  
     }  
 }

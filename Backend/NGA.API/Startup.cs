@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -154,6 +155,20 @@ namespace NGA.API
                 options.EnableDetailedErrors = true;
             });
             #endregion
+
+            #region Versioning
+
+            services.AddApiVersioning(o =>
+            {
+                o.ReportApiVersions = true;
+                o.AssumeDefaultVersionWhenUnspecified = true;
+                o.DefaultApiVersion = new ApiVersion(2, 0);
+                o.ApiVersionReader =
+        ApiVersionReader.Combine(new QueryStringApiVersionReader(),
+                                    new HeaderApiVersionReader("api-version"));
+            });
+
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -183,11 +198,11 @@ namespace NGA.API
 
             app.UseAuthentication();
 
-            app.UseMvc(options =>
-            {
-                options.MapRoute(name: "DefaultApi",
-                template: "api/{controller}/{id?}");
-            });
+            app.UseMvc(); // options =>
+            //{
+            //    options.MapRoute(name: "DefaultApi",
+            //    template: "api/{controller}/{id?}");
+            //});
         }
     }
 }

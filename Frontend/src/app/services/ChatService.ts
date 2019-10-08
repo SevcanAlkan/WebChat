@@ -1,25 +1,30 @@
 import { EventEmitter, Injectable } from '@angular/core';  
 import { HubConnection, HubConnectionBuilder, LogLevel, HubConnectionState } from '@aspnet/signalr';  
-import { Message } from '@models/message';  
+import { MessageVM } from '@app/models/Message';  
 import { environment } from '@environments/environment';
 import { Observable, Subject } from 'rxjs';
-import { promise } from 'protractor';
   
 @Injectable()  
 export class ChatService {  
-  messageReceived = new EventEmitter<Message>();  
-  connectionEstablished = new EventEmitter<Boolean>();  
-  hubIsReady = new Subject<boolean>();
+  MessageReceived: EventEmitter<MessageVM>;  
+  ConnectionEstablished: EventEmitter<Boolean>;  
+  HubIsReady: Subject<boolean>;
   
-  private groupId = "";
-  private userId = "";
-  private connectionIsEstablished = false;  
+  private groupId: string;
+  private userId: string;
+  private connectionIsEstablished: boolean;  
   private _hubConnection: HubConnection;  
   
-  constructor() {  
+  constructor() { 
+    this.MessageReceived = new EventEmitter<MessageVM>();
+    this.ConnectionEstablished = new EventEmitter<Boolean>();
+    this.HubIsReady = new Subject<boolean>();
+    this.groupId = "";
+    this.userId = "";
+    this.connectionIsEstablished = false;    
   }  
   
-  openConnection(userId){
+  OpenConnection(userId: string = "") : void {
     this.userId = userId;
 
     if(this._hubConnection && this._hubConnection.state == HubConnectionState.Connected){
@@ -34,12 +39,15 @@ export class ChatService {
       this.startConnection();  
     }
   }
+  CloseConnection() : void {
+
+  }
 
   IsConnected() : boolean{
     return this._hubConnection && this._hubConnection.state == HubConnectionState.Connected;
   }
 
-  updateGroupId(_groupId=""){
+  UpdateGroupId(_groupId: string = "") : void {
     if( _groupId == null || _groupId == ""){
       return;
     }
@@ -54,36 +62,36 @@ export class ChatService {
     }
   }
 
-  private addToGroup() { 
+  private addToGroup() : void { 
     this._hubConnection.invoke('AddToGroup', this.groupId);  
   }  
 
-  private removeFromGroup() {  
+  private removeFromGroup() : void {  
     this._hubConnection.invoke('RemoveFromGroup', this.groupId);    
   } 
 
-  sendMessage(message: Message) {  
+  SendMessage(message: MessageVM) : void {  
     this._hubConnection.invoke('SendMessage', message);  
   }  
 
-  sendPrivateMessage(message: Message, userId:string) {  
+  SendPrivateMessage(message: MessageVM, userId:string) : void {  
     this._hubConnection.invoke('SendPrivateMessage', message, userId);  
   }  
   
-  private createConnection() {  
+  private createConnection() : void {  
     this._hubConnection = new HubConnectionBuilder()
     .configureLogging(LogLevel.Information)
     .withUrl(environment.apiUrl + "/chatHub?UserId=" + this.userId)
     .build();
   }  
   
-  private startConnection(): void {  
+  private startConnection() : void {  
     this._hubConnection  
       .start()  
       .then(() => {          
         this.connectionIsEstablished = true;   
-        this.connectionEstablished.emit(true);      
-        this.hubIsReady.next(true);
+        this.ConnectionEstablished.emit(true);      
+        this.HubIsReady.next(true);
       })  
       .catch(err => {  
         console.log('Error while establishing connection, retrying...' + err.toString());  
@@ -93,7 +101,7 @@ export class ChatService {
   
   private registerOnServerEvents(): void {  
     this._hubConnection.on('ReceiveMessage', (data: any) => {  
-        this.messageReceived.emit(data);  
+        this.MessageReceived.emit(data);  
     });  
   }  
 }    

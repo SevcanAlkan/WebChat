@@ -39,6 +39,11 @@ namespace NGA.Data
             modelBuilder.ApplyConfiguration(new ParameterMap());
             modelBuilder.ApplyConfiguration(new UserMap());
 
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+
             base.OnModelCreating(modelBuilder);
         }
 

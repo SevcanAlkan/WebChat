@@ -22,7 +22,7 @@ using NGA.Data.Service;
 using NGA.Data.ViewModel;
 using NGA.Domain;
 
-namespace NGA.API.Controllers
+namespace NGA.API.Controllers.V2
 {
     public class UserController : DefaultApiController
     {
@@ -127,7 +127,7 @@ namespace NGA.API.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [AllowAnonymous]      
         public async Task<JsonResult> CreateToken(UserLoginVM model)
         {
             var loginResult = await _signInManager.PasswordSignInAsync(model.UserName, model.PasswordHash, isPersistent: false, lockoutOnFailure: false);

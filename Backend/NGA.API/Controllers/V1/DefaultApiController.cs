@@ -13,11 +13,11 @@ using NGA.Core.Validation;
 using NGA.Data.Logger;
 using NGA.Data.SubStructure;
 
-namespace NGA.API.Controllers.V2
+namespace NGA.API.Controllers.V1
 {
     [Authorize]
     [ApiExplorerSettings(IgnoreApi = true)]
-    [ApiVersion("2.0")]
+    [ApiVersion("1.0")]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public abstract class DefaultApiController : ControllerBase

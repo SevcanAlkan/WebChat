@@ -1,30 +1,31 @@
 import { Injectable } from '@angular/core';  
-import { Group } from '@app/models/Group';
-import { BaseService } from '@app/common/baseService';
+import { BaseServiceCRUD } from '@app/common/BaseServiceCRUD';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';  
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { GroupVM, GroupAddVM, GroupUpdateVM } from '@app/models/Group';
+import { APIVersion } from '@environments/APIVersion';
 
 @Injectable({  
     providedIn: 'root'  
 })  
   
 @Injectable()
-export class GroupService extends BaseService<Group, Group> {
+export class GroupService extends BaseServiceCRUD<GroupVM, GroupAddVM, GroupUpdateVM> {
   constructor(http: HttpClient) {
     super(http, "group");    
   }
 
-  public GetByUserId(userId: string):Observable<Group[]> {  
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });   
-    return this.http.get<Group[]>(this.apiUrl + "GetByUserId?userId=" + userId, { headers: headers })
-    .pipe(map((data: Group[]) => data),  
+  public GetByUserId(userId: string, apiVersion: APIVersion = this.apiVerison) : Observable<GroupVM[]> {  
+    let headers = this.getHeaders(apiVersion);  
+    return this.http.get<GroupVM[]>(this.apiUrl + "GetByUserId?userId=" + userId, { headers: headers })
+    .pipe(map((data: GroupVM[]) => data),  
         catchError(this.handleError)  
     );  
   }  
 
-  public GetUsers(groupId: string):Observable<string[]> {  
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });   
+  public GetUsers(groupId: string, apiVersion: APIVersion = this.apiVerison) : Observable<string[]> {  
+    let headers = this.getHeaders(apiVersion);
     return this.http.get<string[]>(this.apiUrl + "GetUsers?groupId=" + groupId, { headers: headers })
     .pipe(map((data: string[]) => data),  
         catchError(this.handleError)  

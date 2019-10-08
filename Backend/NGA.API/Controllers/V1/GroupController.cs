@@ -10,9 +10,9 @@ using NGA.Data.Service;
 using NGA.Data.ViewModel;
 using NGA.Domain;
 
-namespace NGA.API.Controllers.V2
+namespace NGA.API.Controllers.V1
 {
-    [ApiVersion("2.0")]
+    [ApiVersion("1.0")]
     public class GroupController : DefaultApiCRUDController<GroupAddVM, GroupUpdateVM, GroupVM, IGroupService>
     {
         public GroupController(IGroupService service)
