@@ -9,11 +9,11 @@ import { UserVM, UserLoginVM, UserRegisterVM } from '@app/models/User';
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
     private currentUserSubject: BehaviorSubject<UserVM>;
-    public currentUser: Observable<UserVM>;
+    public CurrentUser: Observable<UserVM>;
 
     constructor(private http: HttpClient) {
         this.currentUserSubject = new BehaviorSubject<UserVM>(JSON.parse(localStorage.getItem('currentUser')));
-        this.currentUser = this.currentUserSubject.asObservable();
+        this.CurrentUser = this.currentUserSubject.asObservable();
     }
 
     public get CurrentUserValue() : UserVM {

@@ -22,6 +22,7 @@ import { ErrorInterceptor } from './helpers/errorInterceptor';
 //Services
 import { ChatService } from '@services/ChatService';
 import { SearchService } from '@services/SearchService';
+import { DataTrackingService } from './services/DataTrackingService';
 
 
 @NgModule({
@@ -45,7 +46,7 @@ import { SearchService } from '@services/SearchService';
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-    ChatService, SearchService
+    ChatService, SearchService, DataTrackingService
   ]
 })
 export class AppModule { }

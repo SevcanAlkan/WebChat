@@ -153,6 +153,9 @@ namespace NGA.API
             services.AddSignalR().AddHubOptions<ChatHub>(options =>
             {
                 options.EnableDetailedErrors = true;
+            }).AddHubOptions<DataHub>(options =>
+            {
+                options.EnableDetailedErrors = true;
             });
             #endregion
 
@@ -194,6 +197,7 @@ namespace NGA.API
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ChatHub>("/chathub");
+                routes.MapHub<ChatHub>("/datahub");
             });
 
             app.UseAuthentication();

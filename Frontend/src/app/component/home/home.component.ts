@@ -12,6 +12,7 @@ import { AuthenticationService } from '@services/AuthenticationService';
 import { ChatService } from '@services/ChatService';
 import { MessageService } from '@services/MessageService';
 import { takeUntil } from 'rxjs/operators';
+import { DataTrackingService } from '@app/services/DataTrackingService';
 
 @Component({
   selector: 'app-home',
@@ -42,24 +43,28 @@ export class HomeComponent implements OnInit  {
     private groupService : GroupService,
     private messageService: MessageService,
     private chatService: ChatService,
+    private dataTrackingService: DataTrackingService,
     private _ngZone: NgZone) {
       this.loadDefaultValues();
 
       this.authenticationService.currentUser.pipe(takeUntil(this.unSubscribe$)).subscribe(x => this.CurrentUser = x); 
       this.chatService.OpenConnection(this.CurrentUser.id);
+      this.dataTrackingService.OpenConnection();
+
       this.subscribeToEvents();    
   }
 
   ngOnInit() {
-    this.chatService.HubIsReady.pipe(takeUntil(this.unSubscribe$))
-    .subscribe(()=>{
-      //Load groups
-      this.getGroups();
-      //Load old messages
-      this.getMessages();
-      //Load info of all registered users
-      this.loadUsers();
-    });
+    this.chatService.HubIsReady
+      .pipe(takeUntil(this.unSubscribe$))
+      .subscribe(()=>{
+        //Load groups
+        this.getGroups();
+        //Load old messages
+        this.getMessages();
+        //Load info of all registered users
+        this.loadUsers();
+      });
     
     window.onunload = () => this.ngOnDestroy();
   } 
@@ -67,6 +72,9 @@ export class HomeComponent implements OnInit  {
   ngOnDestroy() : any {
     this.unSubscribe$.next();
     this.unSubscribe$.complete();
+
+    this.chatService.CloseConnection();
+    this.dataTrackingService.CloseConnection();
 
     this.loadDefaultValues();   
   }
@@ -95,7 +103,7 @@ export class HomeComponent implements OnInit  {
     var groups: Observable<GroupVM[]>;
 
     if(this.CurrentUser.isAdmin){
-      groups = this.groupService.GetAll();
+      groups = this.groupService.GroupList;
     }else{
       groups = this.groupService.GetByUserId(this.CurrentUser.id);
     }
@@ -242,6 +250,18 @@ export class HomeComponent implements OnInit  {
           }); 
         }        
     }); 
+
+    this.dataTrackingService.ConnectionEstablished.pipe(takeUntil(this.unSubscribe$))
+      .subscribe(x => {
+        if(x){
+          this.dataTrackingService.GroupUpdateReceived.pipe(takeUntil(this.unSubscribe$))
+            .subscribe((string) => {  
+              this._ngZone.run(() => {                  
+                //Call Update local records function on GroupService                
+              });  
+          }); 
+        }        
+    });
   };
 
 

@@ -8,6 +8,7 @@ import { UserListVM, UserVM } from '@app/models/User';
 import { AuthenticationService } from '@services/AuthenticationService';
 import { Observable, Subscription, Subject, of } from 'rxjs';
 import { takeUntil, map, mapTo } from 'rxjs/operators';
+import { DataTrackingService } from '@app/services/DataTrackingService';
 
 @Component({
   selector: 'app-group',
@@ -35,7 +36,8 @@ export class GroupComponent implements OnInit {
   
   constructor(private groupService : GroupService, private userService : UserService,
      private router: Router, private route: ActivatedRoute,
-     private authenticationService: AuthenticationService) { 
+     private authenticationService: AuthenticationService,
+     private dataTrackingService: DataTrackingService) { 
       this.loadDefaultValues(); 
    }
 
@@ -80,12 +82,16 @@ export class GroupComponent implements OnInit {
       this.isDeleteVisible = false;
     }  
 
+    this.dataTrackingService.OpenConnection();
+
     window.onunload = () => this.ngOnDestroy();
   }
 
   ngOnDestroy() : any {
     this.unSubscribe$.next();
     this.unSubscribe$.complete();
+
+    this.dataTrackingService.CloseConnection();
 
     this.loadDefaultValues();
   }
@@ -126,6 +132,7 @@ export class GroupComponent implements OnInit {
           takeUntil(this.unSubscribe$),
           map<GroupVM, GroupUpdateVM>(x => x)).subscribe(rec => {
           this.groupService.Update(rec, this.group.id).subscribe( () => {
+            this.SendMessageToClients();
             this.returnBack();
           });
         }); 
@@ -135,11 +142,16 @@ export class GroupComponent implements OnInit {
           takeUntil(this.unSubscribe$),
           map<GroupVM, GroupAddVM>(x => x)).subscribe(rec => {
             this.groupService.Add(rec).subscribe( () => {
+              this.SendMessageToClients();
               this.returnBack();
             });
         });        
       }
     }
+  }
+
+  private SendMessageToClients(){    
+    this.dataTrackingService.GroupUpdated(this.group.id);    
   }
 
   delete() : void {
