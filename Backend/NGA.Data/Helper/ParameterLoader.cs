@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata;
 using System.Text;
 
 namespace NGA.Data.Helper
@@ -19,9 +20,9 @@ namespace NGA.Data.Helper
             {
                 UnitOfWork unitOfWork = new UnitOfWork(context);
 
-                DbSet<Parameter> _param = context.Set<Parameter>();
+                DbSet<NGA.Domain.Parameter> _param = context.Set<NGA.Domain.Parameter>();
 
-                List<Parameter> parameters = _param.Where(a => !a.IsDeleted).ToList();
+                List<NGA.Domain.Parameter> parameters = _param.Where(a => !a.IsDeleted).ToList();
 
                 Type myType = typeof(ParameterValue);
                 foreach (var item in parameters)

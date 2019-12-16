@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using NGA.Core.EntityFramework;
 using NGA.Core.Enum;
 using System;
 using System.Collections.Generic;

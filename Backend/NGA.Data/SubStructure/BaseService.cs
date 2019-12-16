@@ -70,7 +70,7 @@ namespace NGA.Data.SubStructure
                 if (Validation.IsNullOrEmpty(id))
                     return null;
 
-                return Mapper.Map<G>(await uow.Repository<D>().GetByID(id));
+                return mapper.Map<G>(await uow.Repository<D>().GetByID(id));
             }
             catch (Exception e)
             {
@@ -100,7 +100,7 @@ namespace NGA.Data.SubStructure
         {
             try
             {
-                return Repository.Query().ProjectTo<G>().ToList();
+                return mapper.ProjectTo<G>(Repository.Query()).ToList();
             }
             catch (Exception e)
             {
@@ -112,7 +112,7 @@ namespace NGA.Data.SubStructure
         {
             try
             {
-                return Repository.Query().Where(expr).ProjectTo<G>().ToList();
+                return mapper.ProjectTo<G>(Repository.Query().Where(expr)).ToList();
             }
             catch (Exception e)
             {
