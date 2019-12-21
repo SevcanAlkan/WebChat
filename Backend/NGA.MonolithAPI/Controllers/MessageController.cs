@@ -20,6 +20,7 @@ namespace NGA.MonolithAPI.Controllers.V2
 
         }
 
+        //Return messages of a group, which group ID sent
         public virtual JsonResult GetByGroupId(Guid groupId)
         {
             try

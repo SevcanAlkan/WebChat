@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -22,12 +21,16 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using NGA.Core;
 using NGA.Data;
+using NGA.Data.Helper;
 using NGA.Data.Service;
 using NGA.Data.SubStructure;
 using NGA.Domain;
 using NGA.MonolithAPI.Config;
 using NGA.MonolithAPI.Fillter;
+using NGA.MonolithAPI.Helper;
 using NGA.MonolithAPI.SignalR;
+using Serilog;
+using Serilog.Sinks.Elasticsearch;
 
 namespace NGA.MonolithAPI
 {
@@ -40,22 +43,16 @@ namespace NGA.MonolithAPI
             StaticValues.HostAddress = (IPAddress.Loopback.ToString() + ":" + Configuration.GetValue<int>("Host:Port")).ToString();
             StaticValues.HostSSLAddress = (IPAddress.Loopback.ToString() + ":" + Configuration.GetValue<int>("Host:PortSSL")).ToString();
 
-            string hostMachineIpAddress = "127.0.0.1";
+            string elasticUri = Configuration["ElasticConfiguration:Uri"].Replace("{HostMachineIpAddress}", GetHostMachineIP.Get()); 
+            StaticValues.DBConnectionString = Configuration.GetConnectionString("DefaultConnection").Replace("{HostMachineIpAddress}", GetHostMachineIP.Get());
 
-            try
-            {
-                hostMachineIpAddress = Dns.GetHostAddresses(new Uri("http://docker.for.win.localhost").Host)[0].ToString();
-            }
-            catch (SocketException es)
-            {
-            }
-            catch (Exception e)
-            {
-            }
-            finally
-            {
-                StaticValues.DBConnectionString = Configuration.GetConnectionString("DefaultConnection").Replace("{HostMachineIpAddress}", hostMachineIpAddress);
-            }
+            Serilog.Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri))
+                {
+                    AutoRegisterTemplate = true,
+                })
+                .CreateLogger();
         }
 
         public IConfiguration Configuration { get; }
@@ -71,6 +68,15 @@ namespace NGA.MonolithAPI
                 .AllowCredentials()
                 .WithOrigins("http://localhost:4200", "http://192.168.0.102:4200")
                  ));
+            #endregion
+
+            #region Swagger 
+
+            services.AddSwaggerGen(s =>
+            {
+                s.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo() { Title = "Next Generation API", Version = "v1" });
+            });
+
             #endregion
 
             #region Add Entity Framework and Identity Framework
@@ -121,6 +127,23 @@ namespace NGA.MonolithAPI
                //        return Task.CompletedTask;
                //    }
                //};
+
+               //services.AddSwaggerGen(c =>
+               //{
+               //    c.SwaggerDoc("v1", new Info { Title = "Values Api", Version = "v1" });
+               //    c.AddSecurityDefinition("Bearer",
+               //           new ApiKeyScheme
+               //           {
+               //               In = "header",
+               //               Name = "Authorization",
+               //               Type = "apiKey"
+               //           });
+               //    c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> {
+               //     { "Bearer", Enumerable.Empty<string>() },
+               //     });
+
+               //});
+
            });
             #endregion
 
@@ -184,9 +207,9 @@ namespace NGA.MonolithAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, NGADbContext dbContext, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, NGADbContext dbContext, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            Data.Helper.ParameterHelperLoder.LoadStaticValues(dbContext);
+            ParameterHelperLoder.LoadStaticValues(dbContext);
 
             if (env.IsDevelopment())
             {
@@ -194,6 +217,8 @@ namespace NGA.MonolithAPI
             }
 
             //app.UseHttpsRedirection();
+
+            loggerFactory.AddSerilog();
 
             app.UseRouting();
 
@@ -210,6 +235,11 @@ namespace NGA.MonolithAPI
             //    routes.MapHub<ChatHub>("/chathub");  //https://stackoverflow.com/questions/43181561/signalr-in-asp-net-core-1-1
             //});
 
+            app.UseSwagger();
+            app.UseSwaggerUI(s =>
+            {
+                s.SwaggerEndpoint("/help/v1/swagger.json", "NGA V1");
+            });
 
             app.UseEndpoints(endpoints =>
             {
