@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -20,7 +22,6 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using NGA.Core;
 using NGA.Data;
-using NGA.Data.Helper;
 using NGA.Data.Service;
 using NGA.Data.SubStructure;
 using NGA.Domain;
@@ -38,9 +39,23 @@ namespace NGA.MonolithAPI
 
             StaticValues.HostAddress = (IPAddress.Loopback.ToString() + ":" + Configuration.GetValue<int>("Host:Port")).ToString();
             StaticValues.HostSSLAddress = (IPAddress.Loopback.ToString() + ":" + Configuration.GetValue<int>("Host:PortSSL")).ToString();
-            StaticValues.DBConnectionString = Configuration.GetConnectionString("DefaultConnection");
 
-            ParameterHelperLoder.LoadStaticValues();
+            string hostMachineIpAddress = "127.0.0.1";
+
+            try
+            {
+                hostMachineIpAddress = Dns.GetHostAddresses(new Uri("http://docker.for.win.localhost").Host)[0].ToString();
+            }
+            catch (SocketException es)
+            {
+            }
+            catch (Exception e)
+            {
+            }
+            finally
+            {
+                StaticValues.DBConnectionString = Configuration.GetConnectionString("DefaultConnection").Replace("{HostMachineIpAddress}", hostMachineIpAddress);
+            }
         }
 
         public IConfiguration Configuration { get; }
@@ -91,21 +106,21 @@ namespace NGA.MonolithAPI
                    ValidIssuer = Configuration["Jwt:Issuer"],
                };
 
-               options.Events = new JwtBearerEvents
-               {
-                   OnMessageReceived = context =>
-                   {
-                       var accessToken = context.Request.Query["access_token"];
+               //options.Events = new JwtBearerEvents
+               //{
+               //    OnMessageReceived = context =>
+               //    {
+               //        var accessToken = context.Request.Query["access_token"];
 
-                       var path = context.HttpContext.Request.Path;
-                       if (!string.IsNullOrEmpty(accessToken) &&
-                           (path.StartsWithSegments("/chatHub")))
-                       {
-                           context.Token = accessToken;
-                       }
-                       return Task.CompletedTask;
-                   }
-               };
+               //        var path = context.HttpContext.Request.Path;
+               //        if (!string.IsNullOrEmpty(accessToken) &&
+               //            (path.StartsWithSegments("/chatHub")))
+               //        {
+               //            context.Token = accessToken;
+               //        }
+               //        return Task.CompletedTask;
+               //    }
+               //};
            });
             #endregion
 
@@ -132,7 +147,7 @@ namespace NGA.MonolithAPI
             #region Dependency Injection 
 
             services.AddSingleton(mapper);
-            services.AddDbContext<NGADbContext>(ServiceLifetime.Transient);
+            services.AddDbContext<NGADbContext>(db => db.UseSqlServer(StaticValues.DBConnectionString));
             services.AddTransient<UnitOfWork>();
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 
@@ -143,15 +158,15 @@ namespace NGA.MonolithAPI
             services.AddTransient<IUserService, UserService>();
             services.AddTransient(typeof(IBaseService<,,,>), typeof(BaseService<,,,>));
 
-            services.AddSingleton<ChatHub>();
+            //services.AddSingleton<ChatHub>();
 
             #endregion
 
             #region Add SignalR
-            services.AddSignalR().AddHubOptions<ChatHub>(options =>
-            {
-                options.EnableDetailedErrors = true;
-            });
+            //services.AddSignalR().AddHubOptions<ChatHub>(options =>
+            //{
+            //    options.EnableDetailedErrors = true;
+            //});
             #endregion
 
             #region Versioning
@@ -169,8 +184,10 @@ namespace NGA.MonolithAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, NGADbContext dbContext, IWebHostEnvironment env)
         {
+            Data.Helper.ParameterHelperLoder.LoadStaticValues(dbContext);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -180,18 +197,18 @@ namespace NGA.MonolithAPI
 
             app.UseRouting();
 
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
             app.UseCors("CorsPolicy");
 
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<ChatHub>("/chathub");  //https://stackoverflow.com/questions/43181561/signalr-in-asp-net-core-1-1
-            });
+            //app.UseSignalR(routes =>
+            //{
+            //    routes.MapHub<ChatHub>("/chathub");  //https://stackoverflow.com/questions/43181561/signalr-in-asp-net-core-1-1
+            //});
 
 
             app.UseEndpoints(endpoints =>

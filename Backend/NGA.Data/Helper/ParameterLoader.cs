@@ -14,43 +14,38 @@ namespace NGA.Data.Helper
 {
     public static class ParameterHelperLoder
     {
-        public static void LoadStaticValues()
+        public static void LoadStaticValues(NGADbContext dbContext)
         {
-            using (NGADbContext context = new NGADbContext())
+            DbSet<NGA.Domain.Parameter> _param = dbContext.Set<NGA.Domain.Parameter>();
+
+            List<NGA.Domain.Parameter> parameters = _param.Where(a => !a.IsDeleted).ToList();
+
+            Type myType = typeof(ParameterValue);
+            foreach (var item in parameters)
             {
-                UnitOfWork unitOfWork = new UnitOfWork(context);
+                PropertyInfo myPropInfo = myType.GetProperty(item.Code);
+                if (myPropInfo == null)
+                    continue;
 
-                DbSet<NGA.Domain.Parameter> _param = context.Set<NGA.Domain.Parameter>();
+                var value = parameters.Where(a => a.Code == item.Code).Select(a => a.Value).FirstOrDefault();
+                if (value == null || Validation.IsNullOrEmpty(value))
+                    continue;
 
-                List<NGA.Domain.Parameter> parameters = _param.Where(a => !a.IsDeleted).ToList();
-
-                Type myType = typeof(ParameterValue);
-                foreach (var item in parameters)
+                if (myPropInfo.PropertyType == typeof(string))
+                    myPropInfo.SetValue(null, value);
+                else if (myPropInfo.PropertyType == typeof(Guid) || myPropInfo.PropertyType == typeof(Guid?))
                 {
-                    PropertyInfo myPropInfo = myType.GetProperty(item.Code);
-                    if (myPropInfo == null)
-                        continue;
+                    Guid? guidVal = Guid.Parse(value);
 
-                    var value = parameters.Where(a => a.Code == item.Code).Select(a => a.Value).FirstOrDefault();
-                    if (value == null || Validation.IsNullOrEmpty(value))
-                        continue;
-
-                    if (myPropInfo.PropertyType == typeof(string))
-                        myPropInfo.SetValue(null, value);
-                    else if (myPropInfo.PropertyType == typeof(Guid) || myPropInfo.PropertyType == typeof(Guid?))
-                    {
-                        Guid? guidVal = Guid.Parse(value);
-
-                        if (guidVal != null && guidVal != Guid.Empty)
-                            myPropInfo.SetValue(null, guidVal.Value);
-                    }
-                    else if (myPropInfo.PropertyType == typeof(bool))
-                        myPropInfo.SetValue(null, NGA.Core.Convert.ToBoolean(value));
-                    else if (myPropInfo.PropertyType == typeof(int))
-                    {
-                        int num = Convert.ToInt32(value);
-                        myPropInfo.SetValue(null, num);
-                    }
+                    if (guidVal != null && guidVal != Guid.Empty)
+                        myPropInfo.SetValue(null, guidVal.Value);
+                }
+                else if (myPropInfo.PropertyType == typeof(bool))
+                    myPropInfo.SetValue(null, NGA.Core.Convert.ToBoolean(value));
+                else if (myPropInfo.PropertyType == typeof(int))
+                {
+                    int num = Convert.ToInt32(value);
+                    myPropInfo.SetValue(null, num);
                 }
             }
         }

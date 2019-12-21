@@ -13,7 +13,7 @@ namespace NGA.Data
 {
     public class NGADbContext : IdentityDbContext<User,Role, Guid>
     {
-        public NGADbContext() : base()
+        public NGADbContext(DbContextOptions<NGADbContext> options) : base(options)
         {
         }
         

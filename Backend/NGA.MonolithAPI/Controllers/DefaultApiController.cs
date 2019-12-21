@@ -10,7 +10,6 @@ using NGA.Core;
 using NGA.Core.Helper;
 using NGA.Core.Model;
 using NGA.Core.Validation;
-using NGA.Data.Logger;
 using NGA.Data.SubStructure;
 
 namespace NGA.MonolithAPI.Controllers.V2
