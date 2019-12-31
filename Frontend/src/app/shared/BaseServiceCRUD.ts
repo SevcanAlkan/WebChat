@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Observable, fromEvent } from 'rxjs';
 import { catchError, tap, map, retry, delay } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';  
-import { BaseVM, AddVM, UpdateVM } from './baseModel';
-import { APIResultVM } from '@app/common/APIResultVM';
+import { BaseVM, AddVM, UpdateVM } from './models/BaseModel';
+import { APIResultVM } from '@app/shared/models/APIResultVM';
 import { BaseService } from './baseService';
 import { APIVersion } from '@environments/APIVersion';
 

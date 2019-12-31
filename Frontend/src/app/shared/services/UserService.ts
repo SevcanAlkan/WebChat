@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';  
-import { UserVM, UserLoginVM, UserListVM, UserRegisterVM, UserUpdateVM } from '@app/models/User';
-import { BaseServiceCRUD } from '@app/common/BaseServiceCRUD';
+import { UserVM, UserLoginVM, UserListVM, UserRegisterVM, UserUpdateVM } from '@app/shared/models/user';
+import { BaseServiceCRUD } from '@app/shared/BaseServiceCRUD';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';  
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { APIResultVM } from '@app/common/APIResultVM';
+import { APIResultVM } from '@app/shared/models/APIResultVM';
 import { APIVersion } from '@environments/APIVersion';
 
 @Injectable({  

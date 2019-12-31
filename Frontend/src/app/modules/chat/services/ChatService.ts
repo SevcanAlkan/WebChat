@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';  
 import { HubConnection, HubConnectionBuilder, LogLevel, HubConnectionState } from '@aspnet/signalr';  
-import { MessageVM } from '@app/models/Message';  
+import { MessageVM } from '@app/modules/chat/models/message';  
 import { environment } from '@environments/environment';
 import { Observable, Subject } from 'rxjs';
   

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { UserVM } from '@app/models/User';
-import { UserService } from '@services/UserService';
+import { UserVM } from '@app/shared/models/user';
+import { UserService } from '@app/shared/services/UserService';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AuthenticationService } from '@services/AuthenticationService';
+import { AuthenticationService } from '@app/shared/services/AuthenticationService';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 

@@ -16,12 +16,12 @@ import { GroupComponent } from './component/group/group.component';
 import { RegisterComponent } from './component/register/register.component';
 
 //Helpers
-import { JwtInterceptor } from './helpers/jwtInterceptor';
-import { ErrorInterceptor } from './helpers/errorInterceptor';
+import { JwtInterceptor } from './shared/helpers/jwtInterceptor';
+import { ErrorInterceptor } from './shared/helpers/errorInterceptor';
 
 //Services
-import { ChatService } from '@services/ChatService';
-import { SearchService } from '@services/SearchService';
+import { ChatService } from '@app/modules/chat/services/ChatService';
+import { SearchService } from '@app/modules/search/services/SearchService';
 
 
 @NgModule({

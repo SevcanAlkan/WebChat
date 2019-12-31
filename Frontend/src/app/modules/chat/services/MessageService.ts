@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';  
-import { BaseServiceCRUD } from '@app/common/BaseServiceCRUD';
+import { BaseServiceCRUD } from '@app/shared/BaseServiceCRUD';
 import { HttpClient } from '@angular/common/http';  
-import { MessageVM, MessageAddVM, MessageUpdateVM } from '@app/models/Message';
+import { MessageVM, MessageAddVM, MessageUpdateVM } from '@app/modules/chat/models/message';
 import { map, catchError } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 

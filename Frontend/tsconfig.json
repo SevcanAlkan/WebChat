@@ -22,8 +22,8 @@
       "@app/*": ["src/app/*"],
       "@models/*": ["src/app/models/*"],
       "@services/*": ["src/app/services/*"],
-      "@common/*": ["src/app/common/*"],
-      "@helper/*": ["src/app/helpers/*"],
+      "@common/*": ["src/app/shared/*"],
+      "@helper/*": ["src/app/shared/helpers/*"],
       "@environments/*": ["src/environments/*"]
     }
   },

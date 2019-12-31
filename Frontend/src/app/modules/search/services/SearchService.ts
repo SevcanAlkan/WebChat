@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { MessageSearchVM } from '@app/models/Message';
+import { MessageSearchVM } from '@app/modules/chat/models/message';
 import { Observable } from 'rxjs';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
-import { BaseService } from '@app/common/baseService';
+import { BaseService } from '@app/shared/baseService';
 
 @Injectable()
 export class SearchService extends BaseService {

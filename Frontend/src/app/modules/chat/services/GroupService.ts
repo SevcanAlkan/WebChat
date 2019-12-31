@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';  
-import { BaseServiceCRUD } from '@app/common/BaseServiceCRUD';
+import { BaseServiceCRUD } from '@app/shared/BaseServiceCRUD';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';  
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { GroupVM, GroupAddVM, GroupUpdateVM } from '@app/models/Group';
+import { GroupVM, GroupAddVM, GroupUpdateVM } from '@app/modules/chat/models/group';
 import { APIVersion } from '@environments/APIVersion';
 
 @Injectable({  

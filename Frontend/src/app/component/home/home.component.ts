@@ -2,15 +2,15 @@ import { Component, OnInit, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 
-import { MessageVM, TempMessage } from '@app/models/Message';
-import { GroupVM } from '@app/models/Group';
-import { UserVM , UserListVM } from '@app/models/User';
+import { MessageVM, TempMessage } from '@app/modules/chat/models/message';
+import { GroupVM } from '@app/modules/chat/models/group';
+import { UserVM , UserListVM } from '@app/shared/models/user';
 
-import { UserService } from '@services/UserService';
-import { GroupService } from '@services/GroupService';
-import { AuthenticationService } from '@services/AuthenticationService';
-import { ChatService } from '@services/ChatService';
-import { MessageService } from '@services/MessageService';
+import { UserService } from '@app/shared/services/UserService';
+import { GroupService } from '@app/modules/chat/services/GroupService';
+import { AuthenticationService } from '@app/shared/services/AuthenticationService';
+import { ChatService } from '@app/modules/chat/services/ChatService';
+import { MessageService } from '@app/modules/chat/services/MessageService';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
-import { UserRegisterVM, UserVM, UserUpdateVM } from '@app/models/User';
+import { UserRegisterVM, UserVM, UserUpdateVM } from '@app/shared/models/user';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AuthenticationService } from '@services/AuthenticationService';
-import { UserService } from '@services/UserService';
+import { AuthenticationService } from '@app/shared/services/AuthenticationService';
+import { UserService } from '@app/shared/services/UserService';
 import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -25,7 +25,7 @@ export class RegisterComponent implements OnInit {
   private passwordValid: RegExp;
   private registerForm: FormGroup;  
 
-  constructor(private router: Router, private authenticationService: AuthenticationService,
+  constructor(private np: Router, private authenticationService: AuthenticationService,
     private userService: UserService, private route: ActivatedRoute, private fb: FormBuilder) {       
       
       this.loadDefaultValues(); 

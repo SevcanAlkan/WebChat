@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 
 import { ProfileComponent } from './component/profile/profile.component';
 import { LoginComponent } from './component/login/login.component';
-import { AuthGuard } from '@app/helpers/authGuard';
+import { AuthGuard } from '@app/shared/helpers/authGuard';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './component/home/home.component';
 import { GroupComponent } from './component/group/group.component';
