@@ -2,14 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
-import { ProfileComponent } from './component/profile/profile.component';
-import { LoginComponent } from './component/login/login.component';
 import { AuthGuard } from '@app/shared/helpers/authGuard';
-import { AppComponent } from './app.component';
-import { HomeComponent } from './component/home/home.component';
-import { GroupComponent } from './component/group/group.component';
-import { RegisterComponent } from './component/register/register.component';
-import { SearchComponent } from './component/search/search.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, canActivate: [AuthGuard] },
@@ -21,6 +14,9 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'register/:id', component: RegisterComponent, canActivate: [AuthGuard] },
   { path: 'search/:key', component: SearchComponent, canActivate: [AuthGuard] },
+
+  //Chat Module
+  { path: 'chat', loadChildren: '.chat/chat.module#ChatModule' },
 
   // otherwise redirect to home
   { path: '**', redirectTo: ''}

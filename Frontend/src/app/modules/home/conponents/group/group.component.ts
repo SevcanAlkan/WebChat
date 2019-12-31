@@ -1,11 +1,11 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { GroupService } from './node_modules/@app/modules/chat/services/GroupService';
-import { GroupVM, GroupUpdateVM, GroupAddVM } from './node_modules/@app/modules/chat/models/group';
-import { APIResultVM } from './node_modules/@app/shared/models/APIResultVM';
-import { UserService } from './node_modules/@app/shared/services/UserService';
-import { UserListVM, UserVM } from './node_modules/@app/shared/models/user';
-import { AuthenticationService } from './node_modules/@app/shared/services/AuthenticationService';
+import { GroupService } from '@app/modules/chat/services/GroupService';
+import { GroupVM, GroupUpdateVM, GroupAddVM } from '@app/modules/chat/models/group';
+import { APIResultVM } from '@app/shared/models/APIResultVM';
+import { UserService } from '@app/shared/services/UserService';
+import { UserListVM, UserVM } from '@app/shared/models/user';
+import { AuthenticationService } from '@app/shared/services/AuthenticationService';
 import { Observable, Subscription, Subject, of } from 'rxjs';
 import { takeUntil, map, mapTo } from 'rxjs/operators';
 

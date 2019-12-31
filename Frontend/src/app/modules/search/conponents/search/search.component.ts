@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { MessageSearchVM } from './node_modules/@app/modules/chat/models/message';
-import { SearchService } from './node_modules/@app/modules/search/services/SearchService';
+import { MessageSearchVM } from '@app/modules/chat/models/message';
+import { SearchService } from '@app/modules/search/services/SearchService';
 import { Router, ActivatedRoute } from '@angular/router';
-import { GroupVM } from './node_modules/@app/modules/chat/models/group';
-import { UserListVM } from './node_modules/@app/shared/models/user';
-import { GroupService } from './node_modules/@app/modules/chat/services/GroupService';
-import { UserService } from './node_modules/@app/shared/services/UserService';
+import { GroupVM } from '@app/modules/chat/models/group';
+import { UserListVM } from '@app/shared/models/user';
+import { GroupService } from '@app/modules/chat/services/GroupService';
+import { UserService } from '@app/shared/services/UserService';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
