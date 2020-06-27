@@ -21,9 +21,11 @@ namespace NGA.MonolithAPI.Helper
             }
             catch (SocketException es)
             {
+                //TODO: convert to normal class and inject logging, then log here 
             }
             catch (Exception e)
             {
+                //TODO: convert to normal class and inject logging, then log here 
             }
 
             return ipAddress;
