@@ -20,8 +20,9 @@ namespace NGA.MonolithAPI.Data
                 .AddJsonFile("appsettings.json")
                 .Build();
             var builder = new DbContextOptionsBuilder<NGADbContext>();
-            var connectionString = configuration.GetConnectionString("DefaultConnection").Replace("{HostMachineIpAddress}", GetHostMachineIP.Get());
-            builder.UseSqlServer(connectionString);
+            //TODO: Open commented lines!
+            // var connectionString = configuration.GetConnectionString("DefaultConnection").Replace("{HostMachineIpAddress}", GetHostMachineIP.Get());
+            // builder.UseSqlServer(connectionString);
             return new NGADbContext(builder.Options);
         }
     }

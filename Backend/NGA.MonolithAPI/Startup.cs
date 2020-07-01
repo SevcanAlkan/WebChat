@@ -47,13 +47,17 @@ namespace NGA.MonolithAPI
             string elasticUri = Configuration["ElasticConfiguration:Uri"].Replace("{HostMachineIpAddress}", GetHostMachineIP.Get()); 
             StaticValues.DBConnectionString = Configuration.GetConnectionString("DefaultConnection").Replace("{HostMachineIpAddress}", GetHostMachineIP.Get());
 
-            Serilog.Log.Logger = new LoggerConfiguration()
-                .Enrich.FromLogContext()
-                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri))
-                {
-                    AutoRegisterTemplate = true,
-                })
-                .CreateLogger();
+            // Create different mechanisim, to check is ELK is working. When are you using the serilog logging you have to chek ELK status
+            // if(!String.IsNullOrWhiteSpace(elasticUri))
+            // {
+            //     Serilog.Log.Logger = new LoggerConfiguration()
+            //     .Enrich.FromLogContext()
+            //     .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri))
+            //     {
+            //         AutoRegisterTemplate = true,
+            //     })
+            //     .CreateLogger();
+            // }            
         }
 
         public IConfiguration Configuration { get; }
@@ -228,7 +232,7 @@ namespace NGA.MonolithAPI
 
             app.UseHttpsRedirection();
 
-            loggerFactory.AddSerilog();
+            // loggerFactory.AddSerilog(); 
 
             //app.UseSwagger();
             app.UseSwaggerUI(s =>
