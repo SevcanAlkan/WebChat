@@ -26,6 +26,7 @@ namespace NGA.MonolithAPI.Controllers.V1
             this._service = service;
         }
 
+        [HttpGet]
         public virtual JsonResult Get()
         {
             try
@@ -43,6 +44,7 @@ namespace NGA.MonolithAPI.Controllers.V1
             }
         }
 
+        [HttpGet]
         public virtual async Task<JsonResult> GetById(Guid id)
         {
             try

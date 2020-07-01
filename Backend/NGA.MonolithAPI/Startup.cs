@@ -28,6 +28,7 @@ using NGA.Domain;
 using NGA.MonolithAPI.Config;
 using NGA.MonolithAPI.Fillter;
 using NGA.MonolithAPI.Helper;
+using NGA.MonolithAPI.Middleware;
 using NGA.MonolithAPI.SignalR;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
@@ -75,6 +76,12 @@ namespace NGA.MonolithAPI
             services.AddSwaggerGen(s =>
             {
                 s.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo() { Title = "Next Generation API", Version = "v1" });
+                s.SwaggerDoc("v2", new Microsoft.OpenApi.Models.OpenApiInfo() { Title = "Next Generation API", Version = "v2" });
+
+                // Apply the filters
+                s.OperationFilter<RemoveVersionFromParameter>();
+                s.DocumentFilter<ReplaceVersionWithExactValueInPath>();
+
             });
 
             #endregion
@@ -150,12 +157,15 @@ namespace NGA.MonolithAPI
             #region MVC Configration
             services.AddControllers(options =>
             {
+                options.Filters.Add(typeof(LoggerFilter));
                 options.Filters.Add(typeof(ValidatorActionFilter));
             }).AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver();
             });
             #endregion
+
+            services.AddOpenApiDocument();
 
             #region AutoMapper
             var mappingConfig = new MapperConfiguration(mc =>
@@ -199,8 +209,8 @@ namespace NGA.MonolithAPI
                 o.ReportApiVersions = true;
                 o.AssumeDefaultVersionWhenUnspecified = true;
                 o.DefaultApiVersion = new ApiVersion(2, 0);
-                o.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader(),
-                    new HeaderApiVersionReader("api-version"));
+                //o.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader(),
+                //    new HeaderApiVersionReader("api-version"));
             });
 
             #endregion
@@ -216,10 +226,18 @@ namespace NGA.MonolithAPI
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             loggerFactory.AddSerilog();
 
+            //app.UseSwagger();
+            app.UseSwaggerUI(s =>
+            {
+                s.SwaggerEndpoint("/swagger/v1/swagger.json", "NGA V1");
+                s.SwaggerEndpoint("/swagger/v2/swagger.json", "NGA V2");
+            });
+
+            app.UseMiddleware(typeof(ErrorHandlingMiddleware));
             app.UseRouting();
 
             app.UseAuthentication();
@@ -235,16 +253,13 @@ namespace NGA.MonolithAPI
             //    routes.MapHub<ChatHub>("/chathub");  //https://stackoverflow.com/questions/43181561/signalr-in-asp-net-core-1-1
             //});
 
-            app.UseSwagger();
-            app.UseSwaggerUI(s =>
-            {
-                s.SwaggerEndpoint("/help/v1/swagger.json", "NGA V1");
-            });
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
         }
     }
 }

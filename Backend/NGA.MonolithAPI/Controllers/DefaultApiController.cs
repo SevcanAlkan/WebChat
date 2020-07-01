@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NGA.Core;
 using NGA.Core.Helper;
 using NGA.Core.Model;
@@ -15,14 +16,18 @@ using NGA.Data.SubStructure;
 namespace NGA.MonolithAPI.Controllers.V2
 {
     [Authorize]
-    [ApiExplorerSettings(IgnoreApi = true)]
+    //[ApiExplorerSettings(IgnoreApi = true)]
     [ApiVersion("2.0")]
-    [Route("api/[controller]/[action]")]
+    [Route("api/v{version:apiVersion}/[controller]/[action]")]
     [ApiController]
     public abstract class DefaultApiController : ControllerBase
     {
-        public DefaultApiController()
+
+        protected ILogger<DefaultApiController> _logger;
+
+        public DefaultApiController(ILogger<DefaultApiController> logger)
         {
+            this._logger = logger;
         }
     }
 }

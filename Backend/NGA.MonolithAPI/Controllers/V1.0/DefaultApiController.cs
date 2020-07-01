@@ -15,9 +15,9 @@ using NGA.Data.SubStructure;
 namespace NGA.MonolithAPI.Controllers.V1
 {
     [Authorize]
-    [ApiExplorerSettings(IgnoreApi = true)]
+    //[ApiExplorerSettings(IgnoreApi = true)]
     [ApiVersion("1.0")]
-    [Route("api/[controller]/[action]")]
+    [Route("api/v{version:apiVersion}/[controller]/[action]")]
     [ApiController]
     public abstract class DefaultApiController : ControllerBase
     {

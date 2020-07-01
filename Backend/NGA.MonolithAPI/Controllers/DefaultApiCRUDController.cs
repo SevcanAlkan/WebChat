@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Elasticsearch.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NGA.Core;
 using NGA.Core.Helper;
 using NGA.Core.Model;
@@ -21,16 +23,18 @@ namespace NGA.MonolithAPI.Controllers.V2
     {
         protected S _service;
 
-        public DefaultApiCRUDController(S service)
+        public DefaultApiCRUDController(S service, ILogger<DefaultApiCRUDController<A, U, G, S>> logger)
+            : base(logger)
         {
             this._service = service;
         }
 
+        [HttpGet]
         public virtual JsonResult Get()
         {
             try
             {
-                var result = _service.GetAll();
+                var result = _service.GetAll();             
 
                 if (result == null)
                     return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.WRG01001));
@@ -39,10 +43,15 @@ namespace NGA.MonolithAPI.Controllers.V2
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.ToString());
                 return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, null, AppStatusCode.ERR01001)));
             }
         }
 
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(JsonResult), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(JsonResult), StatusCodes.Status500InternalServerError)]
         public virtual async Task<JsonResult> GetById(Guid id)
         {
             try
@@ -59,6 +68,7 @@ namespace NGA.MonolithAPI.Controllers.V2
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.ToString());
                 return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, null, AppStatusCode.ERR01001)));
             }
         }
@@ -82,6 +92,7 @@ namespace NGA.MonolithAPI.Controllers.V2
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.ToString());
                 return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, result.RecId)));
             }
         }
@@ -105,6 +116,7 @@ namespace NGA.MonolithAPI.Controllers.V2
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.ToString());
                 return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, result.RecId)));
             }
         }
@@ -128,18 +140,22 @@ namespace NGA.MonolithAPI.Controllers.V2
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.ToString());
                 return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, result.RecId)));
             }
         }
     }
 
-    public interface IBaseController<A, U>
-        where A : AddVM, IAddVM
-        where U : UpdateVM, IUpdateVM
+    public interface IDefaultApiCRUDController<A, U, G, S>
+            where A : AddVM, IAddVM, new()
+            where U : UpdateVM, IUpdateVM, new()
+            where G : BaseVM, IBaseVM, new()
+            where S : ICRUDService<A, U, G>
     {
-        Task<ActionResult> Add(A model, bool saveAndClose = true);
-        Task<ActionResult> Delete(Guid id);
-        ActionResult Get(Guid id);
-        Task<ActionResult> Update(Guid id, U model, bool saveAndClose = true);
+        JsonResult Get();
+        Task<JsonResult> GetById(Guid id);
+        Task<JsonResult> Add(A model);
+        Task<JsonResult> Update(Guid id, U model);
+        Task<JsonResult> Delete(Guid id);
     }
 }

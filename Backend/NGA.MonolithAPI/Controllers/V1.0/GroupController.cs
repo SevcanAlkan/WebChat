@@ -12,47 +12,49 @@ using NGA.Domain;
 
 namespace NGA.MonolithAPI.Controllers.V1
 {
-    [ApiVersion("1.0")]
-    public class GroupController : DefaultApiCRUDController<GroupAddVM, GroupUpdateVM, GroupVM, IGroupService>
-    {
-        public GroupController(IGroupService service)
-             : base(service)
-        {
+    //[ApiVersion("1.0")]
+    //public class GroupController : DefaultApiCRUDController<GroupAddVM, GroupUpdateVM, GroupVM, IGroupService>
+    //{
+    //    public GroupController(IGroupService service)
+    //         : base(service)
+    //    {
 
-        }
+    //    }
 
-        public virtual JsonResult GetByUserId(Guid userId)
-        {
-            try
-            {
-                var result = _service.GetByUserId(userId);
+    //    [HttpGet]
+    //    public virtual JsonResult GetByUserId(Guid userId)
+    //    {
+    //        try
+    //        {
+    //            var result = _service.GetByUserId(userId);
 
-                if (result == null)
-                    return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.WRG01001));
+    //            if (result == null)
+    //                return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.WRG01001));
 
-                return new JsonResult(result);
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, null, AppStatusCode.ERR01001)));
-            }
-        }
+    //            return new JsonResult(result);
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, null, AppStatusCode.ERR01001)));
+    //        }
+    //    }
 
-        public virtual JsonResult GetUsers(Guid groupId)
-        {
-            try
-            {
-                var result = _service.GetUsers(groupId);
+    //    [HttpGet]
+    //    public virtual JsonResult GetUsers(Guid groupId)
+    //    {
+    //        try
+    //        {
+    //            var result = _service.GetUsers(groupId);
 
-                if (result == null)
-                    return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.WRG01001));
+    //            if (result == null)
+    //                return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.WRG01001));
 
-                return new JsonResult(result);
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, null, AppStatusCode.ERR01001)));
-            }
-        }
-    }
+    //            return new JsonResult(result);
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            return new JsonResult(APIResult.CreateVMWithError(ex, APIResult.CreateVM(false, null, AppStatusCode.ERR01001)));
+    //        }
+    //    }
+    //}
 }

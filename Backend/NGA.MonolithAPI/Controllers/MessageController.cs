@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NGA.Core;
 using NGA.Core.Helper;
 using NGA.Data;
@@ -14,12 +15,13 @@ namespace NGA.MonolithAPI.Controllers.V2
 {
     public class MessageController : DefaultApiCRUDController<MessageAddVM, MessageUpdateVM, MessageVM, IMessageService>
     {
-        public MessageController(IMessageService service)
-             : base(service)
+        public MessageController(IMessageService service, ILogger<MessageController> logger)
+             : base(service, logger)
         {
 
         }
 
+        [HttpGet]
         //Return messages of a group, which group ID sent
         public virtual JsonResult GetByGroupId(Guid groupId)
         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NGA.Core;
 using NGA.Core.Helper;
 using NGA.Data;
@@ -15,12 +16,13 @@ namespace NGA.MonolithAPI.Controllers.V2
     [ApiVersion("2.0")]
     public class GroupController : DefaultApiCRUDController<GroupAddVM, GroupUpdateVM, GroupVM, IGroupService>
     {
-        public GroupController(IGroupService service)
-             : base(service)
+        public GroupController(IGroupService service, ILogger<GroupController> logger)
+             : base(service, logger)
         {
 
         }
 
+        [HttpGet]
         public virtual JsonResult GetByUserId(Guid userId)
         {
             try
@@ -38,6 +40,7 @@ namespace NGA.MonolithAPI.Controllers.V2
             }
         }
 
+        [HttpGet]
         public virtual JsonResult GetUsers(Guid groupId)
         {
             try

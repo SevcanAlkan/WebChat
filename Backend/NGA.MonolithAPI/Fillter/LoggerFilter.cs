@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using NGA.Core;
 using NGA.Core.Enum;
@@ -8,23 +9,23 @@ using NGA.Core.Model;
 using NGA.Core.Parameter;
 using NGA.Core.Validation;
 using NGA.Data;
-using NGA.Data.Logger;
 using NGA.Domain;
+using NGA.MonolithAPI.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NGA.API.Filter
+namespace NGA.MonolithAPI.Fillter
 {
     public class LoggerFilter : IActionFilter
     {
-        private readonly NGADbContext con;
+        ILogger<LoggerFilter> _logger;
 
-        public LoggerFilter(NGADbContext _con)
+        public LoggerFilter(ILogger<LoggerFilter> logger)
         {
-            con = _con;
+            _logger = logger;
         }
 
         public void OnActionExecuting(ActionExecutingContext filterContext)
@@ -38,18 +39,20 @@ namespace NGA.API.Filter
                     if (filterContext.ActionArguments != null || filterContext.ActionArguments.Count > 0)
                         requestBody = JsonConvert.SerializeObject(filterContext.ActionArguments.ToList());
 
-                    filterContext.HttpContext.Response.Headers["RequestID"] = LogContext.CreateRequestRecord(
+                    LogVM model = LogHelper.GetVM(
                         ((Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)filterContext.ActionDescriptor).ActionName,
                         ((Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)filterContext.ActionDescriptor).ControllerName,
                         filterContext.HttpContext.Request.Method,
                         filterContext.HttpContext.Request.Host + filterContext.HttpContext.Request.Path,
                         requestBody,
                         ((Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)filterContext.ActionDescriptor).MethodInfo.ReturnType.FullName);
+
+                    _logger.LogInformation(model.ToString());
                 }
             }
             catch (Exception Ex)
             {
-                Console.WriteLine("Error Message:" + Ex.Message + "/n Source: " + Ex.Source + "/n StackTrace: " + Ex.StackTrace);
+                _logger.LogError(Ex, "Error in LogFilter");
             }
         }
 
@@ -59,34 +62,14 @@ namespace NGA.API.Filter
             {
                 if (ParameterValue.SYS01001)
                 {
-                    Guid id = new Guid(filterContext.HttpContext.Response.Headers["RequestID"].FirstOrDefault());
-
-                    if (id != null && id != Guid.Empty)
-                    {
-                        LogContext.UpdateRequest(id);
-
-                        var result = filterContext.Result;
-                        if (result is JsonResult json)
-                        {
-                            var data = json.Value;
-                            if (data != null && data is APIResultVM)
-                            {
-                                if ((data as APIResultVM).Errors != null && (data as APIResultVM).Errors.Count > 0)
-                                {
-                                    LogContext.AddErrorRange(id.ToString(), (data as APIResultVM).Errors);
-                                    filterContext.HttpContext.Response.StatusCode = 500;
-                                }
-                            }
-                        }
-
-                        LogContext.Save();
-                    }
+                 
                 }
             }
             catch (Exception Ex)
             {
-                Console.WriteLine("Error Message:" + Ex.Message + "/n Source: " + Ex.Source + "/n StackTrace: " + Ex.StackTrace);
+                _logger.LogError(Ex, "Error in LogFilter");
             }
         }
     }
 }
+
