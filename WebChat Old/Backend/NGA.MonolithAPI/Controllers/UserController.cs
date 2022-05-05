@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -12,8 +11,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using NGA.Core;
 using NGA.Core.Helper;
 using NGA.Core.Model;
@@ -22,8 +19,10 @@ using NGA.Data;
 using NGA.Data.Service;
 using NGA.Data.ViewModel;
 using NGA.Domain;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 
-namespace NGA.MonolithAPI.Controllers.V2
+namespace NGA.API.Controllers
 {
     public class UserController : DefaultApiController
     {
@@ -34,9 +33,7 @@ namespace NGA.MonolithAPI.Controllers.V2
         readonly UserManager<User> _userManager;
         readonly SignInManager<User> _signInManager;
 
-        public UserController(IUserService service, IConfiguration config, UserManager<User> userManager,
-            SignInManager<User> signInManager, IMapper mapper, ILogger<UserController> logger)
-             : base(logger)
+        public UserController(IUserService service, IConfiguration config, UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper)
         {
             _config = config;
             _service = service;
@@ -45,7 +42,6 @@ namespace NGA.MonolithAPI.Controllers.V2
             _mapper = mapper;
         }
 
-        [HttpGet]
         [AllowAnonymous]
         public JsonResult UserNameIsExist(string userName)
         {
@@ -61,7 +57,6 @@ namespace NGA.MonolithAPI.Controllers.V2
             }
         }
 
-        [HttpGet]
         public JsonResult Get()
         {
             try
@@ -79,7 +74,6 @@ namespace NGA.MonolithAPI.Controllers.V2
             }
         }
 
-        [HttpGet]
         public JsonResult GetById(Guid id)
         {
             try
@@ -100,7 +94,6 @@ namespace NGA.MonolithAPI.Controllers.V2
             }
         }
 
-        [HttpPut]
         public async Task<JsonResult> Update(UserUpdateVM model)
         {
             try
@@ -134,8 +127,7 @@ namespace NGA.MonolithAPI.Controllers.V2
             }
         }
 
-        [HttpGet]
-        [AllowAnonymous]      
+        [AllowAnonymous]
         public async Task<JsonResult> CreateToken(UserLoginVM model)
         {
             var loginResult = await _signInManager.PasswordSignInAsync(model.UserName, model.PasswordHash, isPersistent: false, lockoutOnFailure: false);
@@ -154,7 +146,6 @@ namespace NGA.MonolithAPI.Controllers.V2
             return new JsonResult(returnVM);
         }
 
-        [HttpGet]
         public async Task<JsonResult> RefreshToken()
         {
             var user = await _userManager.FindByNameAsync(
@@ -165,7 +156,6 @@ namespace NGA.MonolithAPI.Controllers.V2
             return new JsonResult(APIResult.CreateVMWithRec<string>(GetToken(user), true));
         }
 
-        [HttpPost]
         [AllowAnonymous]
         public async Task<JsonResult> Register(UserAddVM model)
         {
@@ -202,7 +192,6 @@ namespace NGA.MonolithAPI.Controllers.V2
             return new JsonResult(APIResult.CreateVM(false, null, AppStatusCode.ERR01001));
         }
 
-        [HttpGet]
         private String GetToken(User user)
         {
             var utcNow = DateTime.UtcNow;

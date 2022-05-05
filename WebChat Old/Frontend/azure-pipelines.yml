@@ -1,0 +1,64 @@
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: Build
+    displayName: Build stage
+    jobs:
+      - job: BuildJob
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: NodeTool@0
+            displayName: 'Install Node.js'
+            inputs:
+              versionSpec: '12.x'
+
+          - task: Bash@3
+            displayName: 'Seed API URL'
+            inputs:
+              targetType: 'inline'
+              script: |
+                export apiUrl='$(API_URL)'
+                sed -i -e 's/DO_NOT_COMMIT_TO_REPO/$(API_URL)/g' src/environments/environment.ts
+
+          - script: |
+              cd '$(System.DefaultWorkingDirectory)'
+              npm install -g @angular/cli@8.3.8
+              npm install
+              npm run build
+            displayName: 'npm install and build'
+
+          - task: ArchiveFiles@2
+            displayName: 'Archive files'
+            inputs:
+              rootFolderOrFile: '$(System.DefaultWorkingDirectory)/dist/web-chat/'
+              includeRootFolder: false
+              archiveType: zip
+              archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+              replaceExistingArchive: true
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
+      - deployment: DeploymentJob
+        pool:
+          vmImage: 'ubuntu-20.04'
+        environment: $(environmentName)
+        strategy:
+            runOnce:
+              deploy:
+                steps:
+
+                  - task: AzureWebApp@1
+                    displayName: 'Deploy Azure Web App : $(webAppName)'
+                    inputs:
+                      azureSubscription: $(azureSubscription)
+                      appName: $(webAppName)
+                      appType: webAppLinux
+                      package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip

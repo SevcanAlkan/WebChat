@@ -1,0 +1,85 @@
+<div class="col-md-6 offset-md-3 mt-5">
+  <div class="card">
+    <h4 class="card-header">Register New User</h4>
+    <div class="card-body">
+
+      <form>
+        <div class="form-group">
+          <label for="userName">User Name</label>
+          <input [(ngModel)]="user.userName" [ngModelOptions]="{standalone: true}" class="form-control"
+                 id="userNameHelp">
+          <small class="form-text text-muted" id="userNameHelp">Uniqe name of user, you will use on Login page</small>
+          <div *ngIf="userNameIsntValid">This field is required,
+            must be at least 4 characters,
+            must be less than 15 characters
+          </div>
+          <div *ngIf="userNameAlreadyTaken">The user name must be uniqe!</div>
+        </div>
+        <div class="form-group">
+          <label for="displayName">Display Name</label>
+          <input [(ngModel)]="user.displayName" [ngModelOptions]="{standalone: true}" aria-describedby="displayNameHelp"
+                 class="form-control" id="displayName">
+          <small class="form-text text-muted" id="displayNameHelp">Visible name for other users</small>
+          <div *ngIf="displayNameIsntValid">This field is required, must be at least 4 characters and must be less than
+            20 characters
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="passworld">Password</label>
+          <input [(ngModel)]="user.passwordHash" [ngModelOptions]="{standalone: true}" class="form-control"
+                 id="password" type="password">
+          <div *ngIf="passwordIsntValid">
+            <ul>
+              <li>Passwords is required</li>
+              <li>Passwords must be at least 4 characters</li>
+              <li>Passwords must be less than 50 characters</li>
+              <li>Passwords must have at least one non alphanumeric character</li>
+              <li>Passwords must have at least one digit ('0'-'9')</li>
+              <li>Passwords must have at least one lowercase ('a'-'z')</li>
+              <li>Passwords must have at least one uppercase ('A'-'Z')</li>
+            </ul>
+          </div>
+
+          <label for="comparePassword">Compare Password</label>
+          <input [(ngModel)]="comparePassword" [ngModelOptions]="{standalone: true}" class="form-control"
+                 id="comparePassword" type="password">
+          <div *ngIf="comparePasswordIsntValid">The password not same with other!</div>
+
+          <div *ngIf="alreadyRegistredUser">
+            <label for="oldPassword">Old Password</label>
+            <input [(ngModel)]="userRec.oldPassword" [ngModelOptions]="{standalone: true}" class="form-control"
+                   id="oldPassword" type="password">
+            <div *ngIf="OldPasswordIsntValid">You must enter old password</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="about">About</label>
+          <input [(ngModel)]="user.about" [ngModelOptions]="{standalone: true}" aria-describedby="aboutHelp" class="form-control"
+                 id="about">
+          <small class="form-text text-muted" id="aboutHelp">This text will show on Profile page of User</small>
+          <div *ngIf="aboutIsntValid">About text must be less than 250 characters</div>
+        </div>
+
+
+        <div class="form-group form-check">
+          <input [(ngModel)]="user.isAdmin" [ngModelOptions]="{standalone: true}" class="form-check-input" id="isAdmin"
+                 type="checkbox">
+          <label class="form-check-label" for="isAdmin">Is Admin</label>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="float-left">
+              <div class="btn-group" role="group">
+                <button (click)="save()" class="btn btn-primary" type="submit">Submit</button>
+                <button (click)="cancel()" class="btn btn-light">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
