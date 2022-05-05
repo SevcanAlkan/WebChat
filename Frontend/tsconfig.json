@@ -19,16 +19,28 @@
       "dom"
     ],
     "paths": {
-      "@app/*": ["src/app/*"],
-      "@models/*": ["src/app/models/*"],
-      "@services/*": ["src/app/services/*"],
-      "@common/*": ["src/app/common/*"],
-      "@helper/*": ["src/app/helpers/*"],
-      "@environments/*": ["src/environments/*"]
+      "@app/*": [
+        "src/app/*"
+      ],
+      "@models/*": [
+        "src/app/models/*"
+      ],
+      "@services/*": [
+        "src/app/services/*"
+      ],
+      "@common/*": [
+        "src/app/common/*"
+      ],
+      "@helper/*": [
+        "src/app/helpers/*"
+      ],
+      "@environments/*": [
+        "src/environments/*"
+      ]
     }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true
-  } 
+  }
 }

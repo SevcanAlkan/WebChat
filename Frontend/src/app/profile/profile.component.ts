@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { User } from '@models/User';
-import { UserService } from '@app/services/UserService';
-import { Router, ActivatedRoute } from '@angular/router';
-import { AuthenticationService } from '@app/services/AuthenticationService';
+import {Component, OnInit} from '@angular/core';
+import {User} from '@app/Models/user';
+import {UserService} from '@services/UserService';
+import {ActivatedRoute, Router} from '@angular/router';
+import {AuthenticationService} from '@services/AuthenticationService';
 
 @Component({
   selector: 'app-profile',
@@ -11,44 +11,44 @@ import { AuthenticationService } from '@app/services/AuthenticationService';
 })
 export class ProfileComponent implements OnInit {
 
-  private user:User = new User();//It stores user data of current or which user id passed via route param.
+  private user: User = new User();//It stores user data of current or which user id passed via route param.
   private id: string; //Route parameter value
-  private isEditable:boolean = false;
+  private isEditable: boolean = false;
 
-  constructor(private authenticationService: AuthenticationService, private userService :UserService,
-    private router: Router, private route: ActivatedRoute) {
+  constructor(private authenticationService: AuthenticationService, private userService: UserService,
+              private router: Router, private route: ActivatedRoute) {
 
-    }
+  }
 
   ngOnInit() {
-    this.id = this.route.snapshot.paramMap.get('id') || null;    
+    this.id = this.route.snapshot.paramMap.get('id') || null;
 
-    if(this.id == null || this.id == ''){
+    if (this.id == null || this.id == '') {
       //Load current user
-      this.authenticationService.currentUser.subscribe(x => { 
+      this.authenticationService.currentUser.subscribe(x => {
         this.id = x.id
       });
 
       this.isEditable = true;
-    }else{        
+    } else {
       this.isEditable = false;
-    }    
+    }
 
     this.userService.GetById(this.id).subscribe(x => {
-      if(x && x.rec){
-       this.user = x.rec;
+      if (x && x.rec) {
+        this.user = x.rec;
       }
     });
   }
 
-  ngDestroy(){    
+  ngDestroy() {
   }
 
-  edit(){
+  edit() {
     this.router.navigate(['register', this.user.id]);
   }
 
-  returnBack(){
+  returnBack() {
     this.router.navigate(['/']);
   }
 }

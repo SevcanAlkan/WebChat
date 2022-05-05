@@ -99,20 +99,21 @@ namespace NGA.API
                };
            });
             #endregion
-          
+
             #region MVC Configration
-            services.AddMvc(options =>
-            {
-                options.Filters.Add(typeof(ValidatorActionFilter));
-                options.Filters.Add(typeof(LoggerFilter));
-            }).AddJsonOptions(options =>
-            {
-                var settings = options.SerializerSettings;
-                options.SerializerSettings.Converters.Add(new StringEnumConverter
+            services
+                .AddControllersWithViews(options =>
                 {
-                    CamelCaseText = true
+                    options.Filters.Add(typeof(ValidatorActionFilter));
+                    options.Filters.Add(typeof(LoggerFilter));
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
+            services.AddControllers()
+                 .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
                 });
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             #endregion
 
             #region AutoMapper
@@ -121,13 +122,9 @@ namespace NGA.API
                 mc.AddProfile(new AutoMapperConfig());
             });
 
-            Mapper.Initialize(cfg =>
-            {
-                cfg.AddProfile(new AutoMapperConfig());
-            });
-
             IMapper mapper = mappingConfig.CreateMapper();
             services.AddAutoMapper(typeof(Startup).Assembly);
+            services.AddSingleton(mapper);
             #endregion
 
             #region Dependency Injection 
@@ -149,16 +146,15 @@ namespace NGA.API
             #endregion
 
             #region Add SignalR
-            services.AddSignalR().AddHubOptions<ChatHub>(options =>
-            {
-                options.EnableDetailedErrors = true;
-            });
+            services.AddSignalR();
             #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseRouting();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -176,17 +172,12 @@ namespace NGA.API
 
             app.UseCors("CorsPolicy");
 
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<ChatHub>("/chathub");
-            });
-
             app.UseAuthentication();
 
-            app.UseMvc(options =>
+            app.UseEndpoints(endpoints =>
             {
-                options.MapRoute(name: "DefaultApi",
-                template: "api/{controller}/{id?}");
+                endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chathub");
             });
         }
     }

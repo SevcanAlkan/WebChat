@@ -1,75 +1,75 @@
-import { BaseVM } from '@common/BaseModel';
-import { Guid } from '@app/common/guid';
+import {BaseVM} from '@common/BaseModel';
+import {Guid} from '../common/Guid';
 
-export class User extends BaseVM{
-    public userName: string;
-    public passwordHash: string;
-    public lastLoginDateTime: number;
-    public createDateTime: number;
-    public isAdmin: boolean;
-    public isBanned: boolean;
+export class User extends BaseVM {
+  public userName: string;
+  public passwordHash: string;
+  public lastLoginDateTime: number;
+  public createDateTime: number;
+  public isAdmin: boolean;
+  public isBanned: boolean;
 
-    public displayName: string;
-    public about: string;
+  public displayName: string;
+  public about: string;
 
-    public statusVal: number;
-    
-    public token: string;
+  public statusVal: number;
 
-    constructor(){
-        super();
-        this.id = Guid.newGuid();
-        this.userName= "";
-        this.passwordHash="";
-        this.displayName="";
-        this.about="";
-        this.isAdmin=false;
-        this.isBanned=false;        
-        this.statusVal=4;
-        this.token="";        
-    }
+  public token: string;
+
+  constructor() {
+    super();
+    this.id = Guid.newGuid();
+    this.userName = "";
+    this.passwordHash = "";
+    this.displayName = "";
+    this.about = "";
+    this.isAdmin = false;
+    this.isBanned = false;
+    this.statusVal = 4;
+    this.token = "";
+  }
 }
 
-export class UserLoginVM{
-    public UserName: string;
-    public PasswordHash: string;
+export class UserLoginVM {
+  public UserName: string;
+  public PasswordHash: string;
 }
 
-export class UserListVM extends BaseVM{
-    public userName: string;
-    public isAdmin: boolean;
-    public displayName: string;
+export class UserListVM extends BaseVM {
+  public userName: string;
+  public isAdmin: boolean;
+  public displayName: string;
 }
 
-export class UserRegisterVM{
-    public userName: string;
-    public passwordHash: string;
-  
-    public isAdmin: boolean;
+export class UserRegisterVM {
+  public userName: string;
+  public passwordHash: string;
 
-    public displayName: string;
-    public about: string;
+  public isAdmin: boolean;
 
-    public status: number;
+  public displayName: string;
+  public about: string;
 
-    constructor(){
-    }
+  public status: number;
+
+  constructor() {
+  }
 }
 
-export class UserUpdateVM extends BaseVM{
-    public userName: string;
-    public passwordHash: string;
-    public oldPassword: string;
-    public isAdmin: boolean;
-    public isBanned: boolean;
+export class UserUpdateVM extends BaseVM {
+  public userName: string;
+  public passwordHash: string;
+  public oldPassword: string;
+  public isAdmin: boolean;
+  public isBanned: boolean;
 
-    public displayName: string;
-    public about: string;
+  public displayName: string;
+  public about: string;
 
-    public status: number;
+  public status: number;
 
-    constructor(){
-        super();
-    }
+  constructor() {
+    super();
+  }
 }
 

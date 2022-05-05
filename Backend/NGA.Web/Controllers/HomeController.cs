@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NGA.Core;
 using NGA.Core.Enum;
 using NGA.Data;
@@ -44,7 +45,7 @@ namespace NGA.Web.Controllers
             return View(rec);
         }
 
-        public IActionResult APIEndPoint()
+        public async Task<IActionResult> APIEndPoint()
         {
             List<APIRouteVM> routes = new List<APIRouteVM>();
             
@@ -52,16 +53,13 @@ namespace NGA.Web.Controllers
             {
                 client.BaseAddress = new Uri(ConfigurationManager.AppSetting["APIHost"]+"/");
                 //HTTP GET
-                var responseTask = client.GetAsync("monitor/routes");
-                responseTask.Wait();
+                var response = await client.GetAsync("monitor/routes");
 
-                var result = responseTask.Result;
-                if (result.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                 {
-                    var readTask = result.Content.ReadAsAsync<List<APIRouteVM>>();
-                    readTask.Wait();
+                    var messageStr = await response.Content.ReadAsStringAsync();
 
-                    routes = readTask.Result;
+                    routes = JsonConvert.DeserializeObject<List<APIRouteVM>>(messageStr);
                 }
                 else 
                 {

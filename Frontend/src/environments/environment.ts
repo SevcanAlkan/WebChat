@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: "http://127.0.0.1:5008"
+  apiUrl: "DO_NOT_COMMIT_TO_REPO"
 };
 
 /*

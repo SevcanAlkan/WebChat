@@ -1,155 +1,159 @@
 <nav class="navbar fixed-top navbar-expand navbar-dark bg-dark">
-    <div class="w-100 order-0 order-md-0">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a (click)="toggleNavBar()" class="float-right">
-                    <i class="material-icons md-light">view_headline</i>
-                </a> 
-            </li>            
-        </ul>
-    </div>
-    <div class="mx-auto order-1 order-md-1">
-        <a class="navbar-brand mx-auto" > {{ CurrentGroup.name }} </a>
-    </div>
-    <div class="navbar-collapse collapse w-100 order-2 dual-collapse2" *ngIf="CurrentUser.isAdmin">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
+  <div class="w-100 order-0 order-md-0">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a (click)="toggleNavBar()" class="float-right">
+          <i class="material-icons md-light">view_headline</i>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="mx-auto order-1 order-md-1">
+    <a class="navbar-brand mx-auto"> {{ CurrentGroup.name }} </a>
+  </div>
+  <div *ngIf="CurrentUser.isAdmin" class="navbar-collapse collapse w-100 order-2 dual-collapse2">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
                 <span (click)="editGroup()">
                     <i class="material-icons">edit</i>
-                </span> 
-            </li>
-        </ul>
-    </div>
-    <div class="navbar-collapse collapse w-100 order-2 dual-collapse2" *ngIf="!CurrentUser.isAdmin">
-    </div>        
+                </span>
+      </li>
+    </ul>
+  </div>
+  <div *ngIf="!CurrentUser.isAdmin" class="navbar-collapse collapse w-100 order-2 dual-collapse2">
+  </div>
 </nav>
 
 
 <div class="container-fluid" style="margin-top: 70px; margin-bottom:70px;">
-    <div class="row">
-            <div class="page-wrapper chiller-theme " [ngClass]="{'toggled':NavbarToggle}">       
-            <nav id="sidebar" class="sidebar-wrapper" style="margin-top: 50px;">
-                <div class="sidebar-content">
-                <div class="sidebar-brand">
-                    <a href="/">WebChat</a>                      
-                    <div>
-                        <i class="material-icons btn btn-light btn-sm" (click)="logout()">exit_to_app</i>
-                    </div>
-                </div>
-                <div class="sidebar-header">
-                    <!-- <div class="user-pic">
-                    <img class="img-responsive img-rounded" src=""
-                        alt="User picture">
-                    </div> -->
-                    <div class="user-info">
+  <div class="row">
+    <div [ngClass]="{'toggled':NavbarToggle}" class="page-wrapper chiller-theme ">
+      <nav class="sidebar-wrapper" id="sidebar" style="margin-top: 50px;">
+        <div class="sidebar-content">
+          <div class="sidebar-brand">
+            <a href="/">WebChat</a>
+            <div>
+              <i (click)="logout()" class="material-icons btn btn-light btn-sm">exit_to_app</i>
+            </div>
+          </div>
+          <div class="sidebar-header">
+            <!-- <div class="user-pic">
+            <img class="img-responsive img-rounded" src=""
+                alt="User picture">
+            </div> -->
+            <div class="user-info">
                     <span class="user-name">
-                        <strong ng-if="CurrentUser">{{ CurrentUser.displayName }}</strong> 
+                        <strong ng-if="CurrentUser">{{ CurrentUser.displayName }}</strong>
                     </span>
-                    <span class="user-role" [ngSwitch]=" CurrentUser.isAdmin">
-                        <span class="badge badge-light" *ngSwitchCase="0">Normal User</span>
-                        <span class="badge badge-danger" *ngSwitchCase="1">Admin</span>
+              <span [ngSwitch]=" CurrentUser.isAdmin" class="user-role">
+                        <span *ngSwitchCase="0" class="badge badge-light">Normal User</span>
+                        <span *ngSwitchCase="1" class="badge badge-danger">Admin</span>
                     </span>
-                    <span class="user-status" [ngSwitch]=" CurrentUser.statusVal">                   
-                        <span class="badge badge-success" *ngSwitchCase="1">Online</span>
-                        <span class="badge badge-warning" *ngSwitchCase="2">Idle</span>
-                        <span class="badge badge-danger" *ngSwitchCase="3">DontDisturb</span>
-                        <span class="badge badge-secondary" *ngSwitchCase="4">Invisible</span>
-                        <span class="badge badge-secondary" *ngSwitchDefault>Invisible</span>
+              <span [ngSwitch]=" CurrentUser.statusVal" class="user-status">
+                        <span *ngSwitchCase="1" class="badge badge-success">Online</span>
+                        <span *ngSwitchCase="2" class="badge badge-warning">Idle</span>
+                        <span *ngSwitchCase="3" class="badge badge-danger">DontDisturb</span>
+                        <span *ngSwitchCase="4" class="badge badge-secondary">Invisible</span>
+                        <span *ngSwitchDefault class="badge badge-secondary">Invisible</span>
                     </span>
-                    </div>
-                </div>
-                <!-- sidebar-header  -->
-                <div class="sidebar-search">
-                    <div>
-                        <div class="input-group">
-                            <input type="text" class="form-control search-menu" [(ngModel)]="searchText" 
-                                (keyup.enter)="search()" placeholder="Search...(min 4 Char)">
-                            <div class="input-group-append">
+            </div>
+          </div>
+          <!-- sidebar-header  -->
+          <div class="sidebar-search">
+            <div>
+              <div class="input-group">
+                <input (keyup.enter)="search()" [(ngModel)]="searchText" class="form-control search-menu"
+                       placeholder="Search...(min 4 Char)" type="text">
+                <div class="input-group-append">
                             <span class="input-group-text">
-                                <i class="fa fa-search" aria-hidden="true"></i>
+                                <i aria-hidden="true" class="fa fa-search"></i>
                             </span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-                <div class="sidebar-menu">
-                    <div>
-                        <ul class="list-group">                          
-                            <li>
-                                <a href="/profile"><span>Profile</span></a>
-                            </li>
-                            <li *ngIf="CurrentUser.isAdmin">
-                                <a href="/group"><span>Add Group</span></a>
-                            </li>
-                        </ul>
-                    </div>
-                    </div>
-                <!-- sidebar-search  -->
-                <div class="sidebar-menu">
-                    <ul>         
-                    <li *ngFor="let item of sortGroups">
-                        <a href="#" id="{{item.id}}" (click)="selectGroup(item.id)">
-                        <span>{{ item.name }}</span>
-                        <!-- <span class="badge badge-light">{{ getMessageCountForGroup(item.id) }}</span> -->
-                        </a>
-                    </li>
-                    </ul>
-                </div>
-                <!-- sidebar-menu  -->
-                </div>         
-            </nav>
-        
+              </div>
+            </div>
+          </div>
+          <div class="sidebar-menu">
+            <div>
+              <ul class="list-group">
+                <li>
+                  <a href="/profile"><span>Profile</span></a>
+                </li>
+                <li *ngIf="CurrentUser.isAdmin">
+                  <a href="/group"><span>Add Group</span></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- sidebar-search  -->
+          <div class="sidebar-menu">
+            <ul>
+              <li *ngFor="let item of sortGroups">
+                <a (click)="selectGroup(item.id)" href="#" id="{{item.id}}">
+                  <span>{{ item.name }}</span>
+                  <!-- <span class="badge badge-light">{{ getMessageCountForGroup(item.id) }}</span> -->
+                </a>
+              </li>
+            </ul>
+          </div>
+          <!-- sidebar-menu  -->
         </div>
-                
-        <div id="content" class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-left: 0px;padding-right: 0px;"
-            #scrollMe style="overflow: scroll; height: xyz;">
-        
-        <div class="container">                      
-                <div class="messaging">  
-                    <div class="inbox_msg">  
-                        <div class="mesgs">  
-                            <div class="msg_history">  
-                                <div *ngFor="let msg of sortMessages">  
-                                    <div class="incoming_msg" *ngIf="msg.type == 'received'"> 
-                                        <div class="received_msg">  
-                                        <div class="received_withd_msg">                           
-                                            <p>  
-                                                <span class="badge badge-dark " style="float:left;" (click)="showProfile(msg.userId)">{{ getUserName(msg.userId) }}</span>
-                                                {{msg.text}}   
-                                            </p>   
-                                            <span class="time_date"> {{msg.date | date:'medium'}}</span>                          
-                                        </div>  
-                                        </div>  
-                                    </div>  
-                                    <div class="outgoing_msg" *ngIf="msg.type == 'sent'">  
-                                        <div class="sent_msg">  
-                                        <p>  
-                                            {{msg.text}}<span class="badge badge-dark " style="float:right;" (click)="showProfile(msg.userId)">{{ getUserName(msg.userId) }}</span>
-                                        </p>  
-                                        <span class="time_date"> {{msg.date | date:'medium'}}</span>  
-                                        </div>  
-                                    </div>  
-                                </div>  
-                            </div>  
-                        </div>  
-                    </div>  
-                </div>  
-            </div>  
-        </div>
+      </nav>
 
-        <div class="container">
-                <nav class="navbar fixed-bottom navbar-dark bg-dark">
-                    <form class="mx-2 my-auto d-inline w-100">
-                        <div class="input-group">
-                            <input class="form-control input-group-addon mr-sm-2 "  style="width: 1%;" type="text" [value]="tempMessage"  
-                                (input)="tempMessage=$event.target.value" (keydown.enter)="sendMessage()" placeholder="Type a message" />  
-                            <span class="input-group-append">
-                                <button class="btn btn-outline-success" type="submit" (click)="sendMessage()">Send</button>
-                            </span>
-                        </div>
-                    </form>
-                </nav>
-        </div>        
     </div>
+
+    <div #scrollMe class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12"
+         id="content"
+         style="padding-left: 0px;padding-right: 0px;" style="overflow: scroll; height: xyz;">
+
+      <div class="container">
+        <div class="messaging">
+          <div class="inbox_msg">
+            <div class="mesgs">
+              <div class="msg_history">
+                <div *ngFor="let msg of sortMessages">
+                  <div *ngIf="msg.type == 'received'" class="incoming_msg">
+                    <div class="received_msg">
+                      <div class="received_withd_msg">
+                        <p>
+                          <span (click)="showProfile(msg.userId)" class="badge badge-dark "
+                                style="float:left;">{{ getUserName(msg.userId) }}</span>
+                          {{msg.text}}
+                        </p>
+                        <span class="time_date"> {{msg.date | date:'medium'}}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="msg.type == 'sent'" class="outgoing_msg">
+                    <div class="sent_msg">
+                      <p>
+                        {{msg.text}}<span (click)="showProfile(msg.userId)" class="badge badge-dark "
+                                          style="float:right;">{{ getUserName(msg.userId) }}</span>
+                      </p>
+                      <span class="time_date"> {{msg.date | date:'medium'}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <nav class="navbar fixed-bottom navbar-dark bg-dark">
+        <form class="mx-2 my-auto d-inline w-100">
+          <div class="input-group">
+            <input (input)="tempMessage=$event.target.value" (keydown.enter)="sendMessage()" [value]="tempMessage" class="form-control input-group-addon mr-sm-2 "
+                   placeholder="Type a message" style="width: 1%;"
+                   type="text"/>
+            <span class="input-group-append">
+                                <button (click)="sendMessage()" class="btn btn-outline-success"
+                                        type="submit">Send</button>
+                            </span>
+          </div>
+        </form>
+      </nav>
+    </div>
+  </div>
 </div>
-  

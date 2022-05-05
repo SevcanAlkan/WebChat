@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { UserRegisterVM, User, UserUpdateVM } from '@models/User';
-import { Router, ActivatedRoute } from '@angular/router';
-import { AuthenticationService } from '@services/AuthenticationService';
-import { UserService } from '@app/services/UserService';
+import {Component, OnInit} from '@angular/core';
+import {UserRegisterVM, UserUpdateVM} from '@app/Models/user';
+import {ActivatedRoute, Router} from '@angular/router';
+import {AuthenticationService} from '@app/services/AuthenticationService';
+import {UserService} from '@app/services/UserService';
 
 @Component({
   selector: 'app-register',
@@ -13,7 +13,7 @@ export class RegisterComponent implements OnInit {
   private user: UserRegisterVM = new UserRegisterVM();
   private userRec: UserUpdateVM = new UserUpdateVM();
   private comparePassword: string = '';
-  private id:string;
+  private id: string;
   private alreadyRegistredUser: boolean = false;
 
   // Validation
@@ -26,18 +26,18 @@ export class RegisterComponent implements OnInit {
   private aboutIsntValid: boolean = false;
 
   constructor(private router: Router, private authenticationService: AuthenticationService,
-    private userService: UserService, private route: ActivatedRoute) { 
+              private userService: UserService, private route: ActivatedRoute) {
 
   }
 
   ngOnInit() {
-    this.id = this.route.snapshot.paramMap.get('id') || null; 
+    this.id = this.route.snapshot.paramMap.get('id') || null;
 
-    if(this.id != null && this.id != ''){
+    if (this.id != null && this.id != '') {
       this.userService.GetById(this.id).subscribe(x => {
-        if(x && x.rec){
-         this.userRec = x.rec;
-            
+        if (x && x.rec) {
+          this.userRec = x.rec;
+
           this.user.about = this.userRec.about;
           this.user.displayName = this.userRec.displayName;
           this.user.isAdmin = this.userRec.isAdmin;
@@ -47,83 +47,83 @@ export class RegisterComponent implements OnInit {
 
           console.log(this.userRec);
         }
-      });      
+      });
 
       this.alreadyRegistredUser = true;
     }
   }
 
-  save(){    
-    if(String(this.user.userName).length < 4 || String(this.user.userName).length > 15){
+  save() {
+    if (String(this.user.userName).length < 4 || String(this.user.userName).length > 15) {
       this.userNameIsntValid = true;
       return;
-    }else{     
-      this.userNameIsntValid = false;  
+    } else {
+      this.userNameIsntValid = false;
     }
 
-    this.userService.isUserNameExist(this.user.userName).subscribe(x=> this.userNameAlreadyTaken = x);      
-    if(this.userNameAlreadyTaken){
+    this.userService.isUserNameExist(this.user.userName).subscribe(x => this.userNameAlreadyTaken = x);
+    if (this.userNameAlreadyTaken) {
       return;
     }
 
-    if(String(this.user.displayName).length < 4 || String(this.user.displayName).length > 20){
+    if (String(this.user.displayName).length < 4 || String(this.user.displayName).length > 20) {
       this.displayNameIsntValid = true;
       return;
-    }else{
+    } else {
       this.displayNameIsntValid = false;
     }
 
     var passwordIsValid = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])");
-    if(String(this.user.passwordHash).length < 6 
-    || String(this.user.passwordHash).length > 50
-    || !passwordIsValid.test(this.user.passwordHash)){
+    if (String(this.user.passwordHash).length < 6
+      || String(this.user.passwordHash).length > 50
+      || !passwordIsValid.test(this.user.passwordHash)) {
       this.passwordIsntValid = true;
       return;
-    }else{
+    } else {
       this.passwordIsntValid = false;
     }
 
-    if(this.user.passwordHash != this.comparePassword){
+    if (this.user.passwordHash != this.comparePassword) {
       this.comparePasswordIsntValid = true;
       return;
-    }else{
+    } else {
       this.comparePasswordIsntValid = false;
     }
 
-    if(this.alreadyRegistredUser && (String(this.userRec.oldPassword).length < 6 
-    || String(this.userRec.oldPassword).length > 50)){
+    if (this.alreadyRegistredUser && (String(this.userRec.oldPassword).length < 6
+      || String(this.userRec.oldPassword).length > 50)) {
       this.OldPasswordIsntValid = true;
       return;
-    }else{
+    } else {
       this.OldPasswordIsntValid = false;
     }
 
-    if(String(this.user.displayName).length < 4 || String(this.user.displayName).length > 20){
+    if (String(this.user.displayName).length < 4 || String(this.user.displayName).length > 20) {
       this.displayNameIsntValid = true;
       return;
-    }else{
+    } else {
       this.displayNameIsntValid = false;
     }
 
-    if(String(this.user.about).length > 250){
+    if (String(this.user.about).length > 250) {
       this.aboutIsntValid = true;
       return;
-    }else{
+    } else {
       this.aboutIsntValid = false;
     }
 
     this.user.status = 4;
-    
-    if(!this.alreadyRegistredUser){
-      this.authenticationService.register(this.user).subscribe( () => {
+
+    if (!this.alreadyRegistredUser) {
+      this.authenticationService.register(this.user).subscribe(() => {
         this.returnBack();
       });
-    }else{
-      
+    } else {
+
       this.userRec.about = this.user.about;
       this.userRec.displayName = this.user.displayName;
       this.userRec.isAdmin = this.user.isAdmin;
-      this.userRec.passwordHash = this.user.passwordHash;            
+      this.userRec.passwordHash = this.user.passwordHash;
       this.userRec.userName = this.user.userName;
 
       this.userService.Update(this.userRec).subscribe(() => {
@@ -132,18 +132,18 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  returnBack(){
-    if(this.alreadyRegistredUser){
+  returnBack() {
+    if (this.alreadyRegistredUser) {
       this.authenticationService.logout();
     }
 
     this.router.navigate(['login']);
   }
 
-  cancel(){
-    if(this.alreadyRegistredUser){
+  cancel() {
+    if (this.alreadyRegistredUser) {
       this.router.navigate(['/']);
-    }else{
+    } else {
       this.router.navigate(['login']);
     }
   }
